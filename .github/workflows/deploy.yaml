@@ -1,0 +1,50 @@
+# .github/workflows/deploy.yaml
+name: Build and deploy lectures
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v3
+      - run: pip install marimo==0.23.16 numpy scipy matplotlib
+      - name: Copy hand-authored pages into staging site
+        run: |
+          mkdir -p _site
+          rsync -a --exclude='.github' --exclude='_site' --exclude='.git' \
+            --include='*/' --include='*.html' --include='.nojekyll' --exclude='*' \
+            ./ _site/
+      - name: Export each lecture notebook to WASM
+        run: |
+          root="$(pwd)"
+          for f in $(find . -path './_site' -prune -o -name "*.py" -path "*/lecture*" -print); do
+            dir=$(dirname "$f")
+            base=$(basename "$f")
+            mkdir -p "_site/$dir"
+            (cd "$dir" && marimo export html-wasm "$base" -o "$root/_site/$dir" --mode run)
+            rsync -a --exclude='*.py' --exclude='__marimo__' --exclude='.DS_Store' --exclude='CLAUDE.md' \
+              "$dir/" "_site/$dir/"
+          done
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
