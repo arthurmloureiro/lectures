@@ -7,8 +7,10 @@ __pycache__/
 *.so
 
 # keynote
-*/keynote_assets/*
+**/keynote_assets/
 *.key
+
+**/.claude/
 
 # Distribution / packaging
 .Python

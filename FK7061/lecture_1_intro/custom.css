@@ -1,0 +1,79 @@
+/* Presentation-mode type scale for the lecture slides.
+   Targets the exact classes marimo emits for markdown output
+   (.markdown.prose is the container Tailwind Typography styles;
+   .paragraph wraps each paragraph; marimo-tex wraps KaTeX equations).
+
+   Sizes are viewport-relative (vw), NOT rem, and NOT the document root.
+   marimo's own UI chrome (paddings, gaps, spacing throughout the app)
+   is built on Tailwind's rem scale, so scaling the <html> root font-size
+   to fix any one thing inflates literally everything else in the app
+   too -- tried that, it made the whole notebook look zoomed in and
+   forced scrolling on most slides. Reverted; every rule here is scoped
+   to our own slide-content classes instead.
+
+   KNOWN LIMITATION: KaTeX renders each equation inside a `<marimo-tex>`
+   shadow root, so no selector here can reach `.katex` or its internal
+   script-style classes (.size1..size6, used for subscripts/superscripts
+   like the x_min/x_max under an integral sign) at all -- shadow DOM
+   blocks outside CSS from matching anything inside it, open or closed.
+   Those classes are also hardcoded in `rem` by KaTeX itself (a
+   deliberate upstream choice, so nested scriptstyle-of-scriptstyle
+   doesn't shrink runaway), which is what makes them immune to fixing
+   from outside without the root-font-size approach above. The only
+   scoped lever left is boosting marimo-tex's own (inherited, em-based)
+   font-size so the *main* glyphs are legible and generously sized --
+   subscripts stay a fixed, KaTeX-controlled fraction of the page's
+   unscaled root and will always look small *relative to* the equation.
+   That's a real KaTeX limitation, not something fixable here without
+   the app-wide side effect above. */
+
+:root {
+  --slide-body: clamp(1.1rem, 1.6vw, 2.4rem);
+}
+
+.markdown.prose {
+  font-size: var(--slide-body);
+  line-height: 1.6;
+}
+
+.markdown.prose .paragraph,
+.markdown.prose li,
+.markdown.prose strong {
+  font-size: 1em; /* inherit the bumped size above, don't fight it */
+}
+
+.markdown.prose marimo-tex {
+  /* Boost on top of --slide-body so equations read as focal content. */
+  font-size: 1.8em;
+}
+
+/* Slider labels/controls are outside .markdown.prose, so scale them too. */
+.markdown.prose marimo-ui-element,
+marimo-slider label,
+marimo-slider .text-xs,
+marimo-slider .text-sm {
+  font-size: var(--slide-body);
+}
+
+/* Fullscreen: marimo drops the notebook's max-width cap, but the slide
+   container keeps its own padding scale — make that proportional as well. */
+:fullscreen .markdown.prose,
+:fullscreen .Slide {
+  font-size: var(--slide-body);
+}
+
+/* custom.css */
+.markdown.prose li {
+  opacity: 0;
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+.markdown.prose li:nth-child(1) { animation-delay: 0.1s; }
+.markdown.prose li:nth-child(2) { animation-delay: 0.35s; }
+.markdown.prose li:nth-child(3) { animation-delay: 0.6s; }
+.markdown.prose li:nth-child(4) { animation-delay: 0.85s; }
+.markdown.prose li:nth-child(5) { animation-delay: 1.1s; }
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
