@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# keynote
+*/keynote_assets/*
+*.key
+
 # Distribution / packaging
 .Python
 build/
