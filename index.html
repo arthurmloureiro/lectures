@@ -1,49 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lectures — Arthur Loureiro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <style>
-  body {
-    background: #1c1c1c;
-    color: #e6e6e6;
-    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    max-width: 640px;
-    margin: 8rem auto;
-    padding: 0 1.5rem;
-    line-height: 1.6;
+:root{
+  --space-1:#13224F; --space-2:#060C22;
+  --ink:#172040; --ink-soft:#56607C;
+  --panel:rgba(241,243,248,.93); --panel-line:rgba(23,32,64,.14);
+  --accent:#A86A00; --chip:rgba(23,32,64,.07);
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EDE9DD; --ink-soft:#A9B2C8;
+    --panel:rgba(10,18,44,.82); --panel-line:rgba(237,233,221,.14);
+    --accent:#FFC857; --chip:rgba(237,233,221,.08);
   }
-  h1 { font-weight: 700; font-size: 2rem; margin-bottom: 0.25rem; }
-  p.subtitle { color: #999; margin-top: 0; margin-bottom: 3rem; }
-  ul { list-style: none; padding: 0; }
-  li { margin-bottom: 1.25rem; }
-  a.course {
-    color: #e6e6e6;
-    text-decoration: none;
-    font-size: 1.15rem;
-    border-bottom: 1px solid #444;
-    padding-bottom: 2px;
-  }
-  a.course:hover { border-bottom-color: #e6e6e6; }
-  span.desc { display: block; color: #999; font-size: 0.9rem; margin-top: 0.15rem; }
-  a.back { color: #999; font-size: 0.85rem; }
+}
+:root[data-theme="dark"]{
+  --ink:#EDE9DD; --ink-soft:#A9B2C8;
+  --panel:rgba(10,18,44,.82); --panel-line:rgba(237,233,221,.14);
+  --accent:#FFC857; --chip:rgba(237,233,221,.08);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  min-height:100vh;margin:0;color:var(--ink);
+  background-color:var(--space-2);
+  background-image:radial-gradient(ellipse 80% 70% at 55% 45%, var(--space-1) 0%, var(--space-2) 72%);
+  background-attachment:fixed;
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding:calc(6rem + env(safe-area-inset-top,0px)) 16px calc(4rem + env(safe-area-inset-bottom,0px));
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 34% 72%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 64%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 56% 34%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 22% 88%, #FFC857 50%, transparent 51%),
+    radial-gradient(1px 1px at 66% 86%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 38%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 46% 8%, #fff 50%, transparent 51%);
+}
+.panel{
+  position:relative;max-width:640px;margin:0 auto;
+  background:var(--panel);border:1px solid var(--panel-line);border-radius:16px;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+  padding:28px 32px 26px;
+}
+a.back{color:var(--ink-soft);font-size:13px;text-decoration:none}
+a.back:hover{color:var(--accent)}
+.code{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:22px 0 4px}
+h1{font-family:Newsreader,Georgia,"Times New Roman",serif;font-weight:400;font-size:38px;line-height:1.1;
+  letter-spacing:-.012em;margin:0 0 12px;font-variation-settings:"opsz" 60;text-wrap:balance}
+.meta{margin:0 0 6px;color:var(--ink-soft)}
+.meta strong{color:var(--ink);font-weight:500}
+.about{font-family:Newsreader,Georgia,serif;font-size:17px;line-height:1.55;margin:16px 0 0;
+  padding-top:16px;border-top:1px solid var(--panel-line)}
+h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:30px 0 12px}
+ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+a.lecture{display:block;text-decoration:none;color:inherit;background:var(--chip);
+  border:1px solid transparent;border-radius:12px;padding:14px 16px;transition:border-color .15s ease}
+a.lecture:hover,a.lecture:focus-visible{border-color:var(--accent);outline:none}
+.num{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.name{display:block;font-family:Newsreader,Georgia,serif;font-size:20px;line-height:1.25;margin-top:2px}
+.desc{display:block;color:var(--ink-soft);font-size:13px;margin-top:4px}
+@media (max-width:520px){
+  body{padding-top:calc(2.5rem + env(safe-area-inset-top,0px))}
+  .panel{padding:22px 20px 20px}
+  h1{font-size:31px}
+}
 </style>
 </head>
 <body>
-  <a class="back" href="https://arthurmloureiro.github.io/">&larr; arthurmloureiro.github.io</a>
-  <h1>Lectures</h1>
-  <p class="subtitle">Course materials — interactive slides and lecture notes.</p>
-  <ul>
-    <li>
-      <a class="course" href="FK7061/">FK7061 — Statistical Methods in Physics</a>
-      <span class="desc">Stockholm University, graduate course</span>
-    </li>
-    <li>
-      <a class="course" href="FK5024/">FK5024 — Astrophysics and Cosmology</a>
-      <span class="desc">Stockholm University</span>
-    </li>
-    <!-- add one <li> per course -->
-  </ul>
+  <main class="panel">
+    <a class="back" href="https://arthurmloureiro.github.io/">&larr; arthurmloureiro.github.io</a>
+    <p class="code">Arthur Loureiro · Stockholm University</p>
+    <h1>Lectures</h1>
+    <p class="about">Course materials — interactive slides, web apps and lecture notes.</p>
+
+    <h2>Courses</h2>
+    <ul>
+      <li>
+        <a class="lecture" href="FK7061/">
+          <span class="num">FK7061</span>
+          <span class="name">Statistical Methods in Physics</span>
+          <span class="desc">Stockholm University, graduate course (tests and prototypes)</span>
+        </a>
+      </li>
+      <li>
+        <a class="lecture" href="FK5024/">
+          <span class="num">FK5024</span>
+          <span class="name">Astrophysics and Cosmology</span>
+          <span class="desc">Stockholm University</span>
+        </a>
+      </li>
+      <!-- add one <li> per course -->
+    </ul>
+  </main>
 </body>
 </html>
