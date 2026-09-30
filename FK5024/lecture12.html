@@ -6,149 +6,144 @@
 <title>Where are we? Angular resolution and the cosmic distance ladder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --space-1:#13224F; --space-2:#060C22;
-  --ink:#172040; --ink-soft:#56607C;
-  --panel:rgba(241,243,248,.93); --panel-line:rgba(23,32,64,.14);
-  --accent:#A86A00; --chip:rgba(23,32,64,.07); --chip-on:#172040; --chip-on-ink:#F1F3F8;
-  --meter:#172040;
+  color-scheme:dark;
+  --sky:#0D1117;
+  --glow-violet:rgba(120,90,220,.20); --glow-blue:rgba(60,140,200,.10);
+  --sky-img:radial-gradient(60% 55% at 62% 40%, var(--glow-violet), transparent 70%),radial-gradient(40% 40% at 20% 90%, var(--glow-blue), transparent 70%);
+  --ink:#E6EDF3; --ink-soft:#8B949E;
+  --panel:rgba(255,255,255,.06); --edge:rgba(255,255,255,.12); --line:rgba(255,255,255,.08);
+  --chip:rgba(255,255,255,.06);
+  --accent:#80B7D0; --on-accent:#0D1117;
+  --seg-on:#E6EDF3; --seg-on-ink:#0D1117;
+  --rim:inset 0 1px 0 rgba(255,255,255,.06);
+  --blur:16px; --r-card:24px; --r-tip:10px; --r-btn:8px; --r-group:11px; --r-bar:14px;
+  --f-ui:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-display:"Inter Tight",Inter,system-ui,sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --ink:#EDE9DD; --ink-soft:#A9B2C8;
-    --panel:rgba(10,18,44,.82); --panel-line:rgba(237,233,221,.14);
-    --accent:#FFC857; --chip:rgba(237,233,221,.08); --chip-on:#FFC857; --chip-on-ink:#0E1636;
-    --meter:#FFC857;
-  }
-}
-:root[data-theme="dark"]{
-  --ink:#EDE9DD; --ink-soft:#A9B2C8;
-  --panel:rgba(10,18,44,.82); --panel-line:rgba(237,233,221,.14);
-  --accent:#FFC857; --chip:rgba(237,233,221,.08); --chip-on:#FFC857; --chip-on-ink:#0E1636;
-  --meter:#FFC857;
-}
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;background-color:var(--sky)}
 body{
   height:100%;margin:0;overflow:hidden;color:var(--ink);
-  background-color:var(--space-2);
-  background-image:radial-gradient(ellipse 80% 70% at 55% 45%, var(--space-1) 0%, var(--space-2) 72%);
-  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background-color:var(--sky);
+  background-image:var(--sky-img);
+  font-family:var(--f-ui);
   font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
 }
 #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
-#fade{position:fixed;inset:0;background:var(--space-2);opacity:0;pointer-events:none;transition:opacity .28s ease}
+#fade{position:fixed;inset:0;background-color:var(--sky);background-image:var(--sky-img);opacity:0;pointer-events:none;transition:opacity .28s ease}
 
-.panel{position:fixed;background:var(--panel);border:1px solid var(--panel-line);border-radius:16px;
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 18px 50px rgba(0,0,0,.35)}
-#story{left:20px;top:calc(20px + env(safe-area-inset-top,0px));width:390px;
+.panel{position:fixed;background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-card);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));box-shadow:var(--rim)}
+#story{left:20px;top:calc(20px + env(safe-area-inset-top,0px));width:412px;
   max-height:calc(100% - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
   overflow:auto;padding:20px 24px 18px}
-#story .step{font-size:13px;color:var(--ink-soft);margin:0 0 6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-#story h1{font-family:Newsreader,Georgia,"Times New Roman",serif;font-weight:400;font-size:31px;line-height:1.1;
-  letter-spacing:-.012em;margin:0 0 14px;font-variation-settings:"opsz" 60;text-wrap:balance}
-#story .txt p{font-family:Newsreader,Georgia,serif;font-size:17px;line-height:1.55;margin:0 0 11px;max-width:34em}
-#story .txt p.note{font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:13px;line-height:1.45;color:var(--ink-soft)}
-#story .txt mjx-container[display="true"]{margin:.5em 0 .7em !important;overflow-x:auto;overflow-y:hidden;max-width:100%}
-#story .txt .eq{font-family:Newsreader,Georgia,serif;font-size:17px;text-align:center;margin:.3em 0 .7em}
-dl.ro{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin:14px 0 4px;padding-top:14px;border-top:1px solid var(--panel-line)}
+#story .step{font:400 12px var(--f-mono);letter-spacing:.02em;color:var(--ink-soft);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+#story h1{font-family:var(--f-display);font-weight:600;font-size:27px;line-height:1.12;
+  letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
+#story .txt p{font-family:var(--f-ui);font-size:15.5px;line-height:1.55;margin:0 0 10px;max-width:34em}
+#story .txt p.note{font-family:var(--f-ui);font-size:12.5px;line-height:1.45;color:var(--ink-soft)}
+#story .txt mjx-container[display="true"]{font-size:92%;margin:.5em 0 .7em !important;overflow-x:auto;overflow-y:hidden;max-width:100%}
+#story .txt .eq{font-family:var(--f-ui);font-size:15.5px;text-align:center;margin:.3em 0 .7em}
+dl.ro{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin:14px 0 4px;padding-top:14px;border-top:1px solid var(--line)}
 dl.ro div{min-width:0}
-dl.ro dt{font-size:12.5px;color:var(--ink-soft);margin:0}
-dl.ro dd{margin:1px 0 0;font-size:16.5px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.005em;overflow-wrap:anywhere}
+dl.ro dt{font-size:12px;color:var(--ink-soft);margin:0}
+dl.ro dd{margin:1px 0 0;font-size:15.5px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.005em;overflow-wrap:anywhere}
 .navrow{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
 .src{font-size:12px;color:var(--ink-soft);margin:14px 0 0;line-height:1.4}
-.collapse{border:0;background:var(--chip);color:var(--ink);font:500 12.5px "IBM Plex Sans",sans-serif;padding:5px 10px;border-radius:999px;cursor:pointer}
+.collapse{border:1px solid var(--edge);background:var(--chip);color:var(--ink);font:500 12px var(--f-ui);padding:4px 11px;border-radius:var(--r-btn);cursor:pointer;letter-spacing:0}
 #story.min .txt,#story.min dl,#story.min .navrow,#story.min .src{display:none}
-#story.min h1{margin:0;font-size:21px}
+#story.min h1{margin:0;font-size:20px}
 
 #controls{right:20px;top:calc(20px + env(safe-area-inset-top,0px));width:310px;padding:16px 18px 18px;
   max-height:calc(100% - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto}
 #controls .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-#controls .head span{font-size:13px;color:var(--ink-soft)}
+#controls .head span{font:400 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
 #controls.min .body{display:none}
-.lab{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--ink-soft);margin:14px 0 6px}
+.lab{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-soft);margin:14px 0 6px}
 .lab b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
-.seg{display:flex;background:var(--chip);border-radius:12px;padding:3px;gap:2px;flex-wrap:wrap}
-.seg button{flex:1 1 auto;border:0;background:transparent;color:var(--ink);font:500 13px "IBM Plex Sans",sans-serif;
-  padding:7px 9px;border-radius:9px;cursor:pointer;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.seg button[aria-pressed="true"]{background:var(--chip-on);color:var(--chip-on-ink)}
+.seg{display:flex;background:var(--chip);border:1px solid var(--line);border-radius:var(--r-group);padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;border:0;background:transparent;color:var(--ink);font:500 12.5px var(--f-ui);
+  padding:6px 10px;border-radius:var(--r-btn);cursor:pointer;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.seg button[aria-pressed="true"]{background:var(--seg-on);color:var(--seg-on-ink)}
 .seg .dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
-.cap{font-size:13px;color:var(--ink-soft);margin:8px 0 0;line-height:1.45}
+.cap{font-size:12.5px;color:var(--ink-soft);margin:8px 0 0;line-height:1.45}
 input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0}
-.chk{display:flex;align-items:center;gap:9px;font-size:14px;margin:12px 0 0;cursor:pointer}
-.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0}
-.btn{border:1px solid var(--panel-line);background:var(--chip);color:var(--ink);font:500 14px "IBM Plex Sans",sans-serif;
-  padding:8px 14px;border-radius:10px;cursor:pointer}
-.btn.primary{background:var(--chip-on);color:var(--chip-on-ink);border-color:transparent}
+.chk{display:flex;align-items:center;gap:9px;font-size:13.5px;margin:12px 0 0;cursor:pointer}
+.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0;border-radius:4px}
+.btn{border:1px solid var(--edge);background:var(--chip);color:var(--ink);font:500 13.5px var(--f-ui);
+  padding:7px 16px;border-radius:var(--r-btn);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent}
 .btn:disabled{opacity:.45;cursor:default}
 .btnrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 ol.steps{list-style:none;counter-reset:s;padding:0;margin:14px 0 0}
-ol.steps li{counter-increment:s;display:flex;gap:10px;font-size:13.5px;padding:5px 6px;border-radius:8px;color:var(--ink-soft)}
-ol.steps li::before{content:counter(s);flex:0 0 20px;height:20px;border-radius:50%;border:1px solid var(--panel-line);
-  display:grid;place-items:center;font-size:11.5px}
+ol.steps li{counter-increment:s;display:flex;align-items:center;gap:10px;font-size:13px;padding:5px 12px 5px 6px;border-radius:var(--r-btn);color:var(--ink-soft)}
+ol.steps li::before{content:counter(s);flex:0 0 20px;height:20px;border-radius:50%;border:1px solid var(--edge);
+  display:grid;place-items:center;font:500 10.5px var(--f-mono)}
 ol.steps li.on{background:var(--chip);color:var(--ink)}
-ol.steps li.on::before{background:var(--chip-on);color:var(--chip-on-ink);border-color:transparent}
+ol.steps li.on::before{background:var(--accent);color:var(--on-accent);border-color:transparent}
 ol.steps li.off{opacity:.4}
 
 #track{left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));
-  display:flex;gap:2px;padding:5px;border-radius:14px;max-width:calc(100% - 24px)}
-#track button{border:0;background:transparent;color:var(--ink-soft);font:500 13.5px "IBM Plex Sans",sans-serif;
-  padding:8px 11px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
-#track button .n{width:21px;height:21px;border-radius:50%;border:1px solid var(--panel-line);display:grid;place-items:center;font-size:11.5px}
+  display:flex;gap:2px;padding:5px;border-radius:var(--r-bar);max-width:calc(100% - 24px)}
+#track button{border:0;background:transparent;color:var(--ink-soft);font:500 13px var(--f-ui);
+  padding:7px 12px 7px 8px;border-radius:var(--r-btn);cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
+#track button .n{width:21px;height:21px;border-radius:50%;border:1px solid var(--edge);display:grid;place-items:center;font:500 10.5px var(--f-mono)}
 #track button[aria-current="step"]{background:var(--chip);color:var(--ink)}
-#track button[aria-current="step"] .n{background:var(--chip-on);color:var(--chip-on-ink);border-color:transparent}
-#track .sep{width:1px;background:var(--panel-line);margin:4px 4px}
+#track button[aria-current="step"] .n{background:var(--accent);color:var(--on-accent);border-color:transparent}
+#track .sep{width:1px;background:var(--line);margin:4px 4px}
 
-#tip{position:fixed;left:0;top:0;pointer-events:none;z-index:5;max-width:280px;padding:8px 11px;border-radius:10px;
-  background:var(--panel);border:1px solid var(--panel-line);color:var(--ink);font-size:13px;line-height:1.4;
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;transition:opacity .12s}
+#tip{position:fixed;left:0;top:0;pointer-events:none;z-index:5;max-width:280px;padding:8px 11px;border-radius:var(--r-tip);
+  background:var(--panel);border:1px solid var(--edge);color:var(--ink);font-size:12.5px;line-height:1.4;
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));box-shadow:var(--rim);opacity:0;transition:opacity .12s}
 #tip b{font-weight:600}
 button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 @media (max-width:1400px) and (min-width:821px){
-  #story{width:340px;padding:18px 20px 16px}
-  #story h1{font-size:27px}
-  #story .txt p{font-size:16px}
+  #story{width:388px;padding:18px 20px 16px}
+  #story h1{font-size:24px}
+  #story .txt p{font-size:15px}
   #controls{width:280px}
   #track button .t{display:none}
   #track button[aria-current="step"] .t{display:inline}
 }
 @media (max-width:820px){
   #story{left:10px;right:10px;width:auto;top:auto;bottom:calc(66px + env(safe-area-inset-bottom,0px));max-height:38%;padding:14px 16px}
-  #story h1{font-size:23px}
-  #story .txt p{font-size:16px}
+  #story h1{font-size:21px}
+  #story .txt p{font-size:15px}
   #controls{left:10px;right:10px;width:auto;top:calc(10px + env(safe-area-inset-top,0px));max-height:40%;padding:12px 14px}
   #track{left:10px;right:10px;transform:none;justify-content:space-between;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:none}
   #track button .t{display:none}
   #track button{padding:7px 5px}
   #track .sep,#track #panels{display:none}
 }
-#cover{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;color:#EDE9DD;overflow:auto;
-  background-color:var(--space-2);background-image:radial-gradient(ellipse 80% 70% at 55% 45%, var(--space-1) 0%, var(--space-2) 72%);
+#cover{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;color:var(--ink);overflow:auto;
+  background-color:var(--sky);background-image:var(--sky-img);
   padding:calc(40px + env(safe-area-inset-top,0px)) clamp(24px,7vw,110px) calc(32px + env(safe-area-inset-bottom,0px));
   transition:opacity .45s ease}
 #cover[hidden]{display:none}
 #cover.leaving{opacity:0;pointer-events:none}
-#cover .uni{align-self:flex-end;font-family:Newsreader,Georgia,serif;font-size:clamp(20px,2.4vw,30px);line-height:1.05;text-align:left;margin:0}
+#cover .uni{align-self:flex-end;font-family:var(--f-display);font-weight:600;letter-spacing:-.03em;font-size:clamp(20px,2.4vw,30px);line-height:1.05;text-align:left;margin:0}
 #cover .curve{position:absolute;left:0;right:0;bottom:9%;height:40%;width:100%;pointer-events:none;-webkit-mask-image:linear-gradient(to right,rgba(0,0,0,.35) 0%,rgba(0,0,0,.35) 45%,#000 70%);mask-image:linear-gradient(to right,rgba(0,0,0,.35) 0%,rgba(0,0,0,.35) 45%,#000 70%)}
-#cover .curve path{fill:none;stroke:rgba(255,200,87,.28);stroke-width:1.6;vector-effect:non-scaling-stroke;stroke-linejoin:round}
-#cover .curve text{fill:rgba(255,200,87,.45);font:500 13px "IBM Plex Sans",sans-serif}
+#cover .curve path{fill:none;stroke:rgba(128,183,208,.30);stroke-width:1.6;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+#cover .curve text{fill:rgba(128,183,208,.45);font:500 12px var(--f-mono)}
 #cover .main{position:relative;margin-top:auto;margin-bottom:auto;max-width:980px;padding:4vh 0}
-#cover .lec{font-family:Newsreader,Georgia,serif;font-size:clamp(22px,2.6vw,34px);margin:0 0 4px;color:#A9B2C8}
-#cover h1{font-family:Newsreader,Georgia,serif;font-weight:400;font-size:clamp(64px,11vw,168px);line-height:.92;letter-spacing:-.025em;margin:0 0 26px;font-variation-settings:"opsz" 72}
-#cover .sub{font-size:clamp(16px,1.5vw,20px);line-height:1.45;max-width:36em;margin:0 0 30px;color:#EDE9DD}
+#cover .lec{font:400 clamp(13px,1.1vw,15px) var(--f-mono);letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px;color:var(--ink-soft)}
+#cover h1{font-family:var(--f-display);font-weight:600;font-size:clamp(60px,10.5vw,160px);line-height:.95;letter-spacing:-.045em;margin:0 0 26px}
+#cover .sub{font-size:clamp(16px,1.5vw,20px);line-height:1.5;max-width:36em;margin:0 0 30px;color:var(--ink)}
 #cover .go{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px}
-#cover .start{border:0;background:#FFC857;color:#0E1636;font:600 16px "IBM Plex Sans",sans-serif;padding:12px 22px;border-radius:12px;cursor:pointer}
-#cover .jump{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:#A9B2C8}
-#cover .jump button{border:0;background:none;color:#EDE9DD;font:500 14px "IBM Plex Sans",sans-serif;padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(237,233,221,.3);text-underline-offset:4px}
-#cover .jump button:hover{text-decoration-color:#FFC857}
-#cover .foot{position:relative;font-size:14px;color:#A9B2C8;margin:0;font-weight:500}
-#cover .foot span{color:#EDE9DD}
+#cover .start{border:0;background:var(--accent);color:var(--on-accent);font:600 15px var(--f-ui);padding:12px 24px;border-radius:10px;cursor:pointer}
+#cover .jump{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink-soft)}
+#cover .jump button{border:0;background:none;color:var(--ink);font:500 14px var(--f-ui);padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(230,237,243,.3);text-underline-offset:4px}
+#cover .jump button:hover{text-decoration-color:var(--accent)}
+#cover .foot{position:relative;font-size:13.5px;color:var(--ink-soft);margin:0;font-weight:500}
+#cover .foot span{color:var(--ink)}
 @media (max-width:820px){#cover .curve{bottom:18%;height:30%}#cover .jump{display:none}}
 @media (prefers-reduced-motion: reduce){ #fade{transition:none} #cover{transition:none} }
 </style>
@@ -208,10 +203,12 @@ function fmtYr(y){if(y>=1e9)return fmt(y/1e9,y<1e10?1:0)+' billion years';if(y>=
 
 /* ---------- canvas ---------- */
 const cv=$('#c'),g=cv.getContext('2d');let W=0,H=0,DPR=1;let P={x:0,y:0,w:100,h:100};
-const C={ink:'#EDE9DD',soft:'#A9B2C8',faint:'rgba(237,233,221,.32)',grid:'rgba(237,233,221,.08)',gold:'#FFC857',orange:'#F28C5B',
-  blue:'#7FB2F0',violet:'#A58BF0',green:'#8FD3A7',pink:'#E07BB5',cyan:'#6CC4F0',red:'#E8615A',bg:'#0A1230'};
-const FONT='"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
-const SERIF='Newsreader,Georgia,"Times New Roman",serif';
+const C={ink:'#E6EDF3',soft:'#8B949E',faint:'rgba(230,237,243,.32)',grid:'rgba(255,255,255,.08)',gold:'#FFC857',orange:'#F28C5B',
+  blue:'#7FB2F0',violet:'#A58BF0',green:'#8FD3A7',pink:'#E07BB5',cyan:'#6CC4F0',red:'#E8615A',bg:'#0D1117',
+  acc:'#80B7D0',accA:a=>`rgba(128,183,208,${a})`};
+const FONT='Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const SERIF='"Inter Tight",Inter,system-ui,sans-serif';
+const MONO='"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace';
 function font(px,w,fam){g.font=`${w||400} ${px}px ${fam||FONT}`;}
 function text(s,x,y,col,px,align,base,w,fam){font(px||12.5,w,fam);g.fillStyle=col||C.soft;g.textAlign=align||'left';g.textBaseline=base||'alphabetic';g.fillText(s,x,y);}
 function tw(s,px,w,fam){font(px||12.5,w,fam);return g.measureText(s).width;}
@@ -223,7 +220,7 @@ function circle(x,y,r,fill,stroke,lw){g.beginPath();g.arc(x,y,r,0,Math.PI*2);if(
 function rrect(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
 function wrap(s,maxw,px,w){font(px,w);const words=s.split(' ');const out=[];let cur='';for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>maxw&&cur){out.push(cur);cur=wd;}else cur=t;}if(cur)out.push(cur);return out;}
 function callout(x,y,lines,col,maxw){const px=13;const L=[];lines.forEach(s=>wrap(s,maxw||240,px,500).forEach(l=>L.push(l)));
-  const w=Math.max(...L.map(l=>tw(l,px,500)))+22,h=L.length*18+14;rrect(x,y,w,h,10);g.fillStyle='rgba(10,18,44,.85)';g.fill();g.strokeStyle=col||C.gold;g.lineWidth=1.2;g.stroke();
+  const w=Math.max(...L.map(l=>tw(l,px,500)))+22,h=L.length*18+14;rrect(x,y,w,h,10);g.fillStyle='rgba(13,17,23,.88)';g.fill();g.strokeStyle=col||C.acc;g.lineWidth=1.2;g.stroke();
   L.forEach((l,i)=>text(l,x+11,y+9+i*18,C.ink,px,'left','top',500));return{w,h};}
 const inset=(p,l,t,r,b)=>({x:p.x+l,y:p.y+t,w:Math.max(10,p.w-l-r),h:Math.max(10,p.h-t-b)});
 function makeAx(rect,xr,yr,xlog,ylog){const fx=xlog?Math.log10:v=>v,fy=ylog?Math.log10:v=>v;
@@ -232,8 +229,8 @@ function makeAx(rect,xr,yr,xlog,ylog){const fx=xlog?Math.log10:v=>v,fy=ylog?Math
   X.inv=px=>{const v=fx(xr[0])+(px-rect.x)/rect.w*(fx(xr[1])-fx(xr[0]));return xlog?Math.pow(10,v):v;};
   return{X,Y,r:rect};}
 function drawAxes(ax,o){const r=ax.r;g.save();
-  (o.xt||[]).forEach(([v,l])=>{const x=ax.X(v);line(x,r.y,x,r.y+r.h,C.grid,1);if(l!=null)text(l,x,r.y+r.h+8,C.soft,12,'center','top');});
-  (o.yt||[]).forEach(([v,l])=>{const y=ax.Y(v);line(r.x,y,r.x+r.w,y,C.grid,1);if(l!=null)text(l,r.x-8,y,C.soft,12,'right','middle');});
+  (o.xt||[]).forEach(([v,l])=>{const x=ax.X(v);line(x,r.y,x,r.y+r.h,C.grid,1);if(l!=null)text(l,x,r.y+r.h+8,C.soft,11,'center','top',400,MONO);});
+  (o.yt||[]).forEach(([v,l])=>{const y=ax.Y(v);line(r.x,y,r.x+r.w,y,C.grid,1);if(l!=null)text(l,r.x-8,y,C.soft,11,'right','middle',400,MONO);});
   line(r.x,r.y+r.h,r.x+r.w,r.y+r.h,C.faint,1);line(r.x,r.y,r.x,r.y+r.h,C.faint,1);
   if(o.xl)text(o.xl,r.x+r.w/2,r.y+r.h+28,C.soft,12.5,'center','top',500);
   if(o.yl){g.save();g.translate(r.x-(o.ylOff||44),r.y+r.h/2);g.rotate(-Math.PI/2);text(o.yl,0,0,C.soft,12.5,'center','middle',500);g.restore();}
@@ -244,7 +241,7 @@ function range(a,b,s){const o=[];for(let v=a;v<=b+1e-9;v+=s)o.push(+v.toFixed(6)
 let starCv=null;
 function makeStars(){starCv=document.createElement('canvas');starCv.width=W*DPR;starCv.height=H*DPR;const s=starCv.getContext('2d');
   let a=12345;const rnd=()=>{a=(a*16807)%2147483647;return a/2147483647;};const n=Math.round(W*H/3500);
-  for(let i=0;i<n;i++){const x=rnd()*W*DPR,y=rnd()*H*DPR,r=(rnd()*0.8+0.3)*DPR;s.fillStyle=`rgba(237,233,221,${(0.08+rnd()*0.3).toFixed(2)})`;s.beginPath();s.arc(x,y,r,0,7);s.fill();}}
+  for(let i=0;i<n;i++){const x=rnd()*W*DPR,y=rnd()*H*DPR,r=(rnd()*0.8+0.3)*DPR;s.fillStyle=`rgba(230,237,243,${(0.08+rnd()*0.3).toFixed(2)})`;s.beginPath();s.arc(x,y,r,0,7);s.fill();}}
 
 function ts(str,x,y,col,px,align,base,w){const parts=str.split(/_\{([^}]*)\}/);let tot=0;parts.forEach((p,i)=>{tot+=tw(p,i%2?px*0.74:px,w);});
   let x0=align==='center'?x-tot/2:align==='right'?x-tot:x;parts.forEach((p,i)=>{const sub=i%2===1;const sz=sub?px*0.74:px;text(p,x0,y+(sub?px*0.28:0),col,sz,'left',base,w);x0+=tw(p,sz,w);});}
@@ -353,14 +350,14 @@ function draw1(){const V=view1(),{X,Y,s}=V;pts1=[];g.save();g.beginPath();g.rect
       if(S.logW<5)text('Orion Spur',X(-5800),Y(-1500),'rgba(220,228,255,.9)',12,'right','middle',500);g.globalAlpha=1;}}
   // Oort cloud and heliopause
   const aO=sstep(-2.9,-2.2,S.logW)*(1-sstep(1.3,2,S.logW));
-  if(aO>0.02){g.globalAlpha=aO;[[2000,'Inner Oort cloud, ~2,000 AU'],[1e5,'Outer edge of the Oort cloud, ~100,000 AU']].forEach(([au,l])=>{const r=au*AUL*s;if(r>6&&r<3*P.w){circle(X(0),Y(0),r,null,'rgba(169,178,200,.25)',1);text(l,X(0),Y(0)-r-6,C.soft,11.5,'center','bottom');}});g.globalAlpha=1;}
+  if(aO>0.02){g.globalAlpha=aO;[[2000,'Inner Oort cloud, ~2,000 AU'],[1e5,'Outer edge of the Oort cloud, ~100,000 AU']].forEach(([au,l])=>{const r=au*AUL*s;if(r>6&&r<3*P.w){circle(X(0),Y(0),r,null,'rgba(139,148,158,.25)',1);text(l,X(0),Y(0)-r-6,C.soft,11.5,'center','bottom');}});g.globalAlpha=1;}
   const rH=120*AUL*s;if(rH>12&&rH<2*P.w){g.setLineDash([3,4]);circle(X(0),Y(0),rH,null,'rgba(108,196,240,.35)',1);g.setLineDash([]);text('Heliopause, ~120 AU',X(0)+rH*0.71+4,Y(0)-rH*0.71,C.cyan,11.5,'left','bottom');}
   // planets
   PLAN.forEach(([n,a,ang])=>{const r=a*AUL*s;if(r<2.5||r>4*Math.max(P.w,P.h))return;const px=X(a*AUL*Math.cos(ang)),py=Y(a*AUL*Math.sin(ang));
-    const pal=n==='Pluto'?0.12:0.22;circle(X(0),Y(0),r,null,`rgba(237,233,221,${pal})`,1);if(r>10){circle(px,py,n==='Earth'?3.5:2.8,n==='Earth'?C.blue:(n==='Pluto'?C.faint:C.ink));
+    const pal=n==='Pluto'?0.12:0.22;circle(X(0),Y(0),r,null,`rgba(230,237,243,${pal})`,1);if(r>10){circle(px,py,n==='Earth'?3.5:2.8,n==='Earth'?C.blue:(n==='Pluto'?C.faint:C.ink));
       text(n==='Pluto'?'Pluto (dwarf planet since 2006)':n,px+7,py,n==='Pluto'?C.soft:C.ink,12,'left','middle');pts1.push([px,py,`<b>${n}</b><br>${fmt(a,a<2?3:2)} AU from the Sun; light takes ${fmtTime(a*AUL)}.`]);}});
   // Earth and Moon
-  const rM=3.844e8/LY*s;if(rM>3&&S.logW<-2){circle(X(EARTH[0]),Y(EARTH[1]),rM,null,'rgba(237,233,221,.22)',1);
+  const rM=3.844e8/LY*s;if(rM>3&&S.logW<-2){circle(X(EARTH[0]),Y(EARTH[1]),rM,null,'rgba(230,237,243,.22)',1);
     const er=Math.max(3,RE/LY*s),mr=Math.max(2,1.737e6/LY*s);const ge=g.createRadialGradient(X(EARTH[0])-er*.3,Y(EARTH[1])-er*.3,er*.1,X(EARTH[0]),Y(EARTH[1]),er);ge.addColorStop(0,'#9CD3FF');ge.addColorStop(1,'#2D5FA8');
     circle(X(EARTH[0]),Y(EARTH[1]),er,ge);circle(X(MOON[0]),Y(MOON[1]),mr,'#CFCBC0');if(rM>30){text('Earth',X(EARTH[0]),Y(EARTH[1])+er+6,C.ink,12.5,'center','top',500);}}
   // objects
@@ -372,8 +369,8 @@ function draw1(){const V=view1(),{X,Y,s}=V;pts1=[];g.save();g.beginPath();g.rect
     text(n,x+8,y,n==='Voyager 1'?C.cyan:C.ink,12,'left','middle',n==='Galactic centre'?500:400);pts1.push([x,y,`<b>${n}</b><br>${info}`]);});
   // Sun
   const sx=X(0),sy=Y(0);if(vis(sx,sy,10)){const sr=Math.max(4,RSUN/LY*s);const gs=g.createRadialGradient(sx,sy,0,sx,sy,sr*2.2);gs.addColorStop(0,'#FFF4C9');gs.addColorStop(0.45,'#FFC857');gs.addColorStop(1,'rgba(255,200,87,0)');circle(sx,sy,sr*2.2,gs);
-    if(S.logW>-5.5){const lab=S.logW>3.4?'You are here':'Sun';text(lab,sx+(S.logW>3.4?8:9),sy+(S.logW>3.4?16:-9),C.gold,S.logW>3.4?13:12.5,'left','middle',600);}
-    if(S.logW>3.4){g.strokeStyle=C.gold;g.lineWidth=1.5;g.beginPath();g.arc(sx,sy,7,0,7);g.stroke();}
+    if(S.logW>-5.5){const lab=S.logW>3.4?'You are here':'Sun';text(lab,sx+(S.logW>3.4?8:9),sy+(S.logW>3.4?16:-9),S.logW>3.4?C.acc:C.gold,S.logW>3.4?13:12.5,'left','middle',600);}
+    if(S.logW>3.4){g.strokeStyle=C.acc;g.lineWidth=1.5;g.beginPath();g.arc(sx,sy,7,0,7);g.stroke();}
     pts1.push([sx,sy,'<b>The Sun</b><br>26,700 ly from the galactic centre, in the Orion Spur.']);}
   g.restore();
   // scale bar
@@ -423,10 +420,10 @@ function fmtRA(a){let h=((a/DEG/15)%24+24)%24;let H=Math.floor(h),m=(h-H)*60,M=M
 function fmtDec(d){const sg=d<0?'−':'+';let v=Math.abs(d)/DEG;let D=Math.floor(v),m=(v-D)*60,M=Math.floor(m),s=Math.round((m-M)*60);if(s===60){s=0;M++;}if(M===60){M=0;D++;}return `${sg}${D}° ${String(M).padStart(2,'0')}′ ${String(s).padStart(2,'0')}″`;}
 let pts2=[];
 function draw2(){const{cx,cy,R}=geo2();pts2=[];const Sy=SYS2[S.sys2];
-  const glow=g.createRadialGradient(cx-R*.3,cy-R*.35,R*.1,cx,cy,R);glow.addColorStop(0,'rgba(127,178,240,.10)');glow.addColorStop(1,'rgba(127,178,240,.02)');circle(cx,cy,R,glow,'rgba(237,233,221,.25)',1);
+  const glow=g.createRadialGradient(cx-R*.3,cy-R*.35,R*.1,cx,cy,R);glow.addColorStop(0,'rgba(127,178,240,.10)');glow.addColorStop(1,'rgba(127,178,240,.02)');circle(cx,cy,R,glow,'rgba(230,237,243,.25)',1);
   const P2=v=>{const p=projV(v[0],v[1],v[2]);return[cx+p[0]*R,cy-p[1]*R,p[2]];};
   const layers=[];const add=(vs,col,lw,bc)=>{const F=new Path2D(),B=new Path2D();let prev=null;vs.forEach(v=>{const q=P2(v);if(prev){const path=(prev[2]+q[2])/2>=0?F:B;path.moveTo(prev[0],prev[1]);path.lineTo(q[0],q[1]);}prev=q;});layers.push({F,B,col,lw,bc});};
-  const grid='rgba(237,233,221,.28)',gridB='rgba(237,233,221,.07)';
+  const grid='rgba(230,237,243,.28)',gridB='rgba(230,237,243,.07)';
   // grid of the chosen system: meridians every 15 degrees (1h in RA), parallels every 15 degrees
   for(let k=0;k<24;k++){const lo=k*15*DEG;const vs=[];for(let d=-90;d<=90;d+=3)vs.push(Sy.toEq(lo,d*DEG));add(vs,k===0?'rgba(255,200,87,.6)':grid,k===0?1.5:1,gridB);}
   for(let d=-75;d<=75;d+=15){if(d===0)continue;const vs=[];for(let a=0;a<=360;a+=3)vs.push(Sy.toEq(a*DEG,d*DEG));add(vs,grid,1,gridB);}
@@ -434,11 +431,11 @@ function draw2(){const{cx,cy,R}=geo2();pts2=[];const Sy=SYS2[S.sys2];
   const circ=(k,lw)=>{const vs=[];for(let a=0;a<=360;a+=2)vs.push(SYS2[k].toEq(a*DEG,0));const c=SYS2[k].col;add(vs,c,lw,c.startsWith('#')?c+'40':c);};
   if(S.sys2!==0)circ(0,1.3);if(S.showEcl&&S.sys2!==1)circ(1,1.3);circ(S.sys2,2.2);
   let arc=null;if(S.sel2.length===2){const[a,b]=S.sel2.map(i=>STARS2[i]);const v1=radec(a[1]*15*DEG,a[2]*DEG),v2=radec(b[1]*15*DEG,b[2]*DEG);const om=sepAng(a[1]*15*DEG,a[2]*DEG,b[1]*15*DEG,b[2]*DEG);const vs=[];
-    for(let i=0;i<=60;i++){const t=i/60,s1=Math.sin((1-t)*om)/Math.sin(om),s2=Math.sin(t*om)/Math.sin(om);vs.push([s1*v1[0]+s2*v2[0],s1*v1[1]+s2*v2[1],s1*v1[2]+s2*v2[2]]);}add(vs,C.gold,2.4,'rgba(255,200,87,.35)');arc={om,mid:vs[30]};}
+    for(let i=0;i<=60;i++){const t=i/60,s1=Math.sin((1-t)*om)/Math.sin(om),s2=Math.sin(t*om)/Math.sin(om);vs.push([s1*v1[0]+s2*v2[0],s1*v1[1]+s2*v2[1],s1*v1[2]+s2*v2[2]]);}add(vs,C.acc,2.4,C.accA(.35));arc={om,mid:vs[30]};}
   layers.forEach(l=>{g.lineWidth=l.lw;g.strokeStyle=l.bc;g.stroke(l.B);});
   const drawStar=(i,front)=>{const s=STARS2[i];const q=P2(radec(s[1]*15*DEG,s[2]*DEG));if((q[2]>=0)!==front)return;const x=q[0],y=q[1];const r=clamp(3.4-0.7*s[3],1.6,4.6);
-    const ext=/Galaxy|Cloud|centre/.test(s[0]);circle(x,y,r,front?(ext?'rgba(165,139,240,.9)':C.ink):'rgba(237,233,221,.25)');
-    if(front){if(S.sel2.includes(i))circle(x,y,r+5,null,C.gold,1.6);text(s[0],x+r+5,y-1,S.sel2.includes(i)?C.gold:C.ink,12,'left','middle',S.sel2.includes(i)?600:400);pts2.push([x,y,i]);}};
+    const ext=/Galaxy|Cloud|centre/.test(s[0]);circle(x,y,r,front?(ext?'rgba(165,139,240,.9)':C.ink):'rgba(230,237,243,.25)');
+    if(front){if(S.sel2.includes(i))circle(x,y,r+4,null,C.ink,1.5);text(s[0],x+r+5,y-1,C.ink,12,'left','middle',S.sel2.includes(i)?600:400);pts2.push([x,y,i]);}};
   STARS2.forEach((s,i)=>drawStar(i,false));
   const er=R*0.07;const ge=g.createRadialGradient(cx-er*.3,cy-er*.3,er*.1,cx,cy,er);ge.addColorStop(0,'#9CD3FF');ge.addColorStop(1,'#2D5FA8');circle(cx,cy,er,ge);
   layers.forEach(l=>{g.lineWidth=l.lw;g.strokeStyle=l.col;g.stroke(l.F);});
@@ -456,7 +453,7 @@ function draw2(){const{cx,cy,R}=geo2();pts2=[];const Sy=SYS2[S.sys2];
   // latitude labels on the meridian facing us
   let best=0,bd=-2;for(let a=0;a<360;a+=5){const q=P2(Sy.toEq(a*DEG,0));if(q[2]>bd){bd=q[2];best=a;}}
   for(let d=-60;d<=60;d+=30){if(d===0)continue;const q=P2(Sy.toEq((best-20)*DEG,d*DEG));if(q[2]<0.1)continue;text((d>0?'+':'−')+Math.abs(d)+'°',q[0],q[1],C.soft,11.5,'center','middle');}
-  if(arc){const q=P2(arc.mid);if(q[2]>0)callout(q[0]+8,q[1]+8,[fmtAng(arc.om)],C.gold,200);}
+  if(arc){const q=P2(arc.mid);if(q[2]>0)callout(q[0]+8,q[1]+8,[fmtAng(arc.om)],C.acc,200);}
   // legend
   const leg=[[Sy.col,Sy.eq]];if(S.sys2!==0)leg.push([C.red,'Celestial equator']);if(S.showEcl&&S.sys2!==1)leg.push([C.green,'Ecliptic, the Sun\'s yearly path']);leg.push([C.gold,Sy.zero]);
   let ly=P.y+P.h-14;leg.reverse().forEach(([c,t])=>{line(P.x+10,ly,P.x+30,ly,c,2);text(t,P.x+36,ly,C.soft,12,'left','middle');ly-=20;});}
@@ -499,7 +496,7 @@ let pts3=[];
 function draw3(){pts3=[];if(S.view3===1)return draw3b();const wide=P.w>P.h*1.25;const th=thR(),sep=SEP3();const hw=Math.max(3*th,sep/2+2.6*th);
   let ix,iy,is,pr;if(wide){is=Math.min(P.h-30,P.w*0.46);ix=P.x;iy=P.y+(P.h-is)/2;pr=inset({x:P.x+is+30,y:P.y,w:P.w-is-30,h:P.h},58,P.h*0.18,10,P.h*0.18+30);}
   else{is=Math.min(P.w,P.h*0.5);ix=P.x+(P.w-is)/2;iy=P.y;pr=inset({x:P.x,y:P.y+is+10,w:P.w,h:P.h-is-10},58,12,10,44);}
-  const im=makeImg3(hw,sep,140);g.imageSmoothingEnabled=true;g.save();rrect(ix,iy,is,is,12);g.clip();g.drawImage(im,ix,iy,is,is);g.restore();rrect(ix,iy,is,is,12);g.strokeStyle='rgba(237,233,221,.2)';g.lineWidth=1;g.stroke();
+  const im=makeImg3(hw,sep,140);g.imageSmoothingEnabled=true;g.save();rrect(ix,iy,is,is,12);g.clip();g.drawImage(im,ix,iy,is,is);g.restore();rrect(ix,iy,is,is,12);g.strokeStyle='rgba(230,237,243,.2)';g.lineWidth=1;g.stroke();
   // scale bar on image
   const unit=hw/AS;const L=niceNum(unit*0.6);const px=L*AS/(2*hw)*is;line(ix+14,iy+is-16,ix+14+px,iy+is-16,'#fff',2);text(fmtAng(L*AS),ix+14+px/2,iy+is-22,'#fff',12.5,'center','bottom',600);
   // profile
@@ -513,7 +510,7 @@ function draw3b(){const rows=SIZES3,n=rows.length;const r=inset(P,Math.min(300,P
   const xt=[[1e-5,'10 μas'],[1e-4,'0.1 mas'],[1e-3,'1 mas'],[1e-2,'10 mas'],[0.1,'0.1″'],[1,'1″'],[10,'10″'],[60,'1′'],[3600,'1°']];drawAxes(ax,{xt,xl:'Angle on the sky (log scale)'});
   const th=thR()/AS;const gx=ax.X(clamp(th,1e-5,1e4));g.fillStyle='rgba(255,200,87,.06)';g.fillRect(r.x,r.y,gx-r.x,r.h);line(gx,r.y-6,gx,r.y+r.h,C.gold,2);
   text('Your telescope: '+fmtAng(thR()),gx+6,r.y-10,C.gold,12.5,'left','bottom',600);text('Unresolved',gx-8,r.y+r.h-8,'rgba(255,200,87,.6)',12,'right','bottom',500);
-  const rh=r.h/n;rows.forEach((row,i)=>{const y=r.y+(i+.5)*rh;const v=row[1]/AS;const x=ax.X(v);const ins=row[2]==='ins';if(i===7)line(r.x-Math.min(290,P.w*0.41),r.y+i*rh,r.x+r.w,r.y+i*rh,'rgba(237,233,221,.18)',1);
+  const rh=r.h/n;rows.forEach((row,i)=>{const y=r.y+(i+.5)*rh;const v=row[1]/AS;const x=ax.X(v);const ins=row[2]==='ins';if(i===7)line(r.x-Math.min(290,P.w*0.41),r.y+i*rh,r.x+r.w,r.y+i*rh,'rgba(230,237,243,.18)',1);
     text(row[0],r.x-12,y,ins?C.soft:C.ink,12.5,'right','middle',ins?400:500);const res=!ins&&v>th;
     if(ins){g.fillStyle=C.soft;g.beginPath();g.moveTo(x,y-6);g.lineTo(x+5,y);g.lineTo(x,y+6);g.lineTo(x-5,y);g.closePath();g.fill();}else circle(x,y,5,res?C.blue:null,C.blue,1.5);
     pts3.push([x,y,row,r.x-12]);});
@@ -535,8 +532,8 @@ function draw4(){if(S.view4===1)return draw4b();const d=dMoon();const L=P.w*0.78
   if(t!=null){const tt=Math.min(t,2*Tone);const out=tt<=Tone;const pos=out?tt/Tone:2-tt/Tone;const xp=x0+er+(L-er-mr)*pos;
     const tail=Math.min(0.06,pos);line(x0+er,y,x0+er+(L-er-mr)*(out?pos:1),y,'rgba(232,97,90,.35)',1.5);if(!out)line(x0+er+(L-er-mr)*pos,y+3,x1-mr,y+3,'rgba(232,97,90,.25)',1.5);
     circle(xp,y+(out?0:3),4,C.red);const gl=g.createRadialGradient(xp,y,0,xp,y,14);gl.addColorStop(0,'rgba(232,97,90,.5)');gl.addColorStop(1,'rgba(232,97,90,0)');circle(xp,y,14,gl);
-    const done=t>=2*Tone;text('t = '+fmt(tt,2)+' s',P.x+P.w/2,P.y+P.h*0.18,done?C.gold:C.ink,34,'center','middle',500,SERIF);
-    text(done?`d = ct / 2 = ${fmt(CL*2*Tone/2/1e3,0)} km = ${fmt(d/RE,1)} R⊕`:(out?'Pulse travelling to the Moon':'Reflected pulse coming back'),P.x+P.w/2,P.y+P.h*0.18+34,done?C.gold:C.soft,14,'center','middle',500);}
+    const done=t>=2*Tone;text('t = '+fmt(tt,2)+' s',P.x+P.w/2,P.y+P.h*0.18,done?C.acc:C.ink,34,'center','middle',500,MONO);
+    text(done?`d = ct / 2 = ${fmt(CL*2*Tone/2/1e3,0)} km = ${fmt(d/RE,1)} R⊕`:(out?'Pulse travelling to the Moon':'Reflected pulse coming back'),P.x+P.w/2,P.y+P.h*0.18+34,done?C.acc:C.soft,14,'center','middle',500);}
   else text('Press Fire the laser. The pulse moves in real time.',P.x+P.w/2,P.y+P.h*0.2,C.soft,14,'center','middle');
   text('Drawn to scale',x1,P.y+P.h-10,C.soft,12,'right','bottom');}
 function tick4(dt){if(S.laserT==null||S.view4!==0)return false;const T=2*dMoon()/CL;if(S.laserT>=T)return false;S.laserT=Math.min(T,S.laserT+dt);updateRO4();return true;}
@@ -545,7 +542,7 @@ function draw4b(){const wide=P.w>P.h*1.1;const Lp=wide?{x:P.x,y:P.y,w:P.w*0.5,h:
   line(ex,ey,mx,my,C.soft,1.5);line(mx,my,sxp,syp,C.soft,1.5,broke?[6,4]:null);line(ex,ey,sxp,syp,C.gold,1.5,broke?[6,4]:null);
   if(broke){[-6,0].forEach(o=>line(sxp-40+o,syp-8,sxp-34+o,syp+8,C.ink,1.5));text('not to scale',sxp-37,syp+22,C.soft,11.5,'center','top');}
   rrect(mx,my,11,11,0);g.strokeStyle=C.ink;g.lineWidth=1;g.stroke();text('90°',mx+15,my+15,C.ink,12,'left','middle');
-  g.strokeStyle=C.gold;g.lineWidth=1.5;g.beginPath();g.arc(ex,ey,34,-Math.PI/2,-Math.PI/2+Math.atan2(sxp-ex,ey-syp),false);g.stroke();text('φ = '+fmt(S.phi,2)+'°',ex+34,ey-40,C.gold,14,'left','bottom',600);
+  g.strokeStyle=C.acc;g.lineWidth=1.5;g.beginPath();g.arc(ex,ey,34,-Math.PI/2,-Math.PI/2+Math.atan2(sxp-ex,ey-syp),false);g.stroke();text('φ = '+fmt(S.phi,2)+'°',ex+34,ey-40,C.acc,14,'left','bottom',600);
   const ge=g.createRadialGradient(ex-4,ey-4,1,ex,ey,11);ge.addColorStop(0,'#9CD3FF');ge.addColorStop(1,'#2D5FA8');circle(ex,ey,11,ge);text('Earth',ex,ey+17,C.ink,12.5,'center','top',500);
   circle(mx,my,9,'#3A3E4A');g.fillStyle='#E4E0D6';g.beginPath();g.arc(mx,my,9,-Math.PI/2,Math.PI/2);g.closePath();g.fill();text('Half Moon',mx+14,my-14,C.ink,12.5,'left','bottom',500);
   const gs=g.createRadialGradient(sxp,syp,0,sxp,syp,24);gs.addColorStop(0,'#FFF4C9');gs.addColorStop(.5,'#FFC857');gs.addColorStop(1,'rgba(255,200,87,0)');circle(sxp,syp,24,gs);text('Sun',sxp,syp-26,C.gold,12.5,'center','bottom',600);
@@ -577,7 +574,7 @@ function draw5(){const wide=P.w>P.h*1.2;const Lp=wide?{x:P.x,y:P.y,w:P.w*0.42,h:
   const Lmax=Math.sqrt(RSA*RSA-Math.min(yN,yS)**2)+40;const xv=(-Lmax+2*Lmax*S.trT);
   [[yN,C.blue,'Path seen from N'],[yS,C.violet,'Path seen from S']].forEach(([yy,c,l],i)=>{const h=Math.sqrt(Math.max(0,RSA*RSA-yy*yy));line(cx-h*k,cyy+yy*k,cx+h*k,cyy+yy*k,c,1.2,[4,3]);
     text(l,cx-R-10,cyy+yy*k+(i?-9:9),c,12,'right','middle',600);const inside=Math.abs(xv)<h+29;if(Math.hypot(xv,yy)<RSA+29)circle(cx+xv*k,cyy+yy*k,Math.max(2.5,29*k),'#15151a');});
-  text(S.exag?'Separation between the paths exaggerated ×10':'True separation',cx,cyy-R-12,S.exag?C.gold:C.soft,12.5,'center','bottom',500);
+  text(S.exag?'Separation between the paths exaggerated ×10':'True separation',cx,cyy-R-12,S.exag?C.acc:C.soft,12.5,'center','bottom',500);
   // the AU recovered from the timings, with its error bar
   const fe=auErr5(),au=149.6,err=fe*au;const sw=Math.min(Rp.w-40,440),sx0=cx-sw/2,sy=cyy+R+58;const lo=130,hi=170;const X=v=>sx0+(clamp(v,lo,hi)-lo)/(hi-lo)*sw;
   line(sx0,sy,sx0+sw,sy,C.faint,1);for(let v=lo;v<=hi;v+=10){line(X(v),sy-4,X(v),sy+4,C.faint,1);text(String(v),X(v),sy+8,C.soft,11.5,'center','top');}
@@ -612,7 +609,7 @@ function draw6(){pts6=[];if(S.view6===1)return draw6b();const T=T6();const r=ins
   else{const st=niceNum(ymax/5);for(let v=0;v<=ymax;v+=st)yt.push([v,fmt(v,v<10&&st<1?1:0)]);}
   drawAxes(ax,{xt:range(200,2000,200).map(v=>[v,String(v)]),yt,xl:'Wavelength (nm)',yl:'Power per m² per nm (kW m⁻² nm⁻¹)',ylOff:50});
   const curve=(t,col,lw,dash)=>{g.strokeStyle=col;g.lineWidth=lw;g.setLineDash(dash||[]);g.beginPath();let st=false;for(let nm=lx[0];nm<=lx[1];nm+=4){let v=exit(nm,t);if(S.logFlux){if(v<ymax*1e-4){st=false;continue;}}const x=ax.X(nm),y=ax.Y(Math.min(v,ymax*1.5));st?g.lineTo(x,y):g.moveTo(x,y);st=true;}g.stroke();g.setLineDash([]);};
-  refs.forEach(t=>{curve(t,'rgba(237,233,221,.28)',1.2);const pk=2.8978e6/t;const v=exit(pk,t);if(!S.logFlux&&ax.Y(v)>r.y+10)text(t+' K',ax.X(pk),ax.Y(v)-6,C.soft,11.5,'center','bottom');});
+  refs.forEach(t=>{curve(t,'rgba(230,237,243,.28)',1.2);const pk=2.8978e6/t;const v=exit(pk,t);if(!S.logFlux&&ax.Y(v)>r.y+10)text(t+' K',ax.X(pk),ax.Y(v)-6,C.soft,11.5,'center','bottom');});
   curve(5780,C.gold,1.3,[5,4]);curve(T,C.ink,2.6);const pk=2.8978e6/T;if(pk<lx[1]&&pk>lx[0]){const v=exit(pk,T);circle(ax.X(pk),ax.Y(v),4.5,C.ink);text(fmt(T,0)+' K, peak at '+fmt(pk,0)+' nm',ax.X(pk)+10,ax.Y(v)+(ax.Y(v)<r.y+20?14:-6),C.ink,13,'left','bottom',600);}
   text('Dashed gold: the Sun, 5,780 K',r.x+r.w,r.y-8,C.gold,12,'right','bottom');}
 function draw6b(){const r=inset(P,20,50,20,80);const ax=makeAx(r,[-28,32],[0,1],false,false);const y0=r.y+r.h*0.47;
@@ -620,10 +617,10 @@ function draw6b(){const r=inset(P,20,50,20,80);const ax=makeAx(r,[-28,32],[0,1],
   for(let m=-25;m<=30;m+=5){const x=ax.X(m);line(x,y0-9,x,y0+9,C.faint,1);text((m>0?'+':m<0?'−':'')+Math.abs(m),x,y0+14,C.soft,12,'center','top');}
   text('Brighter',r.x,y0+40,C.gold,13,'left','top',600);text('Fainter',r.x+r.w,y0+40,C.soft,13,'right','top',600);text('Apparent magnitude m',r.x+r.w/2,y0+40,C.soft,12.5,'center','top',500);
   MAG6.forEach(([n,m],i)=>{const x=ax.X(m);const up=i%2===0;const lv=(i>>1)%4;const yl=up?y0-26-lv*40:y0+66+lv*40;const sel=i===S.mA||i===S.mB;const col=i===S.mA?C.blue:i===S.mB?C.violet:C.ink;
-    line(x,y0+(up?-6:6),x,yl+(up?8:-8),sel?col:'rgba(237,233,221,.3)',sel?1.6:1);const rr=clamp(7-0.2*m,2,9);circle(x,y0,rr,m<-10?C.gold:C.ink);
+    line(x,y0+(up?-6:6),x,yl+(up?8:-8),sel?col:'rgba(230,237,243,.3)',sel?1.6:1);const rr=clamp(7-0.2*m,2,9);circle(x,y0,rr,m<-10?C.gold:C.ink);
     text(n,x,yl,col,12.5,'center',up?'bottom':'top',sel?600:400);text((m>0?'+':m<0?'−':'')+fmt(Math.abs(m),2),x,yl+(up?-16:16),C.soft,11.5,'center',up?'bottom':'top');pts6.push([x,yl,i]);pts6.push([x,y0,i]);});
   const A=MAG6[S.mA],B=MAG6[S.mB];const dm=B[1]-A[1];const rat=Math.pow(10,0.4*dm);
-  callout(r.x,P.y+8,[`${A[0]} is ${rat>=1e5?sci(rat,1):fmt(rat,rat<10?2:0)} times ${rat>=1?'brighter':'fainter'} than ${B[0]}.`,`Δm = ${fmt(dm,2)}, so F_A / F_B = 10^(0.4 Δm).`],C.gold,Math.min(420,P.w-40));}
+  callout(r.x,P.y+8,[`${A[0]} is ${rat>=1e5?sci(rat,1):fmt(rat,rat<10?2:0)} times ${rat>=1?'brighter':'fainter'} than ${B[0]}.`,`Δm = ${fmt(dm,2)}, so F_A / F_B = 10^(0.4 Δm).`],C.acc,Math.min(420,P.w-40));}
 function hover6(x,y){if(S.view6!==1){S.hov=null;return null;}let best=null,bd=22;pts6.forEach(p=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=p;}});S.hov=best?best[2]:null;if(!best)return null;const m=MAG6[best[2]];
   return `<b>${m[0]}</b><br>m = ${fmt(m[1],2)}; ${fmt(Math.abs(m[1]-MAG6[5][1]),1)} mag ${m[1]<0?'brighter':'fainter'} than Vega<br>Click to compare`;}
 function click6(x,y){if(S.view6!==1)return;hover6(x,y);if(S.hov==null)return;if(S.pickB)S.mB=S.hov;else S.mA=S.hov;S.pickB=!S.pickB;updateRO6();}
@@ -640,18 +637,18 @@ function draw7(){const wide=P.w>P.h*1.15;const Lp=wide?{x:P.x,y:P.y,w:P.w*0.46,h
   const th=S.yr*2*Math.PI;
   // orbit diagram
   const ocx=Lp.x+Lp.w/2,ocy=Lp.y+Lp.h*0.74,orr=Math.min(Lp.w*0.3,Lp.h*0.2);const stx=ocx,sty=Lp.y+Lp.h*0.1;
-  g.fillStyle='rgba(237,233,221,.45)';BG7.forEach(b=>{if(b[1]<-0.55)g.fillRect(Lp.x+(b[0]+1)/2*Lp.w,Lp.y+(b[1]+1)/0.9*Lp.h*0.12,1.5,1.5);});
+  g.fillStyle='rgba(230,237,243,.45)';BG7.forEach(b=>{if(b[1]<-0.55)g.fillRect(Lp.x+(b[0]+1)/2*Lp.w,Lp.y+(b[1]+1)/0.9*Lp.h*0.12,1.5,1.5);});
   g.strokeStyle='rgba(108,196,240,.5)';g.lineWidth=1.2;g.beginPath();g.ellipse(ocx,ocy,orr,orr*0.35,0,0,7);g.stroke();const gs=g.createRadialGradient(ocx,ocy,0,ocx,ocy,14);gs.addColorStop(0,'#FFF4C9');gs.addColorStop(.5,'#FFC857');gs.addColorStop(1,'rgba(255,200,87,0)');circle(ocx,ocy,14,gs);
   const exE=ocx-orr*Math.cos(th),eyE=ocy+orr*Math.sin(th)*0.35;
   line(ocx-orr,ocy,stx,sty,'rgba(127,178,240,.35)',1,[4,4]);line(ocx+orr,ocy,stx,sty,'rgba(165,139,240,.35)',1,[4,4]);line(ocx,ocy,stx,sty,C.faint,1,[2,4]);
   line(exE,eyE,stx,sty,C.ink,1.4);circle(exE,eyE,5,C.blue);circle(stx,sty,4.5,C.gold);text('Nearby star',stx+10,sty,C.gold,12.5,'left','middle',600);
   text('January',ocx-orr-8,ocy+4,C.blue,12,'right','middle',500);text('July',ocx+orr+8,ocy+4,C.violet,12,'left','middle',500);text('1 AU',ocx+orr/2,ocy-6,C.soft,11.5,'center','bottom');text('Sun',ocx,ocy+18,C.gold,12,'center','top',600);
-  const a1=Math.atan2(ocy-sty,ocx-orr-stx),a2=Math.atan2(ocy-sty,ocx-stx);g.strokeStyle=C.gold;g.lineWidth=1.3;g.beginPath();g.arc(stx,sty,40,Math.min(a1,a2),Math.max(a1,a2));g.stroke();
-  text('p',stx-14,sty+48,C.gold,15,'right','middle',600,SERIF);text('Angles exaggerated; the star is really '+fmt(d7()*206265,0)+' AU away',Lp.x+Lp.w/2,Lp.y+Lp.h-6,C.soft,11.5,'center','bottom');
+  const a1=Math.atan2(ocy-sty,ocx-orr-stx),a2=Math.atan2(ocy-sty,ocx-stx);g.strokeStyle=C.acc;g.lineWidth=1.3;g.beginPath();g.arc(stx,sty,40,Math.min(a1,a2),Math.max(a1,a2));g.stroke();
+  text('p',stx-14,sty+48,C.acc,15,'right','middle',600,SERIF);text('Angles exaggerated; the star is really '+fmt(d7()*206265,0)+' AU away',Lp.x+Lp.w/2,Lp.y+Lp.h-6,C.soft,11.5,'center','bottom');
   // sky view
-  const sz=Math.min(Rp.w,Rp.h)-30,sx0=Rp.x+(Rp.w-sz)/2,sy0=Rp.y+(Rp.h-sz)/2;rrect(sx0,sy0,sz,sz,12);g.fillStyle='rgba(5,9,26,.7)';g.fill();g.strokeStyle='rgba(237,233,221,.2)';g.lineWidth=1;g.stroke();
+  const sz=Math.min(Rp.w,Rp.h)-30,sx0=Rp.x+(Rp.w-sz)/2,sy0=Rp.y+(Rp.h-sz)/2;rrect(sx0,sy0,sz,sz,12);g.fillStyle='rgba(8,11,16,.72)';g.fill();g.strokeStyle='rgba(230,237,243,.2)';g.lineWidth=1;g.stroke();
   const p=p7()*1e3;const sig=gaiaSig(S.gmag)/1e3;const scale=sz*0.34/Math.max(p,sig*1.2);   // px per mas
-  g.save();rrect(sx0,sy0,sz,sz,12);g.clip();BG7.forEach(b=>circle(sx0+(b[0]+1)/2*sz,sy0+(b[1]+1)/2*sz,b[2]*0.8,'rgba(237,233,221,.55)'));
+  g.save();rrect(sx0,sy0,sz,sz,12);g.clip();BG7.forEach(b=>circle(sx0+(b[0]+1)/2*sz,sy0+(b[1]+1)/2*sz,b[2]*0.8,'rgba(230,237,243,.55)'));
   const scx=sx0+sz/2,scy=sy0+sz/2,sb=Math.sin(S.beta*DEG);g.setLineDash([4,4]);g.strokeStyle='rgba(255,200,87,.5)';g.lineWidth=1.2;g.beginPath();g.ellipse(scx,scy,p*scale,Math.max(0.5,p*scale*sb),0,0,7);g.stroke();g.setLineDash([]);
   const px=scx+p*scale*Math.cos(th),py=scy-p*scale*sb*Math.sin(th);const er=sig*scale;if(er>1.5){circle(px,py,er,'rgba(108,196,240,.15)','rgba(108,196,240,.7)',1);}
   const gg=g.createRadialGradient(px,py,0,px,py,9);gg.addColorStop(0,'#FFF4C9');gg.addColorStop(.4,'#FFC857');gg.addColorStop(1,'rgba(255,200,87,0)');circle(px,py,9,gg);g.restore();
@@ -713,7 +710,7 @@ function draw9(){pts9=[];if(S.view9===1)return draw9b();const r=inset(P,62,24,20
     pts9.push([i,s,pk]);});
   line(ax.X(15),r.y,ax.X(15),r.y+r.h,C.faint,1,[3,4]);text('Δm₁₅: the fall in the first 15 days',ax.X(15)+6,ax.Y(-15.75),C.soft,12,'left','bottom');
   text('Near peak: ⁵⁶Ni → ⁵⁶Co, half-life 6.1 days',ax.X(-18),ax.Y(-20.05),C.ink,12.5,'left','bottom',500);text('⁵⁶Co → ⁵⁶Fe, half-life 77 days',ax.X(48),ax.Y(-17.3),C.ink,12.5,'left','bottom',500);
-  text(ct>0.5?'After the stretch correction':'As observed: broader curves peak brighter',r.x+r.w,r.y-8,ct>0.5?C.gold:C.soft,12.5,'right','bottom',600);}
+  text(ct>0.5?'After the stretch correction':'As observed: broader curves peak brighter',r.x+r.w,r.y-8,ct>0.5?C.acc:C.soft,12.5,'right','bottom',600);}
 function hover9(x,y){if(S.view9===1){let best=null,bd=12;pts9.forEach(p=>{if(p[3]==='row'){if(y>p[1]-10&&y<p[1]+10&&x>p[0]&&x<p[2]){best=p;bd=0;}}else{const d=Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=p;}}});
     if(!best){S.hov=null;return null;}if(best[3]==='row'){const l=LAD[best[4]];S.hov='L'+best[4];return `<b>${l[0]}</b><br>${fmtDist(l[1])} to ${fmtDist(l[2])}. ${l[3]}${l[4]?'<br>Calibrated by: '+l[4]:''}`;}
     S.hov='O'+best[3];const o=LOBJ[best[3]];return `<b>${o[0]}</b><br>${fmtDist(o[1])}<br>Click to see which methods reach it`;}
@@ -725,12 +722,12 @@ function draw9b(){const rows=LAD.length;const r=inset(P,Math.min(210,P.w*0.3),72
   const xt=[];for(let e=-8;e<=10;e+=2)xt.push([Math.pow(10,e),p10(e)]);drawAxes(ax,{xt,xl:'Distance (light years, log scale)'});
   const rh=r.h/rows;const sel=S.lad!=null?LOBJ[S.lad][1]:null;
   LAD.forEach((l,i)=>{const y=r.y+(i+.5)*rh;const x0=ax.X(l[1]),x1=ax.X(l[2]);const on=sel==null||(sel>=l[1]&&sel<=l[2]);const t=i/(rows-1);const col=`hsl(${lerp(200,42,t)},75%,65%)`;
-    rrect(x0,y-rh*0.18,x1-x0,rh*0.36,rh*0.18);g.fillStyle=on?col:'rgba(237,233,221,.08)';g.globalAlpha=on?0.85:1;g.fill();g.globalAlpha=1;
+    rrect(x0,y-rh*0.18,x1-x0,rh*0.36,rh*0.18);g.fillStyle=on?col:'rgba(230,237,243,.08)';g.globalAlpha=on?0.85:1;g.fill();g.globalAlpha=1;
     text(l[0],r.x-12,y,on?C.ink:C.soft,12.5,'right','middle',on?500:400);pts9.push([x0,y,x1,'row',i]);});
   // calibration arrows
-  LAD.forEach((l,i)=>{if(!l[4])return;const j=LAD.findIndex(q=>q[0]===l[4]);const xa=ax.X(Math.max(l[1],LAD[j][1])*1.6);const ya=r.y+(j+.5)*rh+rh*0.3,yb=r.y+(i+.5)*rh-rh*0.3;arrow(xa,ya,xa,yb,'rgba(237,233,221,.55)',1.2,7);});
-  LOBJ.forEach((o,i)=>{const x=ax.X(o[1]);const yy=r.y-14-(i%4)*15;line(x,r.y-4,x,r.y+r.h,S.lad===i?C.gold:'rgba(237,233,221,.12)',S.lad===i?1.6:1,S.lad===i?null:[2,4]);circle(x,r.y-4,S.lad===i?5:3.5,S.lad===i?C.gold:C.ink);
-    text(o[0],x,yy,S.lad===i?C.gold:C.soft,11.5,'center','bottom',S.lad===i?600:400);pts9.push([x,r.y-4,null,i]);pts9.push([x,yy-6,null,i]);});
+  LAD.forEach((l,i)=>{if(!l[4])return;const j=LAD.findIndex(q=>q[0]===l[4]);const xa=ax.X(Math.max(l[1],LAD[j][1])*1.6);const ya=r.y+(j+.5)*rh+rh*0.3,yb=r.y+(i+.5)*rh-rh*0.3;arrow(xa,ya,xa,yb,'rgba(230,237,243,.55)',1.2,7);});
+  LOBJ.forEach((o,i)=>{const x=ax.X(o[1]);const yy=r.y-14-(i%4)*15;line(x,r.y-4,x,r.y+r.h,S.lad===i?'rgba(230,237,243,.7)':'rgba(230,237,243,.12)',S.lad===i?1.5:1,S.lad===i?null:[2,4]);circle(x,r.y-4,S.lad===i?5:3.5,C.ink);if(S.lad===i)circle(x,r.y-4,8,null,C.ink,1.5);
+    text(o[0],x,yy,S.lad===i?C.ink:C.soft,11.5,'center','bottom',S.lad===i?600:400);pts9.push([x,r.y-4,null,i]);pts9.push([x,yy-6,null,i]);});
 }
 function tick9(dt){const tgt=S.corr?1:0;if(Math.abs(S.corrT-tgt)<1e-3){if(S.corrT!==tgt){S.corrT=tgt;return true;}return false;}S.corrT+= (tgt-S.corrT)*Math.min(1,dt*(reduceMotion?60:4));updateRO9();return true;}
 function updateRO9(){const pk=SNE.map(sn=>snPeak(sn,S.corrT));const mu=pk.reduce((a,b)=>a+b,0)/pk.length;const sd=Math.sqrt(pk.reduce((a,b)=>a+(b-mu)**2,0)/(pk.length-1));
@@ -768,10 +765,10 @@ function draw10(){if(S.view10===1)return draw10b();const I=render10();const wide
   if(wide){sz=Math.min((P.w-40)/3,P.h-60);const x0=P.x+(P.w-3*sz-40)/2;pos=[0,1,2].map(i=>[x0+i*(sz+20),P.y+(P.h-sz)/2]);}
   else{sz=Math.min((P.w-20)/2,(P.h-60)/2);const x0=P.x+(P.w-2*sz-20)/2;pos=[[x0,P.y+20],[x0+sz+20,P.y+20],[x0+(sz+20)/2,P.y+sz+50]];}
   g.imageSmoothingEnabled=false;[[I.a,'Reference: stack of '+NREF+' earlier nights'],[I.b,'Tonight'],[I.c,'Tonight minus reference']].forEach(([c,l],i)=>{const[x,y]=pos[i];g.save();rrect(x,y,sz,sz,10);g.clip();g.drawImage(c,x,y,sz,sz);g.restore();
-    rrect(x,y,sz,sz,10);g.strokeStyle='rgba(237,233,221,.22)';g.lineWidth=1;g.stroke();text(l,x,y-8,C.ink,12.5,'left','bottom',500);});g.imageSmoothingEnabled=true;
+    rrect(x,y,sz,sz,10);g.strokeStyle='rgba(230,237,243,.22)';g.lineWidth=1;g.stroke();text(l,x,y-8,C.ink,12.5,'left','bottom',500);});g.imageSmoothingEnabled=true;
   const[x,y]=pos[2];const k=sz/N10;const det=I.snr>=5;const cx=x+SNPOS[0]*k,cy=y+SNPOS[1]*k;
-  if(det){circle(cx,cy,sz*0.07,null,C.gold,2);callout(Math.min(x+sz-150,cx+sz*0.09),Math.max(y+6,cy-sz*0.25),['Alert: new source','S/N = '+fmt(I.snr,0)],C.gold,150);}
-  else if(I.m!=null){circle(cx,cy,sz*0.07,null,'rgba(237,233,221,.4)',1.2,);text('Too faint: S/N = '+fmt(I.snr,1),x+sz/2,y+sz+10,C.soft,12.5,'center','top',500);}
+  if(det){circle(cx,cy,sz*0.07,null,C.acc,2);callout(Math.min(x+sz-150,cx+sz*0.09),Math.max(y+6,cy-sz*0.25),['Alert: new source','S/N = '+fmt(I.snr,0)],C.acc,150);}
+  else if(I.m!=null){circle(cx,cy,sz*0.07,null,'rgba(230,237,243,.4)',1.2,);text('Too faint: S/N = '+fmt(I.snr,1),x+sz/2,y+sz+10,C.soft,12.5,'center','top',500);}
   else text('Before the explosion',x+sz/2,y+sz+10,C.soft,12.5,'center','top',500);}
 function draw10b(){const r=inset(P,62,30,20,48);const ax=makeAx(r,[0.005,2],[27,14],true,false);
   drawAxes(ax,{xt:[[0.01,'0.01'],[0.03,'0.03'],[0.1,'0.1'],[0.3,'0.3'],[1,'1'],[2,'2']],yt:range(14,27,2).map(v=>[v,String(v)]),xl:'Redshift z (log scale)',yl:'Peak apparent magnitude',ylOff:40});

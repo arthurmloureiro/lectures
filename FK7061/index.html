@@ -1,49 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FK7061 — Statistical Methods in Physics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  body {
-    background: #1c1c1c;
-    color: #e6e6e6;
-    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    max-width: 640px;
-    margin: 8rem auto;
-    padding: 0 1.5rem;
-    line-height: 1.6;
-  }
-  h1 { font-weight: 700; font-size: 2rem; margin-bottom: 0.25rem; }
-  p.subtitle { color: #999; margin-top: 0; margin-bottom: 3rem; }
-  ul { list-style: none; padding: 0; }
-  li { margin-bottom: 1.25rem; }
-  a.course {
-    color: #e6e6e6;
-    text-decoration: none;
-    font-size: 1.15rem;
-    border-bottom: 1px solid #444;
-    padding-bottom: 2px;
-  }
-  a.course:hover { border-bottom-color: #e6e6e6; }
-  span.desc { display: block; color: #999; font-size: 0.9rem; margin-top: 0.15rem; }
-  a.back { color: #999; font-size: 0.85rem; }
+:root{
+  --sky:#0D1117;
+  --glow-violet:rgba(120,90,220,.20); --glow-blue:rgba(60,140,200,.10);
+  --ink:#E6EDF3; --ink-soft:#8B949E;
+  --panel:rgba(255,255,255,.06); --edge:rgba(255,255,255,.12); --line:rgba(255,255,255,.08);
+  --chip:rgba(255,255,255,.06); --accent:#80B7D0; --on-accent:#0D1117;
+  --rim:inset 0 1px 0 rgba(255,255,255,.06); --blur:16px;
+  --r-card:24px;
+  --f-ui:Inter,system-ui,sans-serif; --f-display:"Inter Tight",Inter,sans-serif; --f-mono:"Geist Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  min-height:100vh;margin:0;color:var(--ink);
+  background-color:var(--sky);
+  background-image:
+    radial-gradient(60% 55% at 62% 40%, var(--glow-violet), transparent 70%),
+    radial-gradient(40% 40% at 20% 90%, var(--glow-blue), transparent 70%);
+  background-attachment:fixed;
+  font:400 15px/1.5 var(--f-ui);-webkit-font-smoothing:antialiased;
+  padding:calc(6rem + env(safe-area-inset-top,0px)) 16px calc(4rem + env(safe-area-inset-bottom,0px));
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.6;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 34% 72%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 64%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 56% 34%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 22% 88%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 66% 86%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 38%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 46% 8%, #fff 50%, transparent 51%);
+}
+.card{
+  background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-card);box-shadow:var(--rim);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+}
+.panel{position:relative;max-width:640px;margin:0 auto;padding:28px 32px 26px}
+a.back{color:var(--ink-soft);font:400 12px var(--f-mono);letter-spacing:.04em;text-decoration:none}
+a.back:hover{color:var(--accent)}
+.code{font:500 12px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin:22px 0 6px}
+h1{font:600 38px/1.08 var(--f-display);letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
+.meta{margin:0 0 6px;color:var(--ink-soft)}
+.meta strong{color:var(--ink);font-weight:500}
+.about{font-size:15px;line-height:1.55;margin:16px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+h2{font:500 12px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin:30px 0 12px}
+ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+a.lecture{display:block;text-decoration:none;color:inherit;padding:14px 18px;transition:border-color .15s ease}
+a.lecture:hover,a.lecture:focus-visible{border-color:var(--accent);outline:none}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font:500 11px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.name{display:block;font:500 18px/1.3 var(--f-display);letter-spacing:-.01em;margin-top:3px}
+.desc{display:block;color:var(--ink-soft);font-size:13px;margin-top:4px}
+@media (max-width:520px){
+  body{padding-top:calc(2.5rem + env(safe-area-inset-top,0px))}
+  .panel{padding:22px 20px 20px}
+  h1{font-size:30px}
+}
 </style>
 </head>
 <body>
-  <a class="back" href="../">&larr; Lectures</a>
-  <h1>FK7061 — Statistical Methods in Physics</h1>
-  <p class="subtitle">Stockholm University, graduate course.</p>
-  <ul>
-    <li>
-      <a class="course" href="lecture_test/">Lecture 2 — Common Probability Distributions</a>
-      <span class="desc">Interactive Marimo slides (demo)</span>
-    </li>
-    <li>
-      <a class="course" href="lecture_1_intro/">Lecture 1 — Introduction</a>
-      <span class="desc">Interactive Marimo lecture slides (under construction)</span>
-    </li>
-    <!-- add one <li> per lecture -->
-  </ul>
+  <main class="card panel">
+    <a class="back" href="../">&larr; Lectures</a>
+    <p class="code">FK7061 · Stockholm University</p>
+    <h1>Statistical Methods in Physics</h1>
+    <p class="about">Graduate course. Interactive Marimo slides — tests and prototypes.</p>
+
+    <h2>Lectures</h2>
+    <ul>
+      <li>
+        <a class="card lecture" href="lecture_test/">
+          <span class="num">Lecture 2</span>
+          <span class="name">Common Probability Distributions</span>
+          <span class="desc">Interactive Marimo slides (demo)</span>
+        </a>
+      </li>
+      <li>
+        <a class="card lecture" href="lecture_1_intro/">
+          <span class="num">Lecture 1</span>
+          <span class="name">Introduction</span>
+          <span class="desc">Interactive Marimo lecture slides (under construction)</span>
+        </a>
+      </li>
+      <!-- add one <li> per lecture -->
+    </ul>
+  </main>
 </body>
 </html>

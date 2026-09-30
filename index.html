@@ -6,84 +6,73 @@
 <title>Lectures — Arthur Loureiro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --space-1:#13224F; --space-2:#060C22;
-  --ink:#172040; --ink-soft:#56607C;
-  --panel:rgba(241,243,248,.93); --panel-line:rgba(23,32,64,.14);
-  --accent:#A86A00; --chip:rgba(23,32,64,.07);
-  box-sizing:border-box;
+  --sky:#0D1117;
+  --glow-violet:rgba(120,90,220,.20); --glow-blue:rgba(60,140,200,.10);
+  --ink:#E6EDF3; --ink-soft:#8B949E;
+  --panel:rgba(255,255,255,.06); --edge:rgba(255,255,255,.12); --line:rgba(255,255,255,.08);
+  --chip:rgba(255,255,255,.06); --accent:#80B7D0; --on-accent:#0D1117;
+  --rim:inset 0 1px 0 rgba(255,255,255,.06); --blur:16px;
+  --r-card:24px;
+  --f-ui:Inter,system-ui,sans-serif; --f-display:"Inter Tight",Inter,sans-serif; --f-mono:"Geist Mono",ui-monospace,monospace;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --ink:#EDE9DD; --ink-soft:#A9B2C8;
-    --panel:rgba(10,18,44,.82); --panel-line:rgba(237,233,221,.14);
-    --accent:#FFC857; --chip:rgba(237,233,221,.08);
-  }
-}
-:root[data-theme="dark"]{
-  --ink:#EDE9DD; --ink-soft:#A9B2C8;
-  --panel:rgba(10,18,44,.82); --panel-line:rgba(237,233,221,.14);
-  --accent:#FFC857; --chip:rgba(237,233,221,.08);
-}
-*,*::before,*::after{box-sizing:inherit}
+*,*::before,*::after{box-sizing:border-box}
 body{
   min-height:100vh;margin:0;color:var(--ink);
-  background-color:var(--space-2);
-  background-image:radial-gradient(ellipse 80% 70% at 55% 45%, var(--space-1) 0%, var(--space-2) 72%);
+  background-color:var(--sky);
+  background-image:
+    radial-gradient(60% 55% at 62% 40%, var(--glow-violet), transparent 70%),
+    radial-gradient(40% 40% at 20% 90%, var(--glow-blue), transparent 70%);
   background-attachment:fixed;
-  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  font:400 15px/1.5 var(--f-ui);-webkit-font-smoothing:antialiased;
   padding:calc(6rem + env(safe-area-inset-top,0px)) 16px calc(4rem + env(safe-area-inset-bottom,0px));
 }
 body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.6;
   background-image:
     radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 78% 12%, #fff 50%, transparent 51%),
     radial-gradient(1.5px 1.5px at 34% 72%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 88% 64%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 56% 34%, #fff 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 22% 88%, #FFC857 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 22% 88%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 66% 86%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 92% 38%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%),
     radial-gradient(1.5px 1.5px at 46% 8%, #fff 50%, transparent 51%);
 }
-.panel{
-  position:relative;max-width:640px;margin:0 auto;
-  background:var(--panel);border:1px solid var(--panel-line);border-radius:16px;
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  box-shadow:0 18px 50px rgba(0,0,0,.35);
-  padding:28px 32px 26px;
+.card{
+  background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-card);box-shadow:var(--rim);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
 }
-a.back{color:var(--ink-soft);font-size:13px;text-decoration:none}
+.panel{position:relative;max-width:640px;margin:0 auto;padding:28px 32px 26px}
+a.back{color:var(--ink-soft);font:400 12px var(--f-mono);letter-spacing:.04em;text-decoration:none}
 a.back:hover{color:var(--accent)}
-.code{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:22px 0 4px}
-h1{font-family:Newsreader,Georgia,"Times New Roman",serif;font-weight:400;font-size:38px;line-height:1.1;
-  letter-spacing:-.012em;margin:0 0 12px;font-variation-settings:"opsz" 60;text-wrap:balance}
+.code{font:500 12px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin:22px 0 6px}
+h1{font:600 38px/1.08 var(--f-display);letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
 .meta{margin:0 0 6px;color:var(--ink-soft)}
 .meta strong{color:var(--ink);font-weight:500}
-.about{font-family:Newsreader,Georgia,serif;font-size:17px;line-height:1.55;margin:16px 0 0;
-  padding-top:16px;border-top:1px solid var(--panel-line)}
-h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:30px 0 12px}
+.about{font-size:15px;line-height:1.55;margin:16px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+h2{font:500 12px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin:30px 0 12px}
 ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
-a.lecture{display:block;text-decoration:none;color:inherit;background:var(--chip);
-  border:1px solid transparent;border-radius:12px;padding:14px 16px;transition:border-color .15s ease}
+a.lecture{display:block;text-decoration:none;color:inherit;padding:14px 18px;transition:border-color .15s ease}
 a.lecture:hover,a.lecture:focus-visible{border-color:var(--accent);outline:none}
-.num{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.name{display:block;font-family:Newsreader,Georgia,serif;font-size:20px;line-height:1.25;margin-top:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font:500 11px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.name{display:block;font:500 18px/1.3 var(--f-display);letter-spacing:-.01em;margin-top:3px}
 .desc{display:block;color:var(--ink-soft);font-size:13px;margin-top:4px}
 @media (max-width:520px){
   body{padding-top:calc(2.5rem + env(safe-area-inset-top,0px))}
   .panel{padding:22px 20px 20px}
-  h1{font-size:31px}
+  h1{font-size:30px}
 }
 </style>
 </head>
 <body>
-  <main class="panel">
+  <main class="card panel">
     <a class="back" href="https://arthurmloureiro.github.io/">&larr; arthurmloureiro.github.io</a>
     <p class="code">Arthur Loureiro · Stockholm University</p>
     <h1>Lectures</h1>
@@ -92,14 +81,14 @@ a.lecture:hover,a.lecture:focus-visible{border-color:var(--accent);outline:none}
     <h2>Courses</h2>
     <ul>
       <li>
-        <a class="lecture" href="FK5024/">
+        <a class="card lecture" href="FK5024/">
           <span class="num">FK5024</span>
           <span class="name">Astrophysics and Cosmology</span>
           <span class="desc">Stockholm University</span>
         </a>
       </li>
       <li>
-        <a class="lecture" href="FK7061/">
+        <a class="card lecture" href="FK7061/">
           <span class="num">FK7061</span>
           <span class="name">Statistical Methods in Physics</span>
           <span class="desc">Stockholm University, graduate course (tests and prototypes)</span>
