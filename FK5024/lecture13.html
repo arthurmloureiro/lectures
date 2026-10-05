@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<script>
+(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme: light)');
+d.dataset.theme=m.matches?'light':'dark';d.dataset.themeAuto='1';
+m.addEventListener('change',function(e){if(d.dataset.themeAuto==='1'){d.dataset.theme=e.matches?'light':'dark';document.dispatchEvent(new Event('themechange'));}});})();
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>When are we? Hubble expansion and the age of the Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --sky:#0D1117;
+  --glow-violet:rgba(120,90,220,.20); --glow-blue:rgba(60,140,200,.10);
+  --sky-img:radial-gradient(60% 55% at 62% 40%, var(--glow-violet), transparent 70%),radial-gradient(40% 40% at 20% 90%, var(--glow-blue), transparent 70%);
+  --ink:#E6EDF3; --ink-soft:#8B949E;
+  --panel:rgba(255,255,255,.06); --edge:rgba(255,255,255,.12); --line:rgba(255,255,255,.08);
+  --chip:rgba(255,255,255,.06);
+  --accent:#80B7D0; --on-accent:#0D1117; --accent-rgb:128,183,208; --underline:rgba(230,237,243,.3);
+  --seg-on:#E6EDF3; --seg-on-ink:#0D1117;
+  --rim:inset 0 1px 0 rgba(255,255,255,.06);
+  --blur:16px; --r-card:24px; --r-tip:10px; --r-btn:8px; --r-group:11px; --r-bar:14px;
+  --f-ui:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-display:"Inter Tight",Inter,system-ui,sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="light"]{
+  --sky:#F6F5F0;
+  --glow-violet:rgba(37,107,138,.05); --glow-blue:rgba(37,107,138,0);
+  --ink:#141A23; --ink-soft:#4F5B69;
+  --panel:rgba(255,255,255,.92); --edge:#CBCFD3; --line:#E2E3E0;
+  --chip:rgba(20,26,35,.045); --accent:#256B8A; --on-accent:#FFFFFF;
+  --seg-on:#141A23; --seg-on-ink:#FFFFFF;
+  --rim:0 2px 10px rgba(20,26,35,.06); --blur:6px;
+  --accent-rgb:37,107,138; --underline:rgba(20,26,35,.3);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;background-color:var(--sky)}
+body{
+  height:100%;margin:0;overflow:hidden;color:var(--ink);
+  background-color:var(--sky);
+  background-image:var(--sky-img);
+  font-family:var(--f-ui);
+  font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+#fade{position:fixed;inset:0;background-color:var(--sky);background-image:var(--sky-img);opacity:0;pointer-events:none;transition:opacity .28s ease}
+
+.panel{position:fixed;background:var(--panel);border:1px solid var(--edge);border-radius:var(--r-card);
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));box-shadow:var(--rim)}
+#story{left:20px;top:calc(20px + env(safe-area-inset-top,0px));width:412px;
+  max-height:calc(100% - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  overflow:auto;padding:20px 24px 18px}
+#story .step{font:400 12px var(--f-mono);letter-spacing:.02em;color:var(--ink-soft);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+#story h1{font-family:var(--f-display);font-weight:600;font-size:27px;line-height:1.12;
+  letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
+#story .txt p{font-family:var(--f-ui);font-size:15.5px;line-height:1.55;margin:0 0 10px;max-width:34em}
+#story .txt p.note{font-family:var(--f-ui);font-size:12.5px;line-height:1.45;color:var(--ink-soft)}
+#story .txt mjx-container[display="true"]{font-size:92%;margin:.5em 0 .7em !important;overflow-x:auto;overflow-y:hidden;max-width:100%}
+#story .txt .eq{font-family:var(--f-ui);font-size:15.5px;text-align:center;margin:.3em 0 .7em}
+dl.ro{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin:14px 0 4px;padding-top:14px;border-top:1px solid var(--line)}
+dl.ro div{min-width:0}
+dl.ro dt{font-size:12px;color:var(--ink-soft);margin:0}
+dl.ro dd{margin:1px 0 0;font-size:15.5px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.005em;overflow-wrap:anywhere}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.src{font-size:12px;color:var(--ink-soft);margin:14px 0 0;line-height:1.4}
+.collapse{border:1px solid var(--edge);background:var(--chip);color:var(--ink);font:500 12px var(--f-ui);padding:4px 11px;border-radius:var(--r-btn);cursor:pointer;letter-spacing:0}
+#story.min .txt,#story.min dl,#story.min .navrow,#story.min .src{display:none}
+#story.min h1{margin:0;font-size:20px}
+
+#controls{right:20px;top:calc(20px + env(safe-area-inset-top,0px));width:310px;padding:16px 18px 18px;
+  max-height:calc(100% - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto}
+#controls .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+#controls .head span{font:400 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+#controls.min .body{display:none}
+.lab{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-soft);margin:14px 0 6px}
+.lab b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.seg{display:flex;background:var(--chip);border:1px solid var(--line);border-radius:var(--r-group);padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;border:0;background:transparent;color:var(--ink);font:500 12.5px var(--f-ui);
+  padding:6px 10px;border-radius:var(--r-btn);cursor:pointer;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.seg button[aria-pressed="true"]{background:var(--seg-on);color:var(--seg-on-ink)}
+.seg .dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
+.cap{font-size:12.5px;color:var(--ink-soft);margin:8px 0 0;line-height:1.45}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0}
+.chk{display:flex;align-items:center;gap:9px;font-size:13.5px;margin:12px 0 0;cursor:pointer}
+.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0;border-radius:4px}
+.btn{border:1px solid var(--edge);background:var(--chip);color:var(--ink);font:500 13.5px var(--f-ui);
+  padding:7px 16px;border-radius:var(--r-btn);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.btn:disabled{opacity:.45;cursor:default}
+.btnrow{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:14px 0 0}
+ol.steps li{counter-increment:s;display:flex;align-items:center;gap:10px;font-size:13px;padding:5px 12px 5px 6px;border-radius:var(--r-btn);color:var(--ink-soft)}
+ol.steps li::before{content:counter(s);flex:0 0 20px;height:20px;border-radius:50%;border:1px solid var(--edge);
+  display:grid;place-items:center;font:500 10.5px var(--f-mono)}
+ol.steps li.on{background:var(--chip);color:var(--ink)}
+ol.steps li.on::before{background:var(--accent);color:var(--on-accent);border-color:transparent}
+ol.steps li.off{opacity:.4}
+
+#track{left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;gap:2px;padding:5px;border-radius:var(--r-bar);max-width:calc(100% - 24px)}
+#track button{border:0;background:transparent;color:var(--ink-soft);font:500 13px var(--f-ui);
+  padding:7px 12px 7px 8px;border-radius:var(--r-btn);cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
+#track button .n{width:21px;height:21px;border-radius:50%;border:1px solid var(--edge);display:grid;place-items:center;font:500 10.5px var(--f-mono)}
+#track button[aria-current="step"]{background:var(--chip);color:var(--ink)}
+#track button[aria-current="step"] .n{background:var(--accent);color:var(--on-accent);border-color:transparent}
+#track .sep{width:1px;background:var(--line);margin:4px 4px}
+
+#tip{position:fixed;left:0;top:0;pointer-events:none;z-index:5;max-width:280px;padding:8px 11px;border-radius:var(--r-tip);
+  background:var(--panel);border:1px solid var(--edge);color:var(--ink);font-size:12.5px;line-height:1.4;
+  -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));box-shadow:var(--rim);opacity:0;transition:opacity .12s}
+#tip b{font-weight:600}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+@media (max-width:1400px) and (min-width:821px){
+  #story{width:388px;padding:18px 20px 16px}
+  #story h1{font-size:24px}
+  #story .txt p{font-size:15px}
+  #controls{width:280px}
+  #track button .t{display:none}
+  #track button[aria-current="step"] .t{display:inline}
+}
+@media (max-width:820px){
+  #story{left:10px;right:10px;width:auto;top:auto;bottom:calc(66px + env(safe-area-inset-bottom,0px));max-height:38%;padding:14px 16px}
+  #story h1{font-size:21px}
+  #story .txt p{font-size:15px}
+  #controls{left:10px;right:10px;width:auto;top:calc(10px + env(safe-area-inset-top,0px));max-height:40%;padding:12px 14px}
+  #track{left:10px;right:10px;transform:none;justify-content:space-between;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:none}
+  #track button .t{display:none}
+  #track button{padding:7px 5px}
+  #track .sep,#track #panels{display:none}
+  #track{left:58px;gap:0}
+  #track button{padding:7px 1px}
+}
+#cover{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;color:var(--ink);overflow:auto;
+  background-color:var(--sky);background-image:var(--sky-img);
+  padding:calc(40px + env(safe-area-inset-top,0px)) clamp(24px,7vw,110px) calc(32px + env(safe-area-inset-bottom,0px));
+  transition:opacity .45s ease}
+#cover[hidden]{display:none}
+#cover.leaving{opacity:0;pointer-events:none}
+#cover .uni{align-self:flex-end;font-family:var(--f-display);font-weight:600;letter-spacing:-.03em;font-size:clamp(20px,2.4vw,30px);line-height:1.05;text-align:left;margin:0}
+#cover .curve{position:absolute;left:0;right:0;bottom:9%;height:40%;width:100%;pointer-events:none;-webkit-mask-image:linear-gradient(to right,rgba(0,0,0,.35) 0%,rgba(0,0,0,.35) 45%,#000 70%);mask-image:linear-gradient(to right,rgba(0,0,0,.35) 0%,rgba(0,0,0,.35) 45%,#000 70%)}
+#cover .curve path{fill:none;stroke:rgba(var(--accent-rgb),.30);stroke-width:1.6;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+#cover .curve text{fill:rgba(var(--accent-rgb),.45);font:500 12px var(--f-mono)}
+#cover .main{position:relative;margin-top:auto;margin-bottom:auto;max-width:980px;padding:4vh 0}
+#cover .lec{font:400 clamp(13px,1.1vw,15px) var(--f-mono);letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px;color:var(--ink-soft)}
+#cover h1{font-family:var(--f-display);font-weight:600;font-size:clamp(60px,10.5vw,160px);line-height:.95;letter-spacing:-.045em;margin:0 0 26px}
+#cover .sub{font-size:clamp(16px,1.5vw,20px);line-height:1.5;max-width:36em;margin:0 0 30px;color:var(--ink)}
+#cover .go{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px}
+#cover .start{border:0;background:var(--accent);color:var(--on-accent);font:600 15px var(--f-ui);padding:12px 24px;border-radius:10px;cursor:pointer}
+#cover .jump{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink-soft)}
+#cover .jump button{border:0;background:none;color:var(--ink);font:500 14px var(--f-ui);padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--underline);text-underline-offset:4px}
+#cover .jump button:hover{text-decoration-color:var(--accent)}
+#cover .foot{position:relative;font-size:13.5px;color:var(--ink-soft);margin:0;font-weight:500}
+#cover .foot span{color:var(--ink)}
+@media (max-width:820px){#cover .curve{bottom:18%;height:30%}#cover .jump{display:none}#cover .foot{padding-left:48px}}
+#themeToggle{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:11;width:36px;height:36px;
+  display:grid;place-items:center;padding:0;border:1px solid var(--edge);border-radius:8px;background:var(--panel);color:var(--ink);
+  box-shadow:var(--rim);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));cursor:pointer}
+#themeToggle:hover{border-color:var(--accent)}
+#themeToggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#themeToggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:root[data-theme="light"] #themeToggle .i-sun,:root:not([data-theme="light"]) #themeToggle .i-moon{display:none}
+@media (prefers-reduced-motion: reduce){ #fade{transition:none} #cover{transition:none} }
+@media (max-width:1499px) and (min-width:821px){#track button .t{display:none}#track button[aria-current="step"] .t{display:inline}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},
+  startup:{typeset:false,ready(){MathJax.startup.defaultReady();MathJax.startup.promise.then(()=>{window.__mj=true;window.dispatchEvent(new Event('mjready'));});}}};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<canvas id="c" aria-label="Interactive figure for the current chapter"></canvas>
+<div id="fade"></div>
+<div id="tip" role="status"></div>
+
+<section id="story" class="panel" aria-live="polite">
+  <div class="step"><span id="stepno"></span><button class="collapse" id="storyToggle" aria-expanded="true">Hide text</button></div>
+  <h1 id="title"></h1>
+  <div class="txt" id="txt"></div>
+  <dl class="ro" id="ro"></dl>
+  <div class="navrow"><button class="btn" id="prev">Back</button><button class="btn primary" id="next">Next</button></div>
+  <p class="src">Lecture 13, Astrophysics and Cosmology, Stockholm University, autumn 2026. Arthur Loureiro. Use the arrow keys to change chapter, H to hide the panels and T to switch light/dark.</p>
+</section>
+
+<aside id="controls" class="panel">
+  <div class="head"><span>Controls</span><button class="collapse" id="ctlToggle" aria-expanded="true">Hide</button></div>
+  <div class="body" id="ctl"></div>
+</aside>
+
+<nav id="track" class="panel" aria-label="Chapters"></nav>
+<section id="cover" aria-label="Cover">
+  <svg class="curve" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><path id="coverPath"/></svg>
+  <p class="uni">Stockholm<br>University</p>
+  <div class="main">
+    <p class="lec">Lecture 13</p>
+    <h1>When are we?</h1>
+    <p class="sub">Olbers' paradox, redshift and the Hubble–Lemaître law, the Friedmann equations and the age of the Universe: how a dark night sky and receding galaxies tell us that the Universe had a beginning.</p>
+    <div class="go"><button class="start" id="coverStart" type="button">Start with an eternal Universe</button><div class="jump" id="coverJump"><span>or go to</span></div></div>
+  </div>
+  <p class="foot"><span>Astrophysics and Cosmology</span>, Arthur Loureiro, autumn 2026. The faint curve is the scale factor a(t) of our Universe, from the Big Bang to today and beyond.</p>
+</section>
+<button id="themeToggle" type="button" aria-label="Switch to light mode" title="Switch to light mode (T)">
+  <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+  <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 1 1 9.4 4a6.6 6.6 0 0 0 10.6 10.6z"/></svg>
+</button>
+<script>
+(function(){var d=document.documentElement,b=document.getElementById('themeToggle');
+function sync(){var s=d.dataset.theme==='light'?'Switch to dark mode':'Switch to light mode';b.setAttribute('aria-label',s);b.title=s+' (T)';}
+window.setTheme=function(t){delete d.dataset.themeAuto;d.dataset.theme=t;document.dispatchEvent(new Event('themechange'));};
+window.toggleTheme=function(){setTheme(d.dataset.theme==='light'?'dark':'light');};
+b.addEventListener('click',function(){toggleTheme();});
+document.addEventListener('themechange',sync);sync();})();
+</script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const sstep=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const fmt=(x,d)=>x.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+const SUPM={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','−':'⁻','+':'⁺'};
+const sup=s=>String(s).split('').map(c=>SUPM[c]||c).join('');
+const p10=e=>'10'+sup(e);
+function sci(x,d){d=d==null?1:d;if(x===0)return '0';const e=Math.floor(Math.log10(Math.abs(x)));
+  if(e>=-2&&e<=5)return fmt(x,e>=2?0:Math.min(3,d+1-e));let m=x/Math.pow(10,e);if(+m.toFixed(d)>=10){m/=10;}return fmt(m,d)+' × '+p10(e);}
+function fmtE(eV){if(eV<1)return fmt(eV,eV<0.1?3:2)+' eV';if(eV<1e3)return fmt(eV,eV<10?1:0)+' eV';if(eV<1e6)return fmt(eV/1e3,eV<1e4?2:(eV<1e5?1:0))+' keV';return fmt(eV/1e6,eV<1e7?2:1)+' MeV';}
+function fmtYr(y){if(y>=1e9)return fmt(y/1e9,y<1e10?1:0)+' billion years';if(y>=1e6)return fmt(y/1e6,y<1e7?1:0)+' million years';return fmt(Math.round(y/1000)*1000,0)+' years';}
+
+/* ---------- canvas ---------- */
+const cv=$('#c'),g=cv.getContext('2d');let W=0,H=0,DPR=1;let P={x:0,y:0,w:100,h:100};
+const C_DARK={ink:'#E6EDF3',soft:'#8B949E',faint:'rgba(230,237,243,.32)',grid:'rgba(255,255,255,.08)',gold:'#FFC857',orange:'#F28C5B',
+  blue:'#7FB2F0',violet:'#A58BF0',green:'#8FD3A7',pink:'#E07BB5',cyan:'#6CC4F0',red:'#E8615A',bg:'#0D1117',amber:'#F2A65A',
+  acc:'#80B7D0',accA:a=>`rgba(128,183,208,${a})`,
+  inkA:a=>`rgba(230,237,243,${a})`,lineA:a=>`rgba(255,255,255,${a})`,fillA:a=>`rgba(13,17,23,${a})`,onData:'#0D1117',shadow:'rgba(0,0,0,.55)',miss:'#1C232D'};
+const C_LIGHT={ink:'#141A23',soft:'#4F5B69',faint:'rgba(20,26,35,.30)',grid:'rgba(20,26,35,.08)',gold:'#B98000',orange:'#D45A22',
+  blue:'#3F7FD9',violet:'#7553D3',green:'#2E9E5B',pink:'#C2428C',cyan:'#1F86C2',red:'#CF3B32',bg:'#F6F5F0',amber:'#C2701A',brown:'#8A2E22',
+  acc:'#256B8A',accA:a=>`rgba(37,107,138,${a})`,
+  inkA:a=>`rgba(20,26,35,${+(a*0.9).toFixed(3)})`,lineA:a=>`rgba(20,26,35,${a})`,fillA:a=>`rgba(255,255,255,${a})`,onData:'#FFFFFF',shadow:'rgba(255,255,255,.7)',miss:'#1C232D'};
+const C=Object.assign({},C_DARK);
+const isLight=()=>document.documentElement.dataset.theme==='light';
+/* data colour C[key] (hex) with alpha */
+function rgba(key,a){const h=C[key].replace('#','');return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;}
+const FONT='Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const SERIF='"Inter Tight",Inter,system-ui,sans-serif';
+const MONO='"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace';
+function font(px,w,fam){g.font=`${w||400} ${px}px ${fam||FONT}`;}
+function text(s,x,y,col,px,align,base,w,fam){font(px||12.5,w,fam);g.fillStyle=col||C.soft;g.textAlign=align||'left';g.textBaseline=base||'alphabetic';g.fillText(s,x,y);}
+function tw(s,px,w,fam){font(px||12.5,w,fam);return g.measureText(s).width;}
+function line(x1,y1,x2,y2,col,lw,dash){g.strokeStyle=col;g.lineWidth=lw||1;g.setLineDash(dash||[]);g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();g.setLineDash([]);}
+function arrow(x1,y1,x2,y2,col,lw,head){lw=lw||1.5;const a=Math.atan2(y2-y1,x2-x1),s=head||(6+lw*1.6);
+  line(x1,y1,x2-Math.cos(a)*s*0.6,y2-Math.sin(a)*s*0.6,col,lw);g.fillStyle=col;g.beginPath();g.moveTo(x2,y2);
+  g.lineTo(x2-s*Math.cos(a-0.42),y2-s*Math.sin(a-0.42));g.lineTo(x2-s*Math.cos(a+0.42),y2-s*Math.sin(a+0.42));g.closePath();g.fill();}
+function circle(x,y,r,fill,stroke,lw){g.beginPath();g.arc(x,y,r,0,Math.PI*2);if(fill){g.fillStyle=fill;g.fill();}if(stroke){g.strokeStyle=stroke;g.lineWidth=lw||1;g.stroke();}}
+function rrect(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function wrap(s,maxw,px,w){font(px,w);const words=s.split(' ');const out=[];let cur='';for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>maxw&&cur){out.push(cur);cur=wd;}else cur=t;}if(cur)out.push(cur);return out;}
+function callout(x,y,lines,col,maxw){const px=13;const L=[];lines.forEach(s=>wrap(s,maxw||240,px,500).forEach(l=>L.push(l)));
+  const w=Math.max(...L.map(l=>tw(l,px,500)))+22,h=L.length*18+14;rrect(x,y,w,h,10);g.fillStyle=C.fillA(.88);g.fill();g.strokeStyle=col||C.acc;g.lineWidth=1.2;g.stroke();
+  L.forEach((l,i)=>text(l,x+11,y+9+i*18,C.ink,px,'left','top',500));return{w,h};}
+const inset=(p,l,t,r,b)=>({x:p.x+l,y:p.y+t,w:Math.max(10,p.w-l-r),h:Math.max(10,p.h-t-b)});
+function makeAx(rect,xr,yr,xlog,ylog){const fx=xlog?Math.log10:v=>v,fy=ylog?Math.log10:v=>v;
+  const X=v=>rect.x+(fx(v)-fx(xr[0]))/(fx(xr[1])-fx(xr[0]))*rect.w;
+  const Y=v=>rect.y+rect.h-(fy(v)-fy(yr[0]))/(fy(yr[1])-fy(yr[0]))*rect.h;
+  X.inv=px=>{const v=fx(xr[0])+(px-rect.x)/rect.w*(fx(xr[1])-fx(xr[0]));return xlog?Math.pow(10,v):v;};
+  return{X,Y,r:rect};}
+/* light mode: white sheet behind each graph so the atlas grid never mixes with the plot grid.
+   destination-over paints underneath anything already drawn; later drawing lands on top as usual. */
+function plotSheet(r,o){if(!isLight())return;o=o||{};
+  // o.sheet={t,r,b,l}: extra room for anything that belongs to the graph but sits outside the axes (legends, captions, notes)
+  const e=o.sheet||{};const l=r.x-(o.yl?(o.ylOff||44)+16:52)-(e.l||0),t=r.y-14-(e.t||0),rr=r.x+r.w+16+(e.r||0),b=r.y+r.h+(o.xl?50:32)+(e.b||0);paperSheet(l,t,rr-l,b-t);}
+/* Sheets are collected during the frame and painted at its end (flushSheets), after each one has grown to
+   take in any canvas text that crosses or touches its edge (axis captions, end-of-curve labels, legends, notes).
+   Text is recorded by wrapping g.fillText while a light-mode frame is being drawn. */
+let SHEETS=null,TXT=null;
+const _fillText=g.fillText.bind(g);
+g.fillText=function(s,x,y,m){if(TXT){try{const mt=g.measureText(s),t=g.getTransform();
+    const l=x-mt.actualBoundingBoxLeft,r=x+mt.actualBoundingBoxRight,tp=y-mt.actualBoundingBoxAscent,b=y+mt.actualBoundingBoxDescent;
+    const P=[[l,tp],[r,tp],[l,b],[r,b]].map(([u,v])=>[(t.a*u+t.c*v+t.e)/DPR,(t.b*u+t.d*v+t.f)/DPR]);
+    TXT.push([Math.min(...P.map(p=>p[0])),Math.min(...P.map(p=>p[1])),Math.max(...P.map(p=>p[0])),Math.max(...P.map(p=>p[1]))]);}catch(e){}}
+  return m===undefined?_fillText(s,x,y):_fillText(s,x,y,m);};
+function paperSheet(x,y,w,h){if(!isLight()||!SHEETS)return;SHEETS.push([x,y,x+w,y+h]);}
+function flushSheets(){const SS=SHEETS,T=TXT||[];SHEETS=TXT=null;if(!SS||!SS.length)return;
+  for(const s of SS){
+    for(let it=0;it<8;it++){let grew=false;
+      for(const[a,b,c,d]of T){if(a>=s[0]&&b>=s[1]&&c<=s[2]&&d<=s[3])continue;
+        if(a>s[2]+6||c<s[0]-6||b>s[3]+6||d<s[1]-6)continue;
+        // grow to the text plus a margin; 26px on the left leaves room for a legend swatch
+        const n=[Math.min(s[0],a-26),Math.min(s[1],b-8),Math.max(s[2],c+10),Math.max(s[3],d+8)];
+        if(n.some((v,i)=>v!==s[i])){s.splice(0,4,...n);grew=true;}}
+      if(!grew)break;}}
+  // sheets that now overlap (e.g. stacked graphs sharing a caption) merge into one
+  for(let i=0;i<SS.length;i++)for(let j=i+1;j<SS.length;j++){const a=SS[i],b=SS[j];
+    if(a[0]<=b[2]+2&&b[0]<=a[2]+2&&a[1]<=b[3]+2&&b[1]<=a[3]+2){SS[i]=[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])];SS.splice(j,1);i=-1;break;}}
+  for(const s of SS){
+    g.save();g.setTransform(DPR,0,0,DPR,0,0);g.globalCompositeOperation='destination-over';
+    rrect(s[0],s[1],s[2]-s[0],s[3]-s[1],14);g.strokeStyle='#CBCFD3';g.lineWidth=1;g.stroke();
+    rrect(s[0],s[1],s[2]-s[0],s[3]-s[1],14);g.fillStyle='#FFFFFF';g.fill();g.restore();}}
+function drawAxes(ax,o){const r=ax.r;plotSheet(r,o);g.save();
+  (o.xt||[]).forEach(([v,l])=>{const x=ax.X(v);line(x,r.y,x,r.y+r.h,C.grid,1);if(l!=null)text(l,x,r.y+r.h+8,C.soft,11,'center','top',400,MONO);});
+  (o.yt||[]).forEach(([v,l])=>{const y=ax.Y(v);line(r.x,y,r.x+r.w,y,C.grid,1);if(l!=null)text(l,r.x-8,y,C.soft,11,'right','middle',400,MONO);});
+  line(r.x,r.y+r.h,r.x+r.w,r.y+r.h,C.faint,1);line(r.x,r.y,r.x,r.y+r.h,C.faint,1);
+  if(o.xl)text(o.xl,r.x+r.w/2,r.y+r.h+28,C.soft,12.5,'center','top',500);
+  if(o.yl){g.save();g.translate(r.x-(o.ylOff||44),r.y+r.h/2);g.rotate(-Math.PI/2);text(o.yl,0,0,C.soft,12.5,'center','middle',500);g.restore();}
+  g.restore();}
+function range(a,b,s){const o=[];for(let v=a;v<=b+1e-9;v+=s)o.push(+v.toFixed(6));return o;}
+
+/* faint star field behind the figures */
+let starCv=null;
+function drawAtlas(g,W,H,seed){
+  const cx=W*.62,cy=-H*.9;g.save();g.strokeStyle='rgba(20,26,35,.08)';g.lineWidth=1;
+  for(let r=H;r<=H*3.2;r+=H*.214){g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.stroke();}
+  for(let a=-60;a<=60;a+=10){const t=(90+a)*Math.PI/180;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(t)*H*5,cy+Math.sin(t)*H*5);g.stroke();}
+  g.setLineDash([6,6]);g.strokeStyle='rgba(37,107,138,.16)';g.lineWidth=1.2;g.beginPath();g.arc(cx,cy,H*1.86,0,Math.PI*2);g.stroke();g.setLineDash([]);
+  let s=seed||5;const r=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+  const n=Math.round(70*W*H/(1180*700));
+  for(let i=0;i<n;i++){const k=r();g.beginPath();g.arc(r()*W,r()*H,k<.08?2.2:k<.3?1.3:.8,0,Math.PI*2);g.fillStyle=`rgba(20,26,35,${(.18+r()*.2).toFixed(3)})`;g.fill();}
+  g.restore();}
+/* light mode: a dark photo inset for images of light on the sky */
+function skyInset(x,y,w,h,r){if(!isLight())return;g.save();rrect(x,y,w,h,r==null?14:r);g.fillStyle='#0D1117';g.fill();g.strokeStyle='#CBCFD3';g.lineWidth=1;g.stroke();g.restore();}
+function makeStars(){starCv=document.createElement('canvas');starCv.width=W*DPR;starCv.height=H*DPR;const s=starCv.getContext('2d');
+  cv.style.backgroundImage='none';if(isLight()){s.scale(DPR,DPR);drawAtlas(s,W,H,5);cv.style.backgroundImage='url('+starCv.toDataURL()+')';cv.style.backgroundSize='100% 100%';return;}
+  let a=12345;const rnd=()=>{a=(a*16807)%2147483647;return a/2147483647;};const n=Math.round(W*H/3500);
+  for(let i=0;i<n;i++){const x=rnd()*W*DPR,y=rnd()*H*DPR,r=(rnd()*0.8+0.3)*DPR;s.fillStyle=`rgba(230,237,243,${(0.08+rnd()*0.3).toFixed(2)})`;s.beginPath();s.arc(x,y,r,0,7);s.fill();}}
+
+function ts(str,x,y,col,px,align,base,w){const parts=str.split(/_\{([^}]*)\}/);let tot=0;parts.forEach((p,i)=>{tot+=tw(p,i%2?px*0.74:px,w);});
+  let x0=align==='center'?x-tot/2:align==='right'?x-tot:x;parts.forEach((p,i)=>{const sub=i%2===1;const sz=sub?px*0.74:px;text(p,x0,y+(sub?px*0.28:0),col,sz,'left',base,w);x0+=tw(p,sz,w);});}
+/* ---------- control builders ---------- */
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
+function seg(label,opts,cur,on){const w=el(`<div><div class="lab"><span>${label}</span></div><div class="seg" role="group" aria-label="${label}"></div></div>`);const s=w.querySelector('.seg');
+  opts.forEach((o,i)=>{const b=el(`<button type="button" aria-pressed="${i===cur}">${o}</button>`);b.addEventListener('click',()=>{[...s.children].forEach((x,j)=>x.setAttribute('aria-pressed',j===i));on(i);});s.appendChild(b);});return w;}
+function slider(label,min,max,step,val,on,id){const w=el(`<div><div class="lab"><label for="${id}">${label}</label><b id="${id}-v"></b></div><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></div>`);
+  w.querySelector('input').addEventListener('input',e=>on(parseFloat(e.target.value)));return w;}
+function check(label,val,on){const w=el(`<label class="chk"><input type="checkbox" ${val?'checked':''}>${label}</label>`);w.querySelector('input').addEventListener('change',e=>on(e.target.checked));return w;}
+function capt(text,id){return el(`<p class="cap"${id?` id="${id}"`:''}>${text}</p>`);}
+function btnrow(btns){const r=el('<div class="btnrow"></div>');btns.forEach(([t,id,cls,fn])=>{const b=el(`<button class="btn ${cls||''}" id="${id}" type="button">${t}</button>`);b.addEventListener('click',fn);r.appendChild(b);});return r;}
+let stepTimer=null;
+function animSteps(){if(stepTimer)clearInterval(stepTimer);stepTimer=null;const st=$('#steps');if(!st||!S.anim)return;let i=0;const n=st.children.length;
+  const tick=()=>{if(!$('#steps')){clearInterval(stepTimer);stepTimer=null;return;}[...$('#steps').children].forEach((li,j)=>li.classList.toggle('on',j===i));i=(i+1)%n;};tick();stepTimer=setInterval(tick,1100);}
+/* ---------- constants ---------- */
+const DEG=Math.PI/180;
+const CKM=299792.458;          // km/s
+const HUB=977.792;             // 1/H0 in Gyr is HUB/H0, for H0 in km/s/Mpc
+const OR=9.14e-5;              // radiation today: photons and neutrinos
+const PL={h0:67.4,om:0.315};   // Planck 2018
+const setRO=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+const sp=id=>`<span id="${id}">–</span>`;
+function rng(seed){let a=seed;return()=>{a=(a*16807)%2147483647;return a/2147483647;};}
+function gauss(r){let u=r()||1e-9,v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function lamRGB(nm){let r,gg,b;if(nm<380){r=.55;gg=.35;b=1;}else if(nm<440){r=(440-nm)/60*.7+.2;gg=.2;b=1;}else if(nm<490){r=.2;gg=(nm-440)/50;b=1;}else if(nm<510){r=.2;gg=1;b=(510-nm)/20;}
+  else if(nm<580){r=(nm-510)/70;gg=1;b=.15;}else if(nm<645){r=1;gg=(645-nm)/65;b=.1;}else if(nm<=750){r=1;gg=.12;b=.12;}else{const t=clamp((nm-750)/1500,0,1);r=1;gg=.3+.4*t;b=.35+.45*t;}return[r,gg,b];}
+const Bl=(lm,T)=>{const x=1.438776877e-2/(lm*T);return x>700?0:1.191042972e-16/Math.pow(lm,5)/Math.expm1(x);};   // W m^-3 sr^-1
+function erfc(x){const z=Math.abs(x),t=1/(1+0.5*z);const r=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277)))))))));return x>=0?r:2-r;}
+const fGyr=t=>!isFinite(t)?'–':t<1?fmt(t*1000,0)+' Myr':fmt(t,t<10?2:1)+' Gyr';
+const fMpc=d=>!isFinite(d)?'–':d<0.01?sci(d*1e6,2)+' pc':d<1?fmt(d*1000,0)+' kpc':d<1e4?fmt(d,d<10?2:(d<100?1:0))+' Mpc':fmt(d/1e3,1)+' Gpc';
+const fLam=m=>m<1e-6?fmt(m*1e9,0)+' nm':fmt(m*1e6,m<1e-5?2:1)+' μm';
+const fz=z=>fmt(z,z<0.1?3:(z<10?2:1));
+const fH=h=>fmt(h,h<100?1:0)+' km/s/Mpc';
+const signed=(x,d)=>(x<0?'−':'')+fmt(Math.abs(x),d);
+
+/* ---------- cosmology, in units of 1/H0 and c/H0 ---------- */
+function cosmo(om,ol,or){or=or==null?OR:or;return{om,ol,or,ok:1-om-ol-or};}
+const PLM=cosmo(PL.om,1-PL.om-OR);
+function E2z(m,z){const x=1+z;return m.or*x**4+m.om*x**3+m.ok*x*x+m.ol;}
+function ageH(m,a){const n=800;let s=0;for(let i=0;i<n;i++){const x=(i+.5)/n*a;const q=m.or+m.om*x+m.ok*x*x+m.ol*x**4;if(q<=0)return NaN;s+=x/Math.sqrt(q);}return s*a/n;}
+function chiH(m,z){const n=800;let s=0;for(let i=0;i<n;i++){const e=E2z(m,(i+.5)/n*z);if(e<=0)return NaN;s+=1/Math.sqrt(e);}return s*z/n;}
+function SK(m,chi){const k=m.ok;if(Math.abs(k)<1e-7)return chi;const s=Math.sqrt(Math.abs(k));return k>0?Math.sinh(s*chi)/s:Math.sin(s*chi)/s;}
+function bigBang(m){for(let i=0;i<=400;i++){const z=Math.pow(10,-3+i/400*8);if(E2z(m,z)<=0)return false;}return true;}
+const agePL=z=>ageH(PLM,1/(1+z))*HUB/PL.h0;
+
+/* ---------- state ---------- */
+const S={ch:0,hov:null,
+  sel1:0,all1:true,
+  R2:0.3,inf2:false,play2:false,
+  lz3:Math.log10(1.158),
+  data4:0,lh4:Math.log10(500),res4:true,
+  view5:0,zoom5:false,loc5:73.04,sig5:1.04,
+  z6:10,lT6:Math.log10(5500),
+  view7:0,h7:0,s7:0,obs7:0,k7:1.3,pin7:3,play7:false,grid7:true,
+  om8:1,t8:0,play8:!reduceMotion,
+  la9:0,lam9:true,cust9:false,w9:-0.5,
+  l10:1,
+  om11:PL.om,ol11:1-PL.om-OR,h11:PL.h0,log11:false,lz11:0,
+  h12:70,om12:PL.om,de12:true,w12:-1};
+
+/* ===== 1. Has the Universe always been here? ===== */
+const MODELS=[
+ {n:'Static and eternal',who:'Aristotle; Ibn Rushd (12th century); Siger of Brabant (13th century); Einstein, 1917',col:C.gold,beg:'No: it has always existed, unchanged',
+  ev:[0,0,0],why:['An eternal universe full of stars fills up with starlight: Olbers\' paradox.','Nothing recedes, so there is no redshift–distance law.','It never had a hot, dense past to leave a glow.'],
+  note:'Einstein added Λ to hold it still. Eddington showed in 1930 that the balance is unstable.'},
+ {n:'Steady state',who:'Bondi, Gold and Hoyle, 1948',col:C.cyan,beg:'No: it expands forever, in both directions of time',
+  ev:[1,1,0],why:['Expansion redshifts and dims distant light, so the sky stays dark.','A constant expansion rate H gives v = Hd.','It is never hot or dense, so it cannot make a 2.7 K blackbody glow. The CMB ended it in 1965.'],
+  note:'New matter appears, about one hydrogen atom per cubic metre per billion years, to keep the density constant.'},
+ {n:'Big Bang',who:'Friedmann, 1922; Lemaître, 1927 and 1931',col:C.ink,beg:'Yes: 13.8 billion years ago',
+  ev:[1,1,1],why:['Finite age: light from almost every star has not reached us yet.','Hubble\'s law follows from the expansion.','The relic glow of the hot early Universe, cooled to 2.725 K.'],
+  note:'Today\'s standard model, ΛCDM, is a Big Bang universe.'},
+ {n:'Conformal cyclic',who:'Penrose, 2006–2010',col:C.violet,beg:'No absolute start: our Big Bang is the far future of an earlier aeon',
+  ev:[1,1,1],why:['As in the Big Bang, within our aeon.','As in the Big Bang, within our aeon.','As in the Big Bang, plus faint rings left by the previous aeon: claimed, not confirmed.'],
+  note:'When only radiation is left, size loses its meaning, and the infinite future can be rescaled into a new Big Bang.'},
+ {n:'CPT-symmetric',who:'Boyle, Finn and Turok, 2018',col:C.pink,beg:'The Big Bang is a mirror: a time-reversed antimatter universe lies on the other side',
+  ev:[1,1,1],why:['As in the Big Bang, on our side.','As in the Big Bang, on our side.','As in the Big Bang. It also predicts no primordial gravitational waves.'],
+  note:'It predicts that dark matter is a heavy right-handed neutrino.'}];
+const TESTS1=['A dark night sky','Redshift grows with distance','A 2.7 K glow everywhere'];
+let curves1=null;
+function getCurves1(){if(curves1)return curves1;const c=curveW(PL.om,-1,PL.h0),t0=c.t0;const bb=c.pts.filter(p=>p[1]<=3.05).map(p=>[p[0]-t0,p[1]]);
+  const tEnd=bb[bb.length-1][0]+t0;const prev=c.pts.filter(p=>p[1]<=3.05).map(p=>[-34+p[0]/tEnd*(34-t0),p[1]]);
+  const mir=bb.map(p=>[-2*t0-p[0],p[1]]).filter(p=>p[0]>=-34);const H=PL.h0/HUB;const ss=[];for(let i=0;i<=200;i++){const t=-34+59*i/200;ss.push([t,Math.exp(H*t)]);}
+  curves1={t0,lines:[[[[-34,1],[25,1]]],[ss],[bb],[prev,bb],[mir,bb]],dash:[[0],[0],[0],[1,0],[1,0]]};return curves1;}
+function draw1(){const cu=getCurves1();const narrow=P.w<620;const ph=Math.max(170,P.h*(narrow?0.42:0.52));
+  const r=inset({x:P.x,y:P.y,w:P.w,h:ph},48,10,narrow?10:120,44);const ax=makeAx(r,[-34,25],[0,3],false,false);
+  drawAxes(ax,{xt:range(-30,20,10).map(v=>[v,(v>0?'+':v<0?'−':'')+Math.abs(v)]),yt:[0,1,2,3].map(v=>[v,String(v)]),xl:'Time from today (billion years)',yl:'Scale factor a',ylOff:34,sheet:{r:narrow?0:132,b:24}});
+  line(ax.X(0),r.y,ax.X(0),r.y+r.h,C.faint,1,[3,4]);text('today',ax.X(0)+4,r.y+2,C.soft,11.5,'left','top',500);
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
+  const plot=(i,hi)=>{const m=MODELS[i];cu.lines[i].forEach((L,j)=>{g.beginPath();L.forEach((p,k)=>{const X=ax.X(p[0]),Y=ax.Y(p[1]);k?g.lineTo(X,Y):g.moveTo(X,Y);});
+    g.globalAlpha=hi?1:0.28;g.strokeStyle=m.col;g.lineWidth=hi?2.6:1.3;g.setLineDash(cu.dash[i][j]?[5,4]:[]);g.stroke();g.setLineDash([]);g.globalAlpha=1;});};
+  if(S.all1)MODELS.forEach((m,i)=>{if(i!==S.sel1)plot(i,false);});plot(S.sel1,true);g.restore();
+  const m=MODELS[S.sel1],xb=ax.X(-cu.t0);
+  if(S.sel1>=2){circle(xb,ax.Y(0),5,m.col,C.ink,1.2);text('Big Bang',xb+8,ax.Y(0)-6,m.col,12,'left','bottom',600);}
+  if(S.sel1===3)text('previous aeon, rescaled',ax.X(-24),ax.Y(2.6),m.col,11.5,'center','bottom',600);
+  if(S.sel1===4)text('mirror universe',ax.X(-24),ax.Y(1.2),m.col,11.5,'center','bottom',600);
+  if(!narrow)MODELS.forEach((mm,i)=>{const y=r.y+8+i*20;const on=i===S.sel1;line(r.x+r.w+12,y,r.x+r.w+28,y,mm.col,on?2.6:1.3);text(mm.n,r.x+r.w+34,y,on?C.ink:C.soft,12,'left','middle',on?600:500);});
+  // the three tests
+  const top=P.y+ph+8;text('Time has a start?  ',P.x+8,top,C.soft,12.5,'left','top',500);text(m.beg,P.x+8+tw('Time has a start?  ',12.5,500),top,C.ink,12.5,'left','top',600);
+  const cy=top+28,ch=P.y+P.h-cy;if(ch<70)return;const n=3,gap=10,stack=P.w<560;const cw=stack?P.w:(P.w-gap*(n-1))/n;
+  const T=TESTS1.map(t=>wrap(t,cw-56,13,600)),Wh=m.why.map(w=>wrap(w,cw-28,12.5,400));const need=Math.max(...T.map((t,i)=>18+t.length*17+8+Wh[i].length*17+12));
+  const chh=stack?Math.min((ch-gap*2)/3,need):Math.min(ch,need);
+  for(let i=0;i<n;i++){const x=stack?P.x:P.x+i*(cw+gap),y=stack?cy+i*(chh+gap):cy;rrect(x,y,cw,chh,14);g.fillStyle=C.fillA(.55);g.fill();g.strokeStyle=C.lineA(.12);g.lineWidth=1;g.stroke();
+    const ok=m.ev[i];text(ok?'✓':'✗',x+14,y+12,ok?C.green:C.red,20,'left','top',600);T[i].forEach((l,k)=>text(l,x+40,y+16+k*17,C.ink,13,'left','top',600));
+    const y0=y+18+T[i].length*17+8;Wh[i].forEach((l,k)=>{if(y0+k*17<y+chh-8)text(l,x+14,y0+k*17,C.soft,12.5,'left','top',400);});}}
+function updateRO1(){const m=MODELS[S.sel1];setRO('r1a',m.n);setRO('r1b',m.who);setRO('r1c',m.ev.reduce((a,b)=>a+b,0)+' of 3');setRO('r1d',m.note);}
+
+/* ===== 2. Olbers' paradox ===== */
+const LAMBDA_LY=2.0e24;   // mean free path to a star surface, 10^9 Sun-like stars per Mpc^3
+const RS2=0.02,FIELD2=9,VIEW2=3,NR2=720;   // 2D slice, lengths in units of the mean free path
+const STARS2=(function(){const r=rng(1823),a=[];const n=Math.round(FIELD2*FIELD2*Math.PI/(2*RS2));for(let i=0;i<n;i++){const rr=FIELD2*Math.sqrt(r()),th=2*Math.PI*r();if(rr>0.08)a.push([rr*Math.cos(th),rr*Math.sin(th)]);}return a;})();
+const HIT2=(function(){const h=new Float32Array(NR2),who=new Int32Array(NR2);for(let k=0;k<NR2;k++){const th=2*Math.PI*(k+.5)/NR2,c=Math.cos(th),s=Math.sin(th);let best=Infinity,bi=-1;
+  for(let i=0;i<STARS2.length;i++){const x=STARS2[i][0],y=STARS2[i][1];const p=x*c+y*s;if(p<=0||p-RS2>best)continue;const d=-x*s+y*c;if(Math.abs(d)<RS2){const t=p-Math.sqrt(RS2*RS2-d*d);if(t<best){best=t;bi=i;}}}h[k]=best;who[k]=bi;}return{h,who};})();
+const R2=()=>S.inf2?Infinity:S.R2;
+const lit2=()=>{const R=R2();let n=0;for(let k=0;k<NR2;k++)if(HIT2.h[k]<R)n++;return n/NR2;};
+function draw2(){const R=R2();const rad=Math.min(P.w,P.h)/2-40,cx=P.x+P.w/2,cy=P.y+P.h/2,sc=rad/VIEW2;
+  const litSet=new Set();for(let k=0;k<NR2;k++)if(HIT2.h[k]<R)litSet.add(HIT2.who[k]);
+  g.save();g.beginPath();g.arc(cx,cy,rad,0,Math.PI*2);g.clip();g.fillStyle=C.lineA(.02);g.fillRect(cx-rad,cy-rad,2*rad,2*rad);
+  if(R<Infinity){circle(cx,cy,R*sc,C.accA(.06));}
+  for(let k=0;k<NR2;k+=2){const th=2*Math.PI*(k+.5)/NR2,h=HIT2.h[k],hit=h<R,L=Math.min(h,R,VIEW2+0.5)*sc;line(cx,cy,cx+L*Math.cos(th),cy+L*Math.sin(th),hit?rgba('gold',.30):C.inkA(.10),1);}
+  const rp=Math.max(1.3,RS2*sc);STARS2.forEach((p,i)=>{if(Math.abs(p[0])>VIEW2+0.1||Math.abs(p[1])>VIEW2+0.1)return;const on=litSet.has(i);circle(cx+p[0]*sc,cy+p[1]*sc,on?rp+1.2:rp,on?C.gold:rgba('soft',.55));});
+  g.restore();circle(cx,cy,rad,null,C.faint,1);
+  if(R<VIEW2){circle(cx,cy,Math.max(1,R*sc),null,C.acc,1.2);text('light has travelled this far',cx,cy-R*sc-6,C.ink,12,'center','bottom',600);}
+  for(let k=0;k<NR2;k++){const a0=2*Math.PI*k/NR2,a1=2*Math.PI*(k+1.05)/NR2;g.beginPath();g.arc(cx,cy,rad+14,a0,a1);g.strokeStyle=HIT2.h[k]<R?C_DARK.gold:C.miss;g.lineWidth=12;g.stroke();}
+  text('Your sky, all the way round',cx,cy-rad-24,C.soft,12,'center','bottom',500);
+  circle(cx,cy,5,C.ink);text('you',cx+8,cy+4,C.ink,12,'left','top',600);}
+function tick2(dt){if(!S.play2)return false;S.R2=Math.min(VIEW2,S.R2+dt*0.35);if(S.R2>=VIEW2)S.play2=false;const e=$('#rsl2');if(e)e.value=S.R2;updateRO2();return true;}
+function updateRO2(){const R=R2(),f=lit2();setRO('r2a',R===Infinity?'Forever':fmt(R,2)+' λ');setRO('r2b',fmt(f*100,f<0.1?1:0)+'%');setRO('r2c',R===Infinity?'100%':fmt(100*(-Math.expm1(-R)),f<0.1?1:0)+'%');
+  setRO('r2d',sci(1.38e10/LAMBDA_LY,1));labs();}
+
+/* ===== 3. Redshift ===== */
+const LINES3=[['Ca H & K',393.4,1],['',396.8,0],['Hδ',410.2,0],['Hγ',434.0,0],['Hβ',486.1,1],['Mg',517.3,0],['Na',589.3,0],['Hα',656.3,1]];
+const Z3=()=>Math.pow(10,S.lz3)-1;
+const beta3=z=>{const q=(1+z)**2;return(q-1)/(q+1);};
+function draw3(){const r=inset(P,16,26,16,16);const K=isLight()?C_DARK:C;const L0=Math.log10(300),L1=Math.log10(1e4);const X=nm=>r.x+(Math.log10(nm)-L0)/(L1-L0)*r.w;const z=Z3();
+  const sh=Math.min(44,r.h*0.09),y1=r.y+44,y2=y1+sh+Math.min(90,r.h*0.17);
+  {const x0=P.w<600?2:r.x-14;skyInset(x0,y1-50,r.x+r.w+14-x0,(y2+sh+44)-(y1-50),14);}
+  const strip=(y)=>{for(let x=0;x<r.w;x+=2){const nm=10**(L0+x/r.w*(L1-L0));let c,al;if(nm>=380&&nm<=750){c=lamRGB(nm);al=.85;}else if(nm<380){c=[.5,.4,.9];al=.2;}else{const t=clamp((nm-750)/1500,0,1);c=[.8-.3*t,.3,.3+.1*t];al=.32-.14*t;}
+      g.fillStyle=`rgba(${c.map(v=>Math.round(v*255)).join()},${al})`;g.fillRect(r.x+x,y,2.3,sh);}rrect(r.x,y,r.w,sh,6);g.strokeStyle=K.faint;g.lineWidth=1;g.stroke();};
+  [['Ultraviolet',300,380],['Visible',380,750],['Infrared',750,1e4]].forEach(([l,a,b])=>text(l,(X(a)+X(b))/2,y1-8,K.soft,11.5,'center','bottom',500));
+  strip(y1);strip(y2);
+  LINES3.forEach(([nm_l,lam,lab])=>{const xa=X(lam),xb=X(lam*(1+z));g.fillStyle='rgba(13,17,23,.92)';g.fillRect(xa-1.3,y1,2.6,sh);
+    if(xb<r.x+r.w){g.fillRect(xb-1.3,y2,2.6,sh);line(xa,y1+sh+2,xb,y2-2,K.inkA(.22),1);}
+    if(lab){text(nm_l,xa,y1+sh+5,K.ink,10.5,nm_l==='Hα'?'left':nm_l==='Hβ'?'center':'right','top',500);}});
+  text('At rest',r.x,y1-26,K.ink,12,'left','bottom',600);
+  text('Observed, z = '+fz(z),r.x,y2+sh+6,K.ink,12,'left','top',600);
+  [[300,'300 nm'],[500,'500 nm'],[1000,'1 μm'],[2000,'2 μm'],[5000,'5 μm'],[1e4,'10 μm']].forEach(([nm,l],i,a)=>{const x=X(nm);line(x,y2+sh,x,y2+sh+4,K.faint,1);text(l,x,y2+sh+22,K.soft,11,i===0?'left':i===a.length-1?'right':'center','top',400,MONO);});
+  const top=y2+sh+70;const rp=inset({x:r.x,y:top,w:r.w,h:r.y+r.h-top},50,6,10,44);if(rp.h<70)return;
+  const zmax=z<2.5?3:12;const ax=makeAx(rp,[0,zmax],[0,1.5],false,false);
+  drawAxes(ax,{xt:range(0,zmax,zmax>3?2:0.5).map(v=>[v,fmt(v,zmax>3?0:1)]),yt:[0,0.5,1,1.5].map(v=>[v,fmt(v,1)]),xl:'Redshift z',yl:'v / c',ylOff:36});
+  line(rp.x,ax.Y(1),rp.x+rp.w,ax.Y(1),C.faint,1,[3,4]);text('speed of light',rp.x+rp.w-4,ax.Y(1)-4,C.soft,11,'right','bottom',500);
+  g.save();g.beginPath();g.rect(rp.x,rp.y,rp.w,rp.h);g.clip();
+  line(ax.X(0),ax.Y(0),ax.X(1.5),ax.Y(1.5),C.soft,1.5,[5,4]);
+  g.beginPath();for(let i=0;i<=200;i++){const zz=zmax*i/200,Xp=ax.X(zz),Yp=ax.Y(beta3(zz));i?g.lineTo(Xp,Yp):g.moveTo(Xp,Yp);}g.strokeStyle=C.ink;g.lineWidth=2;g.stroke();g.restore();
+  text('v = cz',ax.X(Math.min(1.2,zmax*0.35)),ax.Y(Math.min(1.2,zmax*0.35))-8,C.soft,11.5,'right','bottom',500);
+  text('relativistic',ax.X(zmax*0.75),ax.Y(beta3(zmax*0.75))+8,C.ink,11.5,'center','top',500);
+  if(z<=zmax)circle(ax.X(z),ax.Y(beta3(z)),5.5,C.red,C.ink,1.5);}
+function updateRO3(){const z=Z3();setRO('r3a',fz(z));setRO('r3b',fLam(656.3e-9*(1+z)));setRO('r3c',fmt(656.3*z,1)+' nm');setRO('r3d',fmt(1/(1+z),3)+' of today');
+  setRO('r3e',fmt(beta3(z)*CKM,0)+' km/s');setRO('r3f',fmt(z*CKM,0)+' km/s');}
+
+/* ===== 4. Hubble–Lemaître law ===== */
+// Hubble (1929), table 1: distances in Mpc and velocities in km/s of 24 nebulae
+const H29D=[0.032,0.034,0.214,0.263,0.275,0.275,0.45,0.5,0.5,0.63,0.8,0.9,0.9,0.9,0.9,1.0,1.1,1.1,1.4,1.7,2.0,2.0,2.0,2.0];
+const H29V=[170,290,-130,-70,-185,-220,200,290,270,200,300,-30,650,150,500,920,450,500,500,960,500,850,800,1090];
+const MOD4=(function(){const r=rng(1929),a=[];for(let i=0;i<46;i++){const d=8+Math.pow(r(),0.8)*440;a.push([d,70*d+gauss(r)*(300+0.05*70*d)]);}return a;})();
+const DATA4=()=>S.data4===0?H29D.map((d,i)=>[d,H29V[i]]):MOD4;
+const fit4=()=>{let a=0,b=0;DATA4().forEach(([d,v])=>{a+=d*v;b+=d*d;});return a/b;};
+const H4=()=>Math.pow(10,S.lh4);
+let pts4=[];
+function draw4(){pts4=[];const r=inset(P,72,20,16,56);const m=S.data4===0;const ax=makeAx(r,m?[0,2.2]:[0,480],m?[-400,1200]:[-3000,36000],false,false);
+  drawAxes(ax,{xt:(m?range(0,2,0.5):range(0,450,100)).map(v=>[v,fmt(v,m?1:0)]),yt:(m?range(-400,1200,400):range(0,35000,5000)).map(v=>[v,signed(v,0)]),xl:m?'Distance from Cepheids and bright stars (Mpc)':'Distance (Mpc)',yl:'Recession velocity (km/s)',ylOff:60});
+  line(r.x,ax.Y(0),r.x+r.w,ax.Y(0),C.faint,1);
+  const Hu=H4(),Hb=fit4(),D=DATA4();
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
+  if(S.res4)D.forEach(([d,v])=>line(ax.X(d),ax.Y(v),ax.X(d),ax.Y(Hu*d),C.inkA(.25),1));
+  const xm=m?2.2:480;line(ax.X(0),ax.Y(0),ax.X(xm),ax.Y(Hb*xm),C.soft,1.5,[5,4]);
+  line(ax.X(0),ax.Y(0),ax.X(xm),ax.Y(Hu*xm),C.ink,2);
+  g.restore();
+  D.forEach(([d,v],i)=>{const x=ax.X(d),y=ax.Y(v);const on=S.hov===i;circle(x,y,on?6:4.5,C.amber,on?C.ink:null,1.5);pts4.push([x,y,i]);});
+  const lx=Math.min(xm*0.92,(m?1200:36000)*0.9/Hu);const LX=ax.X(lx),LY=ax.Y(Hu*lx);text('your line, '+fH(Hu),LX-6,LY-6,C.ink,12,'right','bottom',600);
+  text('best fit, '+fH(Hb),r.x+r.w-6,r.y+r.h-8,C.soft,12,'right','bottom',500);}
+function hover4(x,y){let best=null,bd=12;pts4.forEach(p=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=p;}});S.hov=best?best[2]:null;if(!best)return null;const[d,v]=DATA4()[best[2]];
+  return `<b>${S.data4===0?'Nebula '+(best[2]+1)+' of 24':'Galaxy'}</b><br>d = ${fmt(d,S.data4===0?3:0)} Mpc, v = ${signed(v,0)} km/s<br>v / d = ${fmt(v/d,0)} km/s/Mpc`;}
+function drag4(dx,dy){S.lh4=clamp(S.lh4-dy*0.0025,1.4,3);const e=$('#hsl4');if(e)e.value=S.lh4;updateRO4();}
+function updateRO4(){const Hu=H4(),Hb=fit4();const D=DATA4();const rms=Math.sqrt(D.reduce((s,[d,v])=>s+(v-Hu*d)**2,0)/D.length);
+  setRO('r4a',fH(Hu));setRO('r4b',fH(Hb));setRO('r4c',fmt(rms,0)+' km/s');setRO('r4d',fGyr(HUB/Hu));labs();}
+
+/* ===== 5. Hubble constant and the tension ===== */
+const HIST5=[[1929,500,0,0,'Hubble'],[1931,558,0,0,'Hubble and Humason'],[1952,260,0,0,'Baade: two kinds of Cepheids'],[1956,180,0,0,'Humason, Mayall and Sandage'],[1958,75,0,0,'Sandage'],
+  [1975,55,5,0,'Sandage and Tammann'],[1976,100,10,0,'de Vaucouleurs'],[2001,72,8,0,'HST Key Project, Freedman et al.'],[2003,72,5,1,'WMAP, first year'],[2013,67.3,1.2,1,'Planck 2013'],
+  [2016,73.24,1.74,0,'SH0ES, Riess et al.'],[2018,67.4,0.5,1,'Planck 2018'],[2019,69.8,1.9,0,'Tip of the red giant branch, Freedman et al.'],[2020,73.3,1.8,0,'Time-delay lenses, H0LiCOW'],
+  [2022,73.04,1.04,0,'SH0ES, Riess et al.'],[2024,68.5,0.6,1,'DESI BAO with BBN']];
+const LOC5=[['SH0ES 2022',73.04,1.04],['Red giants 2019',69.8,1.9],['Lenses 2020',73.3,1.8]];
+const tens5=()=>Math.abs(S.loc5-67.4)/Math.hypot(S.sig5,0.5);
+let pts5=[];
+function draw5(){pts5=[];if(S.view5===1)return draw5b();const z=S.zoom5;const r=inset(P,62,30,16,56);
+  const ax=z?makeAx(r,[1998,2027],[60,80],false,false):makeAx(r,[1925,2030],[40,700],false,true);
+  drawAxes(ax,{xt:(z?range(2000,2025,5):range(1930,2030,10)).map(v=>[v,String(v)]),yt:(z?range(60,80,5):[50,70,100,200,500]).map(v=>[v,String(v)]),xl:'Year of publication',yl:'H₀ (km/s/Mpc)',ylOff:46});
+  if(!z){const y1=ax.Y(100),y2=ax.Y(50);g.fillStyle=C.inkA(.05);g.fillRect(ax.X(1958),y1,ax.X(2001)-ax.X(1958),y2-y1);text('50 to 100: the factor-of-two debate',ax.X(1960),y1-6,C.soft,11.5,'left','bottom',500);}
+  else{[[67.4,0.5,C.blue],[73.04,1.04,C.amber]].forEach(([v,s,c])=>{const y1=ax.Y(v+s),y2=ax.Y(v-s);g.globalAlpha=.12;g.fillStyle=c;g.fillRect(r.x,y1,r.w,y2-y1);g.globalAlpha=1;});}
+  g.save();g.beginPath();g.rect(r.x-8,r.y-8,r.w+16,r.h+16);g.clip();
+  HIST5.forEach((d,i)=>{if(z&&d[0]<1998)return;const x=ax.X(d[0]),y=ax.Y(d[1]),c=d[3]?C.blue:C.amber;if(d[2]){line(x,ax.Y(d[1]+d[2]),x,ax.Y(d[1]-d[2]),c,1.5);}
+    const on=S.hov===i;circle(x,y,on?6.5:5,c,on?C.ink:null,1.5);pts5.push([x,y,i]);});
+  g.restore();
+  circle(r.x+r.w-190,r.y+8,4.5,C.amber);text('Late Universe: ladder, lenses',r.x+r.w-180,r.y+8,C.soft,11.5,'left','middle',500);
+  circle(r.x+r.w-190,r.y+26,4.5,C.blue);text('Early Universe: CMB, BAO',r.x+r.w-180,r.y+26,C.soft,11.5,'left','middle',500);}
+function draw5b(){const r=inset(P,40,40,16,56);const ax=makeAx(r,[62,80],[0,1.12],false,false);
+  drawAxes(ax,{xt:range(62,80,2).map(v=>[v,String(v)]),yt:[],xl:'H₀ (km/s/Mpc)'});
+  const G=[[67.4,0.5,C.blue,'Planck 2018, CMB'],[S.loc5,S.sig5,C.amber,'Local measurement']];const pk=Math.max(1/0.5,1/S.sig5);
+  G.forEach(([mu,s,c,l])=>{g.beginPath();for(let i=0;i<=400;i++){const x=62+18*i/400,y=Math.exp(-0.5*((x-mu)/s)**2)/s/pk;const X=ax.X(x),Y=ax.Y(y);i?g.lineTo(X,Y):g.moveTo(X,Y);}
+    g.lineTo(ax.X(80),ax.Y(0));g.lineTo(ax.X(62),ax.Y(0));g.closePath();g.globalAlpha=.16;g.fillStyle=c;g.fill();g.globalAlpha=1;g.strokeStyle=c;g.lineWidth=2;g.stroke();
+    text(l,ax.X(mu),ax.Y(1/s/pk)-10,C.ink,12.5,'center','bottom',600);text(fmt(mu,2)+' ± '+fmt(s,2),ax.X(mu),ax.Y(1/s/pk)-27,C.soft,11.5,'center','bottom',500,MONO);});
+  const yb=ax.Y(0.08);const x1=ax.X(67.4),x2=ax.X(S.loc5);arrow(x1,yb,x2,yb,C.ink,1.3);arrow(x2,yb,x1,yb,C.ink,1.3);text(fmt(tens5(),1)+'σ',(x1+x2)/2,yb-8,C.ink,15,'center','bottom',600);}
+function hover5(x,y){if(S.view5===1){S.hov=null;return null;}let best=null,bd=12;pts5.forEach(p=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=p;}});S.hov=best?best[2]:null;if(!best)return null;const d=HIST5[best[2]];
+  return `<b>${d[4]}</b>, ${d[0]}<br>H₀ = ${fmt(d[1],d[1]<100&&d[1]%1?2:0)}${d[2]?' ± '+fmt(d[2],d[2]%1?2:0):''} km/s/Mpc<br>${d[3]?'Early Universe':'Late Universe'}`;}
+function updateRO5(){const n=tens5(),p=erfc(n/Math.SQRT2);setRO('r5a',fmt(S.loc5,2)+' ± '+fmt(S.sig5,2));setRO('r5b','67.40 ± 0.50');setRO('r5c',fmt(Math.abs(S.loc5-67.4),2)+' km/s/Mpc');
+  setRO('r5d',fmt(n,1)+'σ');setRO('r5e',p>0.1?fmt(p*100,0)+'%':'1 in '+(1/p<1e5?fmt(1/p,0):sci(1/p,1)));setRO('r5f',fGyr(HUB/S.loc5)+' vs '+fGyr(HUB/67.4));}
+
+/* ===== 6. JWST ===== */
+const BWIEN=2.898e-3;
+const T6=()=>Math.pow(10,S.lT6);
+function draw6(){const r=inset(P,60,24,16,60);const ax=makeAx(r,[0.1,30],[0,1.6],true,false);const T=T6(),z=S.z6,To=T/(1+z);
+  drawAxes(ax,{xt:[[0.1,'0.1'],[0.2,'0.2'],[0.5,'0.5'],[1,'1'],[2,'2'],[5,'5'],[10,'10'],[20,'20']],yt:[[0,'0'],[0.5,'0.5'],[1,'1']],xl:'Wavelength (μm)',yl:'Brightness, scaled to each peak',ylOff:44});
+  const bars=[['Eye',0.38,0.75],['Hubble',0.1,1.7],['JWST NIRCam',0.6,5],['JWST MIRI',5,28]];
+  bars.forEach(([n,a,b],i)=>{const y=ax.Y(1.55)+i*15,x1=ax.X(a),x2=ax.X(b);
+    if(i===0){for(let x=x1;x<x2;x+=2){const nm=1000*10**(Math.log10(0.1)+(x-r.x)/r.w*Math.log10(300));const c=lamRGB(nm);g.fillStyle=`rgba(${c.map(v=>Math.round(v*255)).join()},.7)`;g.fillRect(x,y-4,2.2,8);}}
+    else{rrect(x1,y-4,x2-x1,8,3);g.fillStyle=C.inkA(.14);g.fill();g.strokeStyle=C.faint;g.lineWidth=1;g.stroke();}
+    text(n,i===0?x1-6:x1+5,y,C.soft,11,i===0?'right':'left','middle',500);});
+  const curve=(TT,col)=>{const lp=BWIEN/TT,pk=Bl(lp,TT);g.beginPath();for(let i=0;i<=500;i++){const um=10**(-1+i/500*Math.log10(300)),y=Bl(um*1e-6,TT)/pk;const X=ax.X(um),Y=ax.Y(y);i?g.lineTo(X,Y):g.moveTo(X,Y);}g.strokeStyle=col;g.lineWidth=2.2;g.stroke();
+    const xp=ax.X(clamp(lp*1e6,0.1,30));line(xp,ax.Y(1),xp,ax.Y(0),col,1,[4,4]);return xp;};
+  g.save();g.beginPath();g.rect(r.x,r.y-10,r.w,r.h+10);g.clip();
+  const xe=curve(T,C.gold);const xo=z>0.001?curve(To,C.red):xe;g.restore();
+  text('Emitted, '+fmt(T,0)+' K',xe,ax.Y(1)-8,C.gold,12.5,'center','bottom',600);
+  if(z>0.001){if(Math.abs(xo-xe)<120)text('Observed',xo,ax.Y(1)-24,C.red,12.5,'center','bottom',600);else text('Observed at z = '+fmt(z,1)+', looks like '+fmt(To,0)+' K',clamp(xo,r.x+120,r.x+r.w-120),ax.Y(1)-8,C.red,12.5,'center','bottom',600);}}
+function updateRO6(){const T=T6(),z=S.z6,To=T/(1+z),lo=BWIEN/To;setRO('r6a',fLam(BWIEN/T));setRO('r6b',fLam(lo));setRO('r6c',fmt(To,0)+' K');
+  const um=lo*1e6;setRO('r6d',um<0.38?'Ultraviolet: Hubble':um<0.75?'Visible: the eye and Hubble':um<1.7?'Near infrared: Hubble and JWST':um<5?'Infrared: JWST NIRCam':um<28?'Mid infrared: JWST MIRI':'Beyond JWST');
+  const t=agePL(z),t0=agePL(0);setRO('r6e',fGyr(t));setRO('r6f',fGyr(t0-t)+' ago');}
+
+/* ===== 7. Hubble expansion and the cosmological principle ===== */
+// a pool of galaxies in comoving coordinates; inhomogeneity and anisotropy decide which show and how space stretches
+const POOL7=(function(){const r=rng(7070),a=[];let k=0;while(a.length<520&&k<40000){k++;const x=r()*2.6-1.3,y=r()*2.6-1.3;if(a.every(p=>Math.hypot(p[0]-x,p[1]-y)>0.065))a.push([x,y,0.75+r()*0.6,r()*Math.PI,r()]);}return a;})();
+const CEN7=POOL7.reduce((b,p,i)=>Math.hypot(p[0],p[1])<Math.hypot(POOL7[b][0],POOL7[b][1])?i:b,0);
+S.obs7=CEN7;
+const RING7=0.42;
+function vis7(p,i){if(i===S.obs7||i===CEN7)return true;const r=Math.hypot(p[0],p[1]);const ring=Math.pow((1+Math.cos(2*Math.PI*r/RING7))/2,3);return p[4]<0.42*((1-S.h7)+S.h7*2.3*ring);}
+function map7(p,k){const r=Math.hypot(p[0],p[1]);const f=1+S.h7*(1.6*Math.exp(-r*r/0.25)-0.5);const kr=1+(k-1)*f;const ax=Math.pow(k,0.6*S.s7);return[p[0]*kr*ax,p[1]*kr/ax];}
+function stats7(){const o=POOL7[S.obs7],o2=map7(o,S.k7);let sxy=0,sxx=0;const rows=[];
+  POOL7.forEach((p,i)=>{if(i===S.obs7||!vis7(p,i))return;const dx=p[0]-o[0],dy=p[1]-o[1],d=Math.hypot(dx,dy);if(d>1.4)return;const q=map7(p,S.k7);const ux=(q[0]-o2[0])-dx,uy=(q[1]-o2[1])-dy;const vr=(ux*dx+uy*dy)/d,vt=(uy*dx-ux*dy)/d;rows.push([d,vr,vt]);sxy+=d*vr;sxx+=d*d;});
+  const k=sxy/sxx;let res=0,vv=0;rows.forEach(([d,vr,vt])=>{res+=(vr-k*d)**2+vt*vt;vv+=vr*vr+vt*vt;});return{k,rows,scat:vv>0?Math.sqrt(res/vv):0};}
+const DIST7=[['Sun',4.85e-12,'One astronomical unit. Bound to the Earth by gravity.'],['α Centauri',1.3e-6,'Bound to the Milky Way.'],['Centre of the Milky Way',8e-3,'Inside our own galaxy.'],
+  ['M31, Andromeda',0.78,'Hubble\'s law says it should recede, but it approaches at about 110 km/s: gravity wins inside the Local Group.'],['Virgo cluster',17,'Homogeneity and isotropy start to break down on these scales.'],
+  ['Furthest Cepheids',100,'Should recede at about 7,000 km/s.'],['Hubble radius, c / H₀',CKM/70,'Where H₀d = c. Beyond it the naive law gives speeds above c.'],['Furthest type Ia supernovae',5000,'We need relativity and a proper definition of distance.'],['Cosmic microwave background',13700,'Comoving distance to the surface where the CMB was released, z ≈ 1,100.']];
+let pts7=[];
+const ang7=p=>p[3]*(1-S.s7);
+function gal7(x,y,p,col,ghost,sz){g.save();g.translate(x,y);g.rotate(ang7(p));g.beginPath();const z=sz||p[2];g.ellipse(0,0,5*z,2.5*z,0,0,Math.PI*2);if(ghost){g.strokeStyle=col;g.lineWidth=1;g.stroke();}else{g.fillStyle=col;g.fill();}g.restore();}
+function draw7(){pts7=[];if(S.view7===1)return draw7b();const k=S.k7;let y0=P.y;
+  if(P.h>440){// rubber ruler along the x axis
+    const L=inset({x:P.x,y:P.y,w:P.w,h:130},44,22,20,0);const xs=[];for(let i=0;i<8;i++)xs.push((i-3.5)*0.3);
+    const x1=xs.map(x=>x),x2=xs.map(x=>map7([x,0],k)[0]);const pin=S.pin7;const u1=x1.map(x=>x-x1[pin]),u2=x2.map(x=>x-x2[pin]);
+    const span=Math.max(...u1.map(Math.abs),...u2.map(Math.abs))||1;const sc=(L.w/2-14)/span,cx=L.x+L.w/2;const yc=L.y+8,ya=L.y+44,yb=L.y+92;
+    text('comoving χ',P.x+4,yc,C.soft,11,'left','middle',500,MONO);text('t₁',P.x+30,ya,C.soft,12,'right','middle',600);text('t₂',P.x+30,yb,C.soft,12,'right','middle',600);
+    for(let i=0;i<8;i++){const xa=cx+u1[i]*sc,xb=cx+u2[i]*sc,on=i===pin,p=[0,0,1.2,0];text(String(i-pin),xa,yc,C.soft,10.5,'center','middle',400,MONO);
+      gal7(xa,ya,p,on?C.ink:C.inkA(.85),false,1.2);gal7(xa,yb,p,C.inkA(.35),true,1.2);
+      if(!on&&Math.abs(xb-xa)>4){arrow(xa,yb,xb,yb,C.inkA(.6),1.2,6);text((xb>xa?'+':'−')+fmt(Math.abs(u2[i]-u1[i])/0.3,2),(xa+xb)/2,yb-10,C.soft,10.5,'center','bottom',400,MONO);}
+      gal7(xb,yb,p,on?C.ink:C.inkA(.95),false,1.2);if(on){circle(xa,ya,10,null,C.ink,1.2);circle(xb,yb,10,null,C.ink,1.2);}pts7.push([xa,ya,i,'r'],[xb,yb,i,'r']);}
+    line(P.x+10,P.y+138,P.x+P.w-10,P.y+138,C.lineA(.08),1);y0=P.y+146;}
+  const A={x:P.x,y:y0,w:P.w,h:P.y+P.h-y0};const o=POOL7[S.obs7],o2=map7(o,k),sc=Math.min(A.w,A.h)/2.6,cx=A.x+A.w/2,cy=A.y+A.h/2;
+  const T1=p=>[cx+(p[0]-o[0])*sc,cy+(p[1]-o[1])*sc],T2=p=>{const q=map7(p,k);return[cx+(q[0]-o2[0])*sc,cy+(q[1]-o2[1])*sc];};
+  paperSheet(P.x-10,P.y-10,P.w+20,P.h+20);
+  g.save();g.beginPath();g.rect(A.x,A.y,A.w,A.h);g.clip();
+  if(S.grid7){for(let j=-6;j<=6;j++){for(const vert of [0,1]){g.beginPath();for(let t=0;t<=40;t++){const u=-1.5+3*t/40,p=vert?[j*0.25,u]:[u,j*0.25];const q=T2(p);t?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}g.strokeStyle=C.lineA(.06);g.lineWidth=1;g.stroke();}}}
+  POOL7.forEach((p,i)=>{if(!vis7(p,i))return;const a=T1(p),b=T2(p),on=i===S.obs7;
+    gal7(a[0],a[1],p,C.inkA(.32),true);if(!on&&Math.hypot(b[0]-a[0],b[1]-a[1])>3)line(a[0],a[1],b[0],b[1],C.inkA(.45),1);
+    gal7(b[0],b[1],p,on||S.hov===i?C.ink:C.inkA(.85));if(on)circle(b[0],b[1],12,null,C.ink,1.5);pts7.push([b[0],b[1],i,'g']);});
+  if(S.h7>0.02&&S.obs7!==CEN7){const c=T2([0,0]);circle(c[0],c[1],4,null,C.gold,1.5);text('centre',c[0]+7,c[1]-7,C.gold,11.5,'left','bottom',600);}
+  g.restore();text('pinned',cx,cy+16,C.ink,12,'center','top',600);
+  const st=stats7();const w=Math.min(210,P.w*0.42),h=Math.min(150,A.h*0.34);const ir=inset({x:P.x+P.w-w-6,y:P.y+P.h-h-6,w,h},40,10,10,30);
+  rrect(ir.x-40,ir.y-10,w,h,14);g.fillStyle=C.fillA(.88);g.fill();g.strokeStyle=C.lineA(.12);g.lineWidth=1;g.stroke();
+  const ym=Math.max(0.2,...st.rows.map(r=>Math.abs(r[1])))*1.1;const iax=makeAx(ir,[0,1.4],[-0.15*ym,ym],false,false);drawAxes(iax,{xt:[[0,'0'],[0.5,null],[1,'1']],yt:[[0,'0']]});text('distance at t₁',ir.x+ir.w/2,ir.y+ir.h+16,C.soft,10.5,'center','top',500);
+  g.save();g.translate(ir.x-28,ir.y+ir.h/2);g.rotate(-Math.PI/2);text('moved away',0,0,C.soft,10.5,'center','middle',500);g.restore();
+  g.save();g.beginPath();g.rect(ir.x,ir.y,ir.w,ir.h);g.clip();line(iax.X(0),iax.Y(0),iax.X(1.4),iax.Y(1.4*st.k),C.soft,1,[3,3]);st.rows.forEach(([d,vr])=>circle(iax.X(d),iax.Y(vr),2.2,C.inkA(.8)));g.restore();}
+function draw7b(){const rows=DIST7.length;const r=inset(P,20,40,20,60);const ax=makeAx(r,[1e-12,1e5],[0,rows],true,false);
+  drawAxes(ax,{xt:[-12,-9,-6,-3,0,3].map(e=>[10**e,p10(e)]).concat([[1e5,null]]),yt:[],xl:'Distance (Mpc), with v = H₀d for H₀ = 70 km/s/Mpc'});
+  const xc=ax.X(CKM/70);g.fillStyle=rgba('red',.08);g.fillRect(xc,r.y,r.x+r.w-xc,r.h);text('v > c',xc+6,r.y+4,C.red,11.5,'left','top',600);
+  const xb=ax.X(3);g.fillStyle=C.inkA(.04);g.fillRect(r.x,r.y,xb-r.x,r.h);text('bound by gravity',r.x+6,r.y+4,C.soft,11.5,'left','top',500);
+  DIST7.forEach((d,i)=>{const y=r.y+(i+0.6)*r.h/rows,x=ax.X(d[1]);const on=S.hov===i;const v=70*d[1];
+    line(r.x,y,x,y,on?C.ink:C.inkA(.18),1);circle(x,y,on?6:4.5,i===6?C.red:C.ink);
+    const lab=d[0]+':  '+fMpc(d[1])+',  v = '+(v<1?sci(v,1):v<1e6?fmt(v,0):sci(v,2))+' km/s';const right=x>r.x+r.w*0.55;text(lab,x+(right?-10:10),y,on?C.ink:C.soft,12,right?'right':'left','middle',on?600:500);pts7.push([x,y,i,'d']);});}
+function hover7(x,y){let best=null,bd=14;pts7.forEach(p=>{const d=S.view7===1?Math.abs(p[1]-y)+(x<P.x||x>P.x+P.w?99:0):Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=p;}});S.hov=best&&(best[3]==='g'||S.view7===1)?best[2]:null;if(!best)return null;
+  if(S.view7===1){const d=DIST7[best[2]];return `<b>${d[0]}</b><br>${fMpc(d[1])}, v = H₀d = ${fmt(70*d[1],70*d[1]<1?4:0)} km/s<br>${d[2]}`;}
+  return 'Click to pin the snapshots on this galaxy';}
+function click7(x,y){if(S.view7!==0)return;let best=null,bd=14;pts7.forEach(p=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=p;}});if(!best)return;if(best[3]==='r')S.pin7=best[2];else S.obs7=best[2];updateRO7();}
+function tick7(dt){if(!S.play7||S.view7!==0)return false;S.k7+=dt*0.12;if(S.k7>1.5)S.k7=1;const e=$('#ksl7');if(e)e.value=S.k7;updateRO7();return true;}
+function updateRO7(){const st=stats7(),o=POOL7[S.obs7],atC=Math.hypot(o[0],o[1])<0.06;const law=st.scat<0.03;
+  setRO('r7a','Galaxy '+(S.obs7+1)+(S.h7>0.02&&atC?', at the centre':''));setRO('r7b',fmt(S.k7,2));
+  setRO('r7c',S.h7<0.01?'Yes':'No: there is a centre');
+  setRO('r7d',S.s7>0.01?'No: left–right is special':S.h7>0.01&&!atC?'No: the centre lies to one side':S.h7>0.01?'Yes, but only from the centre':'Yes');
+  setRO('r7e',law?'Yes: displacement ∝ distance':'No: ±'+fmt(st.scat*100,0)+'% from v ∝ r');labs();}
+
+/* ===== 8. Friedmann equation ===== */
+const HG8=70/HUB;   // H0 in 1/Gyr
+function curve8(Om){const h=HG8,pts=[];
+  if(Om<1e-3){for(let i=0;i<=200;i++){const t=i/200*80;pts.push([t,h*t]);}return{pts,t0:1/h,crunch:null,amax:null};}
+  if(Math.abs(Om-1)<2e-3){for(let i=0;i<=300;i++){const t=Math.pow(i/300,2)*80;pts.push([t,Math.pow(1.5*h*t,2/3)]);}return{pts,t0:2/(3*h),crunch:null,amax:null};}
+  if(Om>1){const A=Om/(2*(Om-1)),B=Om/(2*h*Math.pow(Om-1,1.5));for(let i=0;i<=600;i++){const th=i/600*2*Math.PI;pts.push([B*(th-Math.sin(th)),A*(1-Math.cos(th))]);}const th0=Math.acos(1-1/A);return{pts,t0:B*(th0-Math.sin(th0)),crunch:2*Math.PI*B,amax:2*A};}
+  const A=Om/(2*(1-Om)),B=Om/(2*h*Math.pow(1-Om,1.5));const eM=Math.acosh(1+8/A);for(let i=0;i<=500;i++){const e=i/500*eM;pts.push([B*(Math.sinh(e)-e),A*(Math.cosh(e)-1)]);}const e0=Math.acosh(1+1/A);return{pts,t0:B*(Math.sinh(e0)-e0),crunch:null,amax:null};}
+function aAt8(cv_,t){const p=cv_.pts;if(t<=0)return 0;if(cv_.crunch&&t>=cv_.crunch)return 0;for(let i=1;i<p.length;i++)if(p[i][0]>=t){const f=(t-p[i-1][0])/(p[i][0]-p[i-1][0]);return lerp(p[i-1][1],p[i][1],f);}return p[p.length-1][1];}
+const col8=Om=>Math.abs(Om-1)<0.005?C.ink:Om>1?C.orange:C.cyan;
+function draw8(){const wide=P.w>P.h*1.15;const Lp=wide?{x:P.x,y:P.y,w:P.w*0.36,h:P.h}:{x:P.x,y:P.y,w:P.w,h:P.h*0.38};const Rp=wide?inset({x:P.x+P.w*0.38,y:P.y,w:P.w*0.62,h:P.h},56,20,12,56):inset({x:P.x,y:P.y+P.h*0.4,w:P.w,h:P.h*0.6},56,10,12,50);
+  const cu=curve8(S.om8),col=col8(S.om8);const tAbs=S.t8+cu.t0,a=aAt8(cu,tAbs);
+  // the sphere
+  const cx=Lp.x+Lp.w/2,cy=Lp.y+Lp.h/2,R0=Math.min(Lp.w,Lp.h)*0.2,R=Math.min(Math.min(Lp.w,Lp.h)*0.46,R0*a);
+  if(R>1){const dens=clamp(0.35/Math.pow(Math.max(a,0.3),3),0,0.6);circle(cx,cy,R,C.inkA(+(dens*0.35).toFixed(3)),col,1.8);
+    line(cx,cy,cx+R*0.707,cy-R*0.707,C.soft,1,[3,3]);text('r(t) = a(t) χ',cx+R*0.35+6,cy-R*0.35,C.soft,11.5,'left','bottom',500);
+    text('M(t), ρ(t)',cx,cy+6,C.ink,12,'center','top',600);
+    const px=cx+R*0.707,py=cy-R*0.707;circle(px,py,4.5,C.ink);text('m',px+8,py-4,C.ink,12,'left','bottom',600);
+    const pi=cu.pts.findIndex(p=>p[0]>=tAbs);const dadt=pi>0?(cu.pts[pi][1]-cu.pts[pi-1][1])/(cu.pts[pi][0]-cu.pts[pi-1][0]):0;const L=clamp(dadt*R0*6,-40,40);if(Math.abs(L)>3)arrow(px,py,px+L*0.707,py-L*0.707,col,1.5,7);}
+  else text(cu.crunch&&tAbs>=cu.crunch?'Big Crunch':'Big Bang',cx,cy,C.ink,14,'center','middle',600);
+  text('a = '+fmt(a,2),cx,Lp.y+Lp.h-14,C.ink,13,'center','bottom',600,MONO);
+  // a(t)
+  const ax=makeAx(Rp,[-15,35],[0,3],false,false);
+  drawAxes(ax,{xt:range(-10,30,10).map(v=>[v,(v>0?'+':v<0?'−':'')+Math.abs(v)]),yt:[0,1,2,3].map(v=>[v,String(v)]),xl:'Time from today (Gyr)',yl:'Scale factor a',ylOff:36});
+  line(ax.X(0),Rp.y,ax.X(0),Rp.y+Rp.h,C.faint,1,[3,4]);text('today',ax.X(0)+4,Rp.y+4,C.soft,11.5,'left','top',500);
+  g.save();g.beginPath();g.rect(Rp.x,Rp.y,Rp.w,Rp.h);g.clip();
+  const plot=(c,clr,lw,dash)=>{g.beginPath();c.pts.forEach((p,i)=>{const X=ax.X(p[0]-c.t0),Y=ax.Y(p[1]);i?g.lineTo(X,Y):g.moveTo(X,Y);});g.strokeStyle=clr;g.lineWidth=lw;g.setLineDash(dash||[]);g.stroke();g.setLineDash([]);};
+  [[0.3,C.cyan],[1,C.ink],[2,C.orange]].forEach(([om,c])=>{if(Math.abs(om-S.om8)>0.02)plot(curve8(om),c,1.2,[5,4]);});
+  plot(cu,col,2.5);g.restore();
+  [[0.3,'Ω = 0.3'],[1,'Ω = 1'],[2,'Ω = 2']].forEach(([om,l])=>{const c=curve8(om);const y=aAt8(c,c.t0+30);if(y>0.05&&y<3)text(l,ax.X(30)+4,ax.Y(y),C.soft,11,'left','middle',500,MONO);});
+  if(a>0&&S.t8>=-15&&S.t8<=35)circle(ax.X(S.t8),ax.Y(a),6,col,C.ink,1.5);
+  text('Big Bang '+fmt(cu.t0,1)+' Gyr ago',ax.X(-cu.t0)+4,ax.Y(0)-8,col,11.5,'left','bottom',600);}
+function tick8(dt){if(!S.play8)return false;const cu=curve8(S.om8);S.t8+=dt*5;const end=cu.crunch?Math.min(35,cu.crunch-cu.t0):35;if(S.t8>end+1.5)S.t8=-cu.t0;updateRO8();return true;}
+function updateRO8(){const cu=curve8(S.om8),Om=S.om8;setRO('r8a',fmt(Om,2));setRO('r8b',fmt(5.5*Om,1)+' protons m⁻³');
+  setRO('r8c',Math.abs(Om-1)<0.005?'U = 0, K = 0: flat':Om>1?'U < 0, K > 0: closed':'U > 0, K < 0: open');
+  setRO('r8d',cu.crunch?'Recollapses '+fGyr(cu.crunch-cu.t0)+' from now':'Expands forever');setRO('r8e',fGyr(cu.t0));setRO('r8f',(S.t8<0?'−':'+')+fmt(Math.abs(S.t8),1)+' Gyr');}
+
+/* ===== 9. Fluid equation and equation of state ===== */
+const OL9=1-PL.om-OR,OX9=0.05;
+const comp9=()=>{const c=[['Radiation',OR,1/3,C.pink],['Matter',PL.om,0,C.green]];if(S.lam9)c.push(['Λ',OL9,-1,C.violet]);if(S.cust9)c.push(['Your w',OX9,S.w9,C.ink]);return c;};
+const rho9=(c,a)=>c[1]*Math.pow(a,-3*(1+c[2]));
+function draw9(){const r=inset(P,66,30,74,56);const ax=makeAx(r,[1e-6,10],[1e-3,1e22],true,true);
+  drawAxes(ax,{xt:[-6,-5,-4,-3,-2,-1,0,1].map(e=>[10**e,e===0?'1':e===1?'10':p10(e)]),yt:[-3,0,3,6,9,12,15,18,21].map(e=>[10**e,e===0?'1':p10(e)]),xl:'Scale factor a',yl:'Density / today\'s critical density',ylOff:52});
+  const aeq=OR/PL.om,aml=Math.pow(PL.om/OL9,1/3);
+  [[aeq,'matter = radiation, z ≈ '+fmt(1/aeq-1,0)],[aml,'matter = Λ, z ≈ '+fmt(1/aml-1,2)]].forEach(([av,l],i)=>{if(i===1&&!S.lam9)return;const X=ax.X(av);line(X,r.y,X,r.y+r.h,C.faint,1,[3,4]);text(l,X+(i?-5:5),r.y+4+(i?16:0),C.soft,11.5,i?'right':'left','top',500);});
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
+  comp9().forEach(c=>{g.beginPath();for(let i=0;i<=200;i++){const av=10**(-6+7*i/200);const X=ax.X(av),Y=ax.Y(rho9(c,av));i?g.lineTo(X,Y):g.moveTo(X,Y);}g.strokeStyle=c[3];g.lineWidth=2.2;g.setLineDash(c[0]==='Your w'?[6,4]:[]);g.stroke();g.setLineDash([]);});
+  g.restore();
+  const LA9={'Radiation':1e-5,'Matter':1e-3,'Λ':10,'Your w':0.05};comp9().forEach(c=>{const av=LA9[c[0]],X=ax.X(av),y=ax.Y(rho9(c,av));if(c[0]==='Λ')text(c[0],r.x+r.w+6,clamp(y,r.y+6,r.y+r.h-6),c[3],12,'left','middle',600);else if(y>r.y&&y<r.y+r.h)text(c[0],X+8,y,c[3],12,'left','bottom',600);});
+  const av=10**S.la9,X=ax.X(av);line(X,r.y,X,r.y+r.h,C.ink,1);comp9().forEach(c=>{const y=ax.Y(rho9(c,av));if(y>=r.y&&y<=r.y+r.h)circle(X,y,5,c[3],C.ink,1.2);});}
+function updateRO9(){const av=10**S.la9,cs=comp9();setRO('r9a',(av<0.01?sci(av,1):fmt(av,3))+',  z = '+(1/av-1<1e4?fmt(Math.max(0,1/av-1),1/av-1<10?2:0):sci(1/av-1,1)));
+  const tot=cs.reduce((s,c)=>s+rho9(c,av),0);const dom=cs.reduce((b,c)=>rho9(c,av)>rho9(b,av)?c:b);setRO('r9b',dom[0]+', '+fmt(100*rho9(dom,av)/tot,0)+'%');
+  const rr=rho9(cs[0],av)/rho9(cs[1],av);setRO('r9c',rr<0.01||rr>100?sci(rr,1):fmt(rr,2));setRO('r9d',(2.7255/av<1e4?fmt(2.7255/av,av>0.1?2:0):sci(2.7255/av,1))+' K');
+  const q=cs.reduce((s,c)=>s+rho9(c,av)*(1+3*c[2]),0)/(2*tot);setRO('r9e',fmt(q,2)+(q>0?', decelerating':', accelerating'));
+  setRO('r9f',S.cust9?'ρ ∝ a<sup>'+signed(-3*(1+S.w9),2)+'</sup>':'–');}
+
+/* ===== 10. Curvature ===== */
+const ang10=(k,l)=>3*Math.acos(k===0?0.5:k>0?Math.cos(l)/(1+Math.cos(l)):Math.cosh(l)/(1+Math.cosh(l)))/DEG;
+function drawSphere10(cx,cy,R,l,col){const tau=0.75,ct=Math.cos(tau),st=Math.sin(tau);
+  const pr=v=>{const y1=v[1]*ct-v[2]*st,z1=v[1]*st+v[2]*ct;return[cx+R*v[0],cy-R*z1,y1];};
+  circle(cx,cy,R,rgba('orange',.05),C.faint,1);
+  const path=(f,n,c,lw)=>{let prev=null;for(let i=0;i<=n;i++){const q=pr(f(i/n));if(prev){const front=q[2]<0&&prev[2]<0;line(prev[0],prev[1],q[0],q[1],front?c:C.inkA(.08),lw,front?[]:[2,3]);}prev=q;}};
+  [-60,-30,0,30,60].forEach(la=>path(s=>{const p=2*Math.PI*s,c=Math.cos(la*DEG);return[c*Math.cos(p),c*Math.sin(p),Math.sin(la*DEG)];},72,C.inkA(.13),1));
+  for(let m=0;m<6;m++)path(s=>{const t=Math.PI*s-Math.PI/2,p=m*Math.PI/6;return[Math.cos(t)*Math.cos(p),Math.cos(t)*Math.sin(p),Math.sin(t)];},60,C.inkA(.13),1);
+  const rho=Math.asin(Math.min(1,Math.sin(l/2)/0.8660254));const V=[270,30,150].map(f=>[Math.sin(rho)*Math.cos(f*DEG),Math.sin(rho)*Math.sin(f*DEG),Math.cos(rho)]);
+  const sl=(u,v,s)=>{const d=Math.acos(clamp(u[0]*v[0]+u[1]*v[1]+u[2]*v[2],-1,1));if(d<1e-6)return u;const a=Math.sin((1-s)*d)/Math.sin(d),b=Math.sin(s*d)/Math.sin(d);return[a*u[0]+b*v[0],a*u[1]+b*v[1],a*u[2]+b*v[2]];};
+  g.beginPath();for(let e=0;e<3;e++)for(let i=0;i<=40;i++){const q=pr(sl(V[e],V[(e+1)%3],i/40));(e||i)?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}g.closePath();g.fillStyle=rgba('orange',.18);g.fill();
+  for(let e=0;e<3;e++)path(s=>sl(V[e],V[(e+1)%3],s),40,col,2);
+  V.forEach(v=>{const q=pr(v);circle(q[0],q[1],3.5,col);});}
+function drawHyp10(cx,cy,R,l,col){circle(cx,cy,R,rgba('cyan',.05),C.faint,1);
+  for(let k=1;k<=5;k++)circle(cx,cy,R*Math.tanh(k*0.5/2),null,C.inkA(.10),1);
+  for(let m=0;m<6;m++){const p=m*Math.PI/6;line(cx-R*Math.cos(p),cy-R*Math.sin(p),cx+R*Math.cos(p),cy+R*Math.sin(p),C.inkA(.10),1);}
+  const rho=Math.asinh(Math.sinh(l/2)/0.8660254);const V=[90,210,330].map(f=>[Math.sinh(rho)*Math.cos(f*DEG),Math.sinh(rho)*Math.sin(f*DEG),Math.cosh(rho)]);
+  const sl=(u,v,s)=>{const d=Math.acosh(Math.max(1,u[2]*v[2]-u[0]*v[0]-u[1]*v[1]));if(d<1e-6)return u;const a=Math.sinh((1-s)*d)/Math.sinh(d),b=Math.sinh(s*d)/Math.sinh(d);return[a*u[0]+b*v[0],a*u[1]+b*v[1],a*u[2]+b*v[2]];};
+  const pr=v=>[cx+R*v[0]/(1+v[2]),cy-R*v[1]/(1+v[2])];
+  g.beginPath();for(let e=0;e<3;e++)for(let i=0;i<=40;i++){const q=pr(sl(V[e],V[(e+1)%3],i/40));(e||i)?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);}g.closePath();g.fillStyle=rgba('cyan',.18);g.fill();g.strokeStyle=col;g.lineWidth=2;g.stroke();
+  V.forEach(v=>{const q=pr(v);circle(q[0],q[1],3.5,col);});}
+function drawFlat10(cx,cy,R,l,col){const s=R*0.5;rrect(cx-R,cy-R*0.8,2*R,1.6*R,8);g.fillStyle=C.inkA(.03);g.fill();g.strokeStyle=C.faint;g.lineWidth=1;g.stroke();
+  for(let k=-4;k<=4;k++){line(cx+k*R/4,cy-R*0.8,cx+k*R/4,cy+R*0.8,C.inkA(.08),1);}for(let k=-3;k<=3;k++)line(cx-R,cy+k*R/4,cx+R,cy+k*R/4,C.inkA(.08),1);
+  const L=l*s,rc=L/Math.sqrt(3);const V=[90,210,330].map(f=>[cx+rc*Math.cos(f*DEG),cy-rc*Math.sin(f*DEG)]);
+  g.beginPath();V.forEach((v,i)=>i?g.lineTo(v[0],v[1]):g.moveTo(v[0],v[1]));g.closePath();g.fillStyle=C.inkA(.12);g.fill();g.strokeStyle=col;g.lineWidth=2;g.stroke();V.forEach(v=>circle(v[0],v[1],3.5,col));}
+function draw10(){const n=3;const wide=Math.min(P.w/n*0.4,(P.h-70)*0.42)>=Math.min(P.w*0.4,(P.h/n-70)*0.42);let cells;
+  if(wide){const w=P.w/n;cells=[0,1,2].map(i=>({x:P.x+i*w,y:P.y,w,h:P.h}));}else{const h=P.h/n;cells=[0,1,2].map(i=>({x:P.x,y:P.y+i*h,w:P.w,h}));}
+  const K=[[1,'Closed: K > 0, Ω > 1',C.orange,drawSphere10],[0,'Flat: K = 0, Ω = 1',C.ink,drawFlat10],[-1,'Open: K < 0, Ω < 1',C.cyan,drawHyp10]];
+  cells.forEach((c,i)=>{const[k,lab,col,fn]=K[i];const R=Math.min(c.w*0.4,(c.h-70)*0.42);const cx=c.x+c.w/2,cy=c.y+28+R+(wide?R*0.25:6);
+    const sh=c.w<230;text(sh?lab.split(':')[0]:lab,cx,c.y+6,col,13,'center','top',600);fn(cx,cy,R,S.l10,col);
+    text((sh?'Sum ':'Angles add up to ')+fmt(ang10(k,S.l10),1)+'°',cx,cy+R+(wide?R*0.3:10)+8,C.ink,13,'center','top',600);});}
+function updateRO10(){setRO('r10a',fmt(ang10(1,S.l10),1)+'°');setRO('r10b','180°');setRO('r10c',fmt(ang10(-1,S.l10),1)+'°');setRO('r10d','0.001 ± 0.002');
+  setRO('r10e','> '+fmt(CKM/PL.h0/Math.sqrt(0.005)/1e3,0)+' Gpc');}
+
+/* ===== 11. Cosmological distances ===== */
+const m11=()=>cosmo(S.om11,S.ol11);
+let D11=null,D11k='';
+function calc11(){const key=[S.om11,S.ol11,S.h11,S.log11].join();if(key===D11k)return D11;D11k=key;const m=m11(),dh=CKM/S.h11;
+  const zs=[0];const n=900;if(S.log11){for(let i=0;i<=n;i++)zs.push(10**(-2.5+i/n*(Math.log10(1100)+2.5)));}else{for(let i=1;i<=n;i++)zs.push(6*i/n);}
+  let chi=0,bad=!bigBang(m);const out=[[0,0,0,0]];
+  if(!bad)for(let i=1;i<zs.length;i++){const z0=zs[i-1],z1=zs[i];const e0=E2z(m,z0),e1=E2z(m,z1),em=E2z(m,(z0+z1)/2);if(e0<=0||e1<=0||em<=0){bad=true;break;}
+    chi+=(z1-z0)/6*(1/Math.sqrt(e0)+4/Math.sqrt(em)+1/Math.sqrt(e1));const sk=SK(m,chi)*dh;out.push([z1,chi*dh,sk/(1+z1),sk*(1+z1)]);}
+  D11={pts:out,bad,m};return D11;}
+let ax11=null;
+const SER11=[[1,'Comoving χ',C.ink],[2,'Angular diameter D_{A}',C.blue],[3,'Luminosity D_{L}',C.amber]];
+function draw11(){const D=calc11();const r=inset(P,66,24,16,56);ax11=null;
+  if(D.bad){text('No Big Bang: with this much Λ the Universe bounces',P.x+P.w/2,P.y+P.h/2,C.ink,15,'center','middle',600);return;}
+  const lg=S.log11;let ax;
+  if(lg){ax=makeAx(r,[0.01,1100],[10,3e7],true,true);drawAxes(ax,{xt:[[0.01,'0.01'],[0.1,'0.1'],[1,'1'],[10,'10'],[100,'100'],[1000,'1,000']],yt:[1,2,3,4,5,6,7].map(e=>[10**e,p10(e)]),xl:'Redshift z',yl:'Distance (Mpc)',ylOff:46});}
+  else{const ym=Math.max(2,Math.ceil(D.pts[D.pts.length-1][1]/1e3*1.15));ax=makeAx(r,[0,6],[0,ym],false,false);drawAxes(ax,{xt:range(0,6,1).map(v=>[v,String(v)]),yt:range(0,ym,ym>12?4:2).map(v=>[v,String(v)]),xl:'Redshift z',yl:'Distance (Gpc)',ylOff:40});}
+  ax11=ax;const u=lg?1:1e-3;
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
+  SER11.forEach(([k,,c])=>{g.beginPath();let st=false;D.pts.forEach(p=>{if(lg&&p[0]<0.01)return;const v=Math.max(p[k]*u,lg?1:0);const X=ax.X(p[0]),Y=ax.Y(v);st?g.lineTo(X,Y):(g.moveTo(X,Y),st=true);});g.strokeStyle=c;g.lineWidth=2.2;g.stroke();});
+  const z=10**S.lz11;if(z<=(lg?1100:6)){const X=ax.X(z);line(X,r.y,X,r.y+r.h,C.faint,1,[3,4]);const d=dist11(z);[d.chi,d.da,d.dl].forEach((v,i)=>circle(X,ax.Y(Math.max(v*u,lg?1:0)),5,SER11[i][2],C.ink,1.2));}
+  g.restore();
+  SER11.forEach(([,l,c],i)=>{const y=r.y+8+i*18;line(r.x+12,y,r.x+30,y,c,2.5);ts(l,r.x+38,y,C.ink,12.5,'left','middle',500);});
+  if(!lg){let im=0;D.pts.forEach((p,i)=>{if(p[2]>D.pts[im][2])im=i;});const p=D.pts[im];if(im<D.pts.length-2){const X=ax.X(p[0]),Y=ax.Y(p[2]*u);circle(X,Y,3.5,C.blue);ts('D_{A} peaks at z = '+fmt(p[0],2),X,Y-10,C.blue,11.5,'center','bottom',600);}}}
+function dist11(z){const m=m11(),dh=CKM/S.h11;const c=chiH(m,z),s=SK(m,c);const t0=ageH(m,1),t=ageH(m,1/(1+z));return{chi:c*dh,da:s*dh/(1+z),dl:s*dh*(1+z),lb:(t0-t)*HUB/S.h11,t0:t0*HUB/S.h11};}
+function hover11(x,y){if(!ax11||x<ax11.r.x||x>ax11.r.x+ax11.r.w||y<ax11.r.y||y>ax11.r.y+ax11.r.h)return null;const z=ax11.X.inv(x);if(z<=0)return null;const d=dist11(z);
+  return `<b>z = ${fz(z)}</b><br>χ = ${fMpc(d.chi)}<br>D<sub>A</sub> = ${fMpc(d.da)}<br>D<sub>L</sub> = ${fMpc(d.dl)}`;}
+function updateRO11(){const z=10**S.lz11,m=m11();setRO('r11a',fz(z)+(Math.abs(m.ok)>5e-4?',  Ω<sub>k</sub> = '+signed(m.ok,2):',  flat'));if(!bigBang(m)){['r11b','r11c','r11d','r11e','r11f'].forEach(i=>setRO(i,'–'));return;}const d=dist11(z);
+  setRO('r11b',fMpc(d.chi));setRO('r11c',fMpc(d.da));setRO('r11d',fMpc(d.dl));const th=0.03/d.da/(DEG/3600);setRO('r11e',th<60?fmt(th,1)+'″':fmt(th/60,1)+'′');setRO('r11f',fGyr(d.lb)+' of '+fGyr(d.t0));}
+
+/* ===== 12. A flat universe and its age ===== */
+// flat universe with radiation, matter and dark energy of constant w; returns a(t) and the age, in Gyr
+function curveW(om,w,h0){const ode=1-om-OR,f=HUB/h0,q=x=>OR+om*x+ode*Math.pow(x,1-3*w);const n=700,pts=[[0,0]];let t=0,prev=0;
+  for(let i=1;i<=n;i++){const a=3.2*Math.pow(i/n,2),mid=(prev+a)/2;t+=(a-prev)*mid/Math.sqrt(q(mid))*f;pts.push([t,a]);prev=a;}
+  let s=0;const m=1000;for(let i=0;i<m;i++){const x=(i+.5)/m;s+=x/Math.sqrt(q(x));}return{pts,t0:s/m*f};}
+const PL18={h0:67.4,om:0.315,age:13.787,sig:0.020};
+const ages12=()=>{const f=HUB/S.h12;return{E:f,R:f/2,M:2*f/3,D:curveW(S.om12,S.w12,S.h12).t0};};
+const deName=()=>Math.abs(S.w12+1)<0.005?'ΛCDM, w = −1':'Dark energy, w = '+signed(S.w12,2);
+function draw12(){const r=inset(P,56,24,tw('Dark energy, w = −1.50',12,600)+14,56);const ax=makeAx(r,[0,35],[0,2.5],false,false);const f=HUB/S.h12,A=ages12();
+  drawAxes(ax,{xt:range(0,35,5).map(v=>[v,String(v)]),yt:[0,0.5,1,1.5,2,2.5].map(v=>[v,fmt(v,1)]),xl:'Time since the Big Bang (Gyr)',yl:'Scale factor a',ylOff:40});
+  g.fillStyle=C.inkA(.06);g.fillRect(ax.X(12),r.y,ax.X(13)-ax.X(12),r.h);text('oldest stars',ax.X(12.5),r.y+4,C.soft,11.5,'center','top',500);
+  line(r.x,ax.Y(1),r.x+r.w,ax.Y(1),C.faint,1,[3,4]);text('today, a = 1',r.x+r.w+6,ax.Y(1),C.soft,11.5,'left','middle',500);
+  const C12=[['Empty, n = 1',t=>t/f,C.soft,[5,4],A.E],['Radiation, n = 1/2',t=>Math.sqrt(2*t/f),C.pink,[],A.R],['Matter, n = 2/3',t=>Math.pow(1.5*t/f,2/3),C.green,[],A.M]];
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
+  C12.forEach(([,fn,c,d])=>{g.beginPath();for(let i=0;i<=300;i++){const t=35*Math.pow(i/300,1.5);const X=ax.X(t),Y=ax.Y(fn(t));i?g.lineTo(X,Y):g.moveTo(X,Y);}g.strokeStyle=c;g.lineWidth=2.2;g.setLineDash(d);g.stroke();g.setLineDash([]);});
+  let L=null;if(S.de12){L=curveW(S.om12,S.w12,S.h12);g.beginPath();L.pts.forEach((p,i)=>{const X=ax.X(p[0]),Y=ax.Y(p[1]);i?g.lineTo(X,Y):g.moveTo(X,Y);});g.strokeStyle=C.violet;g.lineWidth=2.5;g.stroke();}
+  g.restore();
+  const marks=C12.map(c=>[c[4],c[2]]);if(S.de12)marks.push([A.D,C.violet]);marks.forEach(([t,c])=>{if(t<35)circle(ax.X(t),ax.Y(1),5.5,c,C.ink,1.2);});
+  const xp=ax.X(PL18.age),yp=ax.Y(1)+16;g.beginPath();g.moveTo(xp,yp-6);g.lineTo(xp+5,yp);g.lineTo(xp,yp+6);g.lineTo(xp-5,yp);g.closePath();g.fillStyle=C.ink;g.fill();
+  text('Planck 2018 ΛCDM, H₀ = 67.4: 13.787 ± 0.020 Gyr',xp+9,yp,C.ink,11.5,'left','middle',600);
+  const lab=C12.map(c=>[c[0],c[2],c[1](35)]);if(L){const p=L.pts.find(q=>q[0]>=35);lab.push([deName(),C.violet,p?p[1]:3]);}
+  lab.sort((a,b)=>a[2]-b[2]);let last=1e9;lab.forEach(([l,c,av])=>{let y=ax.Y(Math.min(av,2.45));if(y>last-16)y=last-16;last=y;text(l,r.x+r.w+6,y,c,12,'left','middle',600);});}
+function updateRO12(){const A=ages12();setRO('r12a',fGyr(A.E));setRO('r12b',fGyr(A.M));setRO('r12c',fGyr(A.R));
+  setRO('r12d',S.de12?fmt(A.D,2)+' Gyr (Ω<sub>m</sub> = '+fmt(S.om12,3)+', w = '+signed(S.w12,2)+')':'–');setRO('r12e','13.787 ± 0.020 Gyr');
+  setRO('r12f',A.M<12?'Younger than its oldest stars':'Older than its oldest stars');}
+
+/* ---------- chapters ---------- */
+const CH=[
+ {name:'Eternal?',title:'Has the Universe always been here?',draw:draw1,
+  txt:String.raw`<p>For most of history the natural answer was yes. Aristotle's cosmos had no first moment; Ibn Rushd (Averroes) defended that eternal world in 12th-century Córdoba, and Siger of Brabant taught it in 13th-century Paris. In 1917 Einstein gave it equations: a static, eternal universe held still by a cosmological constant.</p>
+<p>Physics turns the question into a test. Each model of the Universe predicts how its scale factor \(a(t)\), the relative size of the Universe, changes with time, and so what we should see: whether the night sky is dark, whether galaxies recede with redshifts that grow with distance, and whether a 2.7 K glow fills the sky.</p>
+<p>Pick a model in the controls and check its predictions. Only universes with a hot, dense past pass all three tests. Penrose's conformal cyclic cosmology and the CPT-symmetric universe of Boyle, Finn and Turok keep that hot Big Bang but try to make it something other than an absolute beginning.</p>
+<p class="note">All curves expand at today's rate. The previous aeon and the mirror universe are schematic. Lecture 13 slides 3–4.</p>`,
+  ro:[['Model',sp('r1a')],['Proposed by',sp('r1b')],['Tests passed',sp('r1c')],['Also',sp('r1d')]]},
+ {name:'Olbers',title:'Olbers\' paradox: why is the night sky dark?',draw:draw2,tick:tick2,
+  txt:String.raw`<p>Suppose the Universe is infinitely old, static and filled with Sun-like stars. Look out in any direction: your line of sight runs on until it meets the surface of a star. In a deep forest every line of sight ends on a tree trunk; in such a universe every line of sight ends on a star.</p>
+<p>Each of those stars looks equally bright per unit area. A star at distance \(r\) delivers flux \(F=L_\odot/4\pi r^2\), but its disc shrinks too, \(\theta^2\propto R_\odot^2/r^2\), so
+\[\frac{F}{\theta^2}\propto r^0.\]
+The whole sky should shine like the surface of the Sun, and the Earth would be as hot as the Sun.</p>
+<p>Count it shell by shell: a shell at radius \(r\) holds \(\propto r^2\) stars, each \(\propto 1/r^2\) as bright, so every shell adds the same light, without limit.</p>
+<p>The way out is that light has travelled only for a finite time. A line of sight runs on average a mean free path \(\lambda\) before it meets a star; with \(10^9\) stars per Mpc³, \(\lambda\approx10^{24}\) light years. Light has had 13.8 billion years, about \(10^{-14}\lambda\), so almost no line of sight reaches a star. The dark night sky shows that the Universe has a finite age.</p>
+<p>Drag the slider to let light travel further, or make the Universe infinitely old.</p>
+<p class="note">A 2D slice, with stars drawn far larger than to scale so that λ fits on the screen. Expansion also redshifts distant light, but the finite age matters more. Lecture 13 slide 5.</p>`,
+  ro:[['Light has travelled',sp('r2a')],['Lines of sight ending on a star',sp('r2b')],['Expected, 1 − e<sup>−R/λ</sup>',sp('r2c')],['In our Universe, R / λ',sp('r2d')]]},
+ {name:'Redshift',title:'Redshift: reading motion in a spectrum',draw:draw3,
+  txt:String.raw`<p>Atoms absorb and emit at fixed wavelengths: hydrogen's Hα line sits at 656.3 nm in the laboratory. In the spectrum of a galaxy the whole pattern of lines is shifted. The redshift
+\[z=\frac{\lambda_\mathrm{obs}-\lambda_\mathrm{emit}}{\lambda_\mathrm{emit}}=\frac{\Delta\lambda}{\lambda_\mathrm{emit}}\]
+is the same for every line, so one pattern is enough to measure it.</p>
+<p>For a source moving away at speed \(v\), special relativity gives
+\[1+z=\gamma\left(1+\frac{v}{c}\right)=\sqrt{\frac{1+v/c}{1-v/c}},\]
+which reduces to \(z\approx v/c\) when \(v\ll c\). A source moving towards us has \(z<0\), a blueshift.</p>
+<p>For distant galaxies the redshift is not really a Doppler shift. Space stretches while the light travels, and \(1+z=1/a\), where \(a\) is the scale factor when the light left. The spectrum tells us how much smaller the Universe was then.</p>
+<p>Move the redshift slider and watch the lines slide to the red. On a logarithmic wavelength axis every line moves by the same distance.</p>
+<p class="note">Lecture 13 slide 6.</p>`,
+  ro:[['Redshift z',sp('r3a')],['Hα observed at',sp('r3b')],['Shift Δλ of Hα',sp('r3c')],['Size of the Universe then',sp('r3d')],['Speed, relativistic',sp('r3e')],['Speed, v = cz',sp('r3f')]]},
+ {name:'Hubble law',title:'The Hubble–Lemaître law',draw:draw4,hover:hover4,drag:drag4,
+  txt:String.raw`<p>In 1927 Georges Lemaître combined published redshifts with distance estimates and found that galaxies recede at speeds proportional to their distance. He published in French in the <em>Annales de la Société Scientifique de Bruxelles</em>, and few noticed. In 1929 Edwin Hubble found the same relation from Cepheid distances:
+\[v=H_0\,d.\]</p>
+<p>It needs two independent measurements: the velocity, from the redshift, \(v\approx cz\), and the distance, from standard candles such as Cepheids. Hubble's points scatter a lot, because nearby galaxies also have peculiar velocities of a few hundred km/s.</p>
+<p>\(H_0\) has units of inverse time. The Hubble time \(1/H_0\) is roughly how long the galaxies have been flying apart. Hubble's value of about 500 km/s/Mpc gives only 2 billion years, less than the age of the Earth. His distances were too small: in 1952 Baade found two kinds of Cepheids, and \(H_0\) fell several-fold.</p>
+<p>Drag up or down on the plot, or use the slider, to fit a line by eye. Then switch to a modern sample.</p>
+<p class="note">Hubble (1929), PNAS 15, 168, table 1: 24 nebulae. The modern sample is simulated with \(H_0=70\) km/s/Mpc and realistic scatter. Lecture 13 slide 7.</p>`,
+  ro:[['Your H₀',sp('r4a')],['Best fit through the origin',sp('r4b')],['Scatter about your line',sp('r4c')],['Your Hubble time, 1/H₀',sp('r4d')]]},
+ {name:'Tension',title:'The Hubble constant and the Hubble tension',draw:draw5,hover:hover5,
+  txt:String.raw`<p>From the 1950s to the 1990s two camps argued over \(H_0\): Sandage and Tammann found about 50 km/s/Mpc, de Vaucouleurs about 100. In 2001 the Hubble Space Telescope Key Project settled on \(72\pm8\) km/s/Mpc.</p>
+<p>Today there are two very different routes. The <em>late Universe</em> route climbs the distance ladder of parallax, Cepheids and type Ia supernovae; SH0ES finds \(73.04\pm1.04\) km/s/Mpc. The <em>early Universe</em> route fits a model to the cosmic microwave background and predicts today's expansion rate; Planck finds \(67.4\pm0.5\) km/s/Mpc.</p>
+<p>For two independent Gaussian measurements the tension is
+\[n_\sigma=\frac{|H_1-H_2|}{\sqrt{\sigma_1^2+\sigma_2^2}}\approx4.9.\]
+Either one measurement has an unknown systematic error, or the standard cosmological model is missing something.</p>
+<p>Hover over a point for the measurement. In the tension view, move the local value and its error to see how the tension changes.</p>
+<p class="note">Values are approximate and compiled for teaching. Lecture 13 slides 8–9.</p>`,
+  ro:[['Local value',sp('r5a')],['Planck 2018',sp('r5b')],['Difference',sp('r5c')],['Tension',sp('r5d')],['Chance of a fluke this large',sp('r5e')],['1/H₀, local vs Planck',sp('r5f')]]},
+ {name:'JWST',title:'JWST: what does a star at z = 10 look like?',draw:draw6,
+  txt:String.raw`<p>A star is close to a blackbody, and Wien's law says where its spectrum peaks:
+\[\lambda_\mathrm{peak}=\frac{b}{T},\qquad b=2.9\times10^{-3}\ \mathrm{m\,K}.\]
+A Sun-like star at 5,500 K peaks near 530 nm, in the visible.</p>
+<p>Redshift stretches every wavelength by \(1+z\), so the observed spectrum is again a blackbody, with
+\[T_\mathrm{obs}=\frac{T_\mathrm{emit}}{1+z}.\]
+At \(z=10\) the star looks like a 500 K object, peaking near 5.8 μm in the infrared. That is why the James Webb Space Telescope works from 0.6 to 28 μm and is kept cold.</p>
+<p>The light also left long ago: at \(z=10\) the Universe was under 500 million years old.</p>
+<p>Change the redshift and the temperature of the star. The curves are scaled to the same height; in reality the surface brightness falls as \((1+z)^4\).</p>
+<p class="note">Ages use flat ΛCDM with Planck 2018 parameters. JADES-GS-z14-0, at z = 14.3, is among the most distant galaxies JWST has confirmed. Lecture 13 slide 12 and Notes, p. 1.</p>`,
+  ro:[['Peak, emitted',sp('r6a')],['Peak, observed',sp('r6b')],['Looks like a blackbody at',sp('r6c')],['Peak seen by',sp('r6d')],['Age of the Universe then',sp('r6e')],['Light left',sp('r6f')]]},
+ {name:'Expansion',title:'Hubble expansion and the cosmological principle',draw:draw7,hover:hover7,click:click7,tick:tick7,
+  txt:String.raw`<p>The cosmological principle has two parts. <em>Homogeneous</em>: the Universe looks the same from every place. <em>Isotropic</em>: it looks the same in every direction. Use the sliders to break either one. Inhomogeneity piles galaxies into shells around a centre, which also expands faster than its surroundings. Anisotropy lines the galaxies up and stretches space faster left–right than up–down.</p>
+<p>If both hold, every distance grows by the same factor:
+\[r(t)=a(t)\,\chi,\]
+where \(\chi\) is the comoving distance, fixed for galaxies that move with the expansion, and the scale factor \(a\) can depend only on time.</p>
+<p>The strip at the top is a rubber ruler: comoving labels stay fixed while proper distances grow by \(a(t_2)/a(t_1)\). Below, the faint outlines are a snapshot at \(t_1\) and the bright galaxies a later one at \(t_2\). Click any galaxy to pin both snapshots on it.</p>
+<p>Only when the Universe is both homogeneous and isotropic does every galaxy see all the others move straight away, by amounts proportional to distance. With isotropy alone, an observer at the centre sees a radial flow but not \(v\propto r\), and everyone else sees a lopsided one. With homogeneity alone, everyone sees the same pattern, but it is not radial.</p>
+<p>Dividing the displacement by the time between snapshots,
+\[v=\dot r=\dot a\,\chi=\frac{\dot a}{a}\,r=H(t)\,r.\]
+Hubble's law follows from the cosmological principle. Today \(H_0=H(t_0)\), and we choose \(a(t_0)=1\).</p>
+<p>The second view lists distances with \(H_0=70\) km/s/Mpc. Inside groups and clusters gravity wins; beyond \(c/H_0\approx4{,}300\) Mpc the law gives \(v>c\), and we need proper cosmological distances.</p>
+<p class="note">The snapshots are the classic demonstration with two transparencies: slide one over the other and line up any galaxy. Lecture 13 slides 10–11 and Notes, pp. 1–2.</p>`,
+  ro:[['Pinned on',sp('r7a')],['Size ratio a(t₂) / a(t₁)',sp('r7b')],['Homogeneous?',sp('r7c')],['Isotropic around you?',sp('r7d')],['Hubble\'s law from here?',sp('r7e')]]},
+ {name:'Friedmann',title:'The Friedmann equation',draw:draw8,tick:tick8,
+  txt:String.raw`<p>Cut a sphere of radius \(r(t)=a(t)\chi\) out of a uniform universe of density \(\rho(t)\). It contains \(M=\frac{4\pi}{3}\rho r^3\), and a test particle of mass \(m\) on its surface has energy
+\[U=\tfrac12 m\dot r^2-\frac{GMm}{r}.\]
+By the shell theorem, matter outside the sphere has no effect.</p>
+<p>Substituting \(r=a\chi\) and rearranging gives the first Friedmann equation,
+\[\left(\frac{\dot a}{a}\right)^2=\frac{8\pi G}{3}\rho-\frac{Kc^2}{a^2},\qquad K=-\frac{2U}{mc^2\chi^2}.\]
+General relativity gives the same equation from the FLRW metric, with \(K\) the curvature of space.</p>
+<p>The fate depends on the sign of the energy. The density with \(U=0\) is the critical density, \(\rho_c=3H_0^2/8\pi G\approx9\times10^{-27}\) kg m⁻³, about five protons per cubic metre. Above it the Universe is bound and recollapses; below it, it expands forever.</p>
+<p>Set the density \(\Omega=\rho/\rho_c\) and press play. All curves pass \(a=1\) today with the same \(H_0\), but they started at different times.</p>
+<p class="note">Matter only, no Λ, \(H_0=70\) km/s/Mpc. Lecture 13 slide 18 and Notes, pp. 2–3.</p>`,
+  ro:[['Ω = ρ / ρ<sub>c</sub>',sp('r8a')],['Density today',sp('r8b')],['Energy and curvature',sp('r8c')],['Fate',sp('r8d')],['Age today',sp('r8e')],['Time shown',sp('r8f')]]},
+ {name:'Fluid',title:'The fluid equation and the equation of state',draw:draw9,
+  txt:String.raw`<p>As the sphere expands, its energy \(E=\frac{4\pi}{3}a^3\rho c^2\) changes. If the expansion is reversible, \(dE+p\,dV=0\), and differentiating gives the fluid equation:
+\[\dot\rho+3\frac{\dot a}{a}\left(\rho+\frac{p}{c^2}\right)=0.\]
+Combining it with the time derivative of the Friedmann equation gives the second Friedmann equation,
+\[\frac{\ddot a}{a}=-\frac{4\pi G}{3}\left(\rho+\frac{3p}{c^2}\right).\]</p>
+<p>To solve them we need an equation of state, \(p=w\rho c^2\), which gives \(\rho\propto a^{-3(1+w)}\). Matter, \(w=0\), dilutes as \(a^{-3}\). Radiation, \(w=\tfrac13\), dilutes as \(a^{-4}\), because each photon is also redshifted. A cosmological constant, \(w=-1\), stays constant.</p>
+<p>Radiation dominated the early Universe until matter overtook it at \(z\approx3{,}400\). Any component with \(w<-\tfrac13\) makes \(\ddot a>0\): the expansion accelerates.</p>
+<p>Move along the scale factor, and add a component with your own \(w\).</p>
+<p class="note">Densities in units of today's critical density, Planck 2018. Λ is a preview of the next lecture. Lecture 13 slides 19–22 and Notes, pp. 3–5.</p>`,
+  ro:[['Scale factor and redshift',sp('r9a')],['Dominant component',sp('r9b')],['Radiation / matter',sp('r9c')],['CMB temperature',sp('r9d')],['Deceleration q',sp('r9e')],['Your component',sp('r9f')]]},
+ {name:'Curvature',title:'The curvature of space',draw:draw10,
+  txt:String.raw`<p>The constant \(K\) in the Friedmann equation is the curvature of space. In terms of today's density parameter,
+\[\Omega_k=-\frac{Kc^2}{H_0^2}=1-\Omega,\]
+a universe denser than critical is closed (\(K>0\)), one at exactly the critical density is flat, and a less dense one is open (\(K<0\)).</p>
+<p>Geometry is the test. On a flat sheet the angles of a triangle add up to 180°. In a closed space, like the surface of a sphere, they add up to more; in an open one, like a saddle, to less. The difference grows with the size of the triangle compared with the radius of curvature.</p>
+<p>Curvature also changes distances. The transverse comoving distance is
+\[S_K(\chi)=\begin{cases}\frac{1}{\sqrt K}\sin\left(\sqrt K\chi\right), & K>0,\\ \chi, & K=0,\\ \frac{1}{\sqrt{|K|}}\sinh\left(\sqrt{|K|}\chi\right), & K<0,\end{cases}\]
+so an object at a given \(\chi\) looks bigger in a closed universe and smaller in an open one.</p>
+<p>Measurements give \(\Omega_k=0.001\pm0.002\): space is flat within the errors. Grow the triangle with the slider.</p>
+<p class="note">The open space is drawn as a Poincaré disc: the curved sides are straight lines in that geometry, and lengths shrink towards the rim. Lecture 13 slide 23 and Notes, pp. 5–6.</p>`,
+  ro:[['Closed, angle sum',sp('r10a')],['Flat, angle sum',sp('r10b')],['Open, angle sum',sp('r10c')],['Measured Ω<sub>k</sub>',sp('r10d')],['Radius of curvature, if |Ω<sub>k</sub>| < 0.005',sp('r10e')]]},
+ {name:'Distances',title:'Cosmological distances',draw:draw11,hover:hover11,
+  txt:String.raw`<p>In an expanding universe "distance" needs a definition. The comoving distance is the present-day ruler, the distance to a galaxy today if we could stop the expansion:
+\[\chi(z)=c\int_0^z\frac{dz'}{H(z')}.\]</p>
+<p>The angular diameter distance turns an angle into a size, \(\theta=l/D_A\), and the luminosity distance turns a flux into a luminosity, \(F=L/4\pi D_L^2\):
+\[D_A=\frac{S_K(\chi)}{1+z},\qquad D_L=(1+z)\,S_K(\chi),\]so that \(D_L=(1+z)^2D_A\).</p>
+<p>\(D_A\) reaches a maximum and then falls. Beyond \(z\approx1.6\) a galaxy of fixed size looks <em>larger</em> the further away it is, because the light left when the Universe was much smaller and the galaxy was much closer to us.</p>
+<p>Hover over the plot or move the redshift slider. Change what the Universe contains and see how the distances change.</p>
+<p class="note">\(H(z)\) includes radiation, matter, curvature and Λ, with \(\Omega_k=1-\Omega_m-\Omega_\Lambda-\Omega_r\). Λ is a preview of the next lecture. Lecture 13 slides 15–17.</p>`,
+  ro:[['Redshift',sp('r11a')],['Comoving distance χ',sp('r11b')],['Angular diameter D<sub>A</sub>',sp('r11c')],['Luminosity D<sub>L</sub>',sp('r11d')],['A 30 kpc galaxy spans',sp('r11e')],['Lookback time',sp('r11f')]]},
+ {name:'Age',title:'A flat universe and the age of the Universe',draw:draw12,
+  txt:String.raw`<p>In a flat universe the Friedmann equation is \((\dot a/a)^2=\frac{8\pi G}{3}\rho\). With only matter, \(\rho\propto a^{-3}\), so \(\dot a^2a\) is constant. Trying \(a\propto t^n\) gives \(2(n-1)+n=0\):
+\[a\propto t^{2/3}\ \text{(matter)},\qquad a\propto t^{1/2}\ \text{(radiation)}.\]</p>
+<p>For matter, \(H=\dot a/a=2/3t\), so the age today is
+\[t_0=\frac{2}{3H_0}.\]
+With \(H_0=70\) km/s/Mpc \(=2.3\times10^{-18}\) s⁻¹, the Hubble time is \(1/H_0=14.0\) Gyr and \(t_0=9.3\) Gyr.</p>
+<p>That is a problem: the oldest stars, in globular clusters, are 12 to 13 billion years old. A flat, matter-only universe is younger than its own stars.</p>
+<p>The way out, previewing the next lecture, is dark energy with equation of state \(w<-\tfrac13\), which makes the expansion accelerate. The Universe expanded more slowly in the past, so it took longer to reach today's size. With \(w=-1\), a cosmological constant, this is ΛCDM, and with Planck 2018 parameters it gives 13.8 billion years.</p>
+<p>Change \(H_0\), the matter density and \(w\), or press Planck 2018. All the curves expand at the same rate today, where they cross \(a=1\).</p>
+<p class="note">Planck 2018: Planck Collaboration (2020), A&amp;A 641, A6, with \(H_0=67.4\pm0.5\) km/s/Mpc, \(\Omega_m=0.315\pm0.007\) and \(t_0=13.787\pm0.020\) Gyr. Dark energy here has constant \(w\) and fills the rest of a flat universe, \(\Omega_\mathrm{DE}=1-\Omega_m\). Lecture 13 slides 24–25 and Notes, pp. 6–7.</p>`,
+  ro:[['Hubble time, 1/H₀',sp('r12a')],['Matter only, 2/3H₀',sp('r12b')],['Radiation only, 1/2H₀',sp('r12c')],['With dark energy',sp('r12d')],['Planck 2018 measurement',sp('r12e')],['Matter only vs stars',sp('r12f')]]}
+];
+
+/* ---------- controls ---------- */
+const setLab=(id,v)=>{const e=document.getElementById(id+'-v');if(e)e.textContent=v;};
+function labs(){const ch=S.ch;
+  if(ch===1)setLab('rsl2',S.inf2?'Forever':fmt(S.R2,2)+' λ');
+  if(ch===2)setLab('zsl3',fz(Z3()));
+  if(ch===3)setLab('hsl4',fH(H4()));
+  if(ch===4){setLab('lsl5',fmt(S.loc5,2));setLab('ssl5','± '+fmt(S.sig5,2));}
+  if(ch===5){setLab('zsl6',fmt(S.z6,1));setLab('tsl6',fmt(T6(),0)+' K');}
+  if(ch===6){setLab('ksl7',fmt(S.k7,2));setLab('hsl7',fmt(S.h7*100,0)+'%');setLab('ssl7',fmt(S.s7*100,0)+'%');}
+  if(ch===7)setLab('osl8',fmt(S.om8,2));
+  if(ch===8){const av=10**S.la9;setLab('asl9',av<0.01?sci(av,1):fmt(av,3));setLab('wsl9',signed(S.w9,2));}
+  if(ch===9)setLab('lsl10',fmt(S.l10,2)+' R');
+  if(ch===10){setLab('msl11',fmt(S.om11,2));setLab('lsl11',fmt(S.ol11,2));setLab('hsl11',fH(S.h11));setLab('zsl11',fz(10**S.lz11));}
+  if(ch===11){setLab('hsl12',fH(S.h12));setLab('msl12',fmt(S.om12,2));setLab('wsl12',signed(S.w12,2));}}
+function refreshRO(){[updateRO1,updateRO2,updateRO3,updateRO4,updateRO5,updateRO6,updateRO7,updateRO8,updateRO9,updateRO10,updateRO11,updateRO12][S.ch]();labs();}
+function buildControls(){const c=$('#ctl');c.innerHTML='';const ch=S.ch;const up=()=>{refreshRO();draw();};
+  if(ch===0){
+    c.appendChild(seg('Model',MODELS.map(m=>m.n),S.sel1,i=>{S.sel1=i;up();}));
+    c.appendChild(check('Show the other models faintly',S.all1,v=>{S.all1=v;draw();}));
+    c.appendChild(capt('Each card below asks whether the model predicts what we observe. Green ticks mean it does.'));}
+  if(ch===1){
+    c.appendChild(slider('How far light has travelled, R',0,3,0.01,S.R2,v=>{S.R2=v;S.inf2=false;S.play2=false;const k=c.querySelector('.chk input');if(k)k.checked=false;up();},'rsl2'));
+      c.appendChild(check('Infinitely old',S.inf2,v=>{S.inf2=v;S.play2=false;up();}));
+      c.appendChild(btnrow([['Let the Universe age','age2','primary',()=>{S.inf2=false;const k=c.querySelector('.chk input');if(k)k.checked=false;S.R2=0;S.play2=true;up();}]]));
+      c.appendChild(capt('Distances are in mean free paths λ. Each grey dot is a star; a gold line of sight ends on a star and lights up that direction of your sky. In our Universe R is only 10⁻¹⁴ λ, so the sky is dark.'));}
+  if(ch===2){
+    c.appendChild(slider('Redshift z',0,Math.log10(13),0.0005,S.lz3,v=>{S.lz3=v;up();},'zsl3'));
+    const J=[['Virgo',0.004],['Coma',0.023],['3C 273',0.158],['z = 1',1],['z = 3',3],['z = 10',10]];
+    c.appendChild(seg('Jump to',J.map(j=>j[0]),J.findIndex(j=>Math.abs(Math.log10(1+j[1])-S.lz3)<1e-4),i=>{S.lz3=Math.log10(1+J[i][1]);$('#zsl3').value=S.lz3;up();}));
+    c.appendChild(capt('3C 273 is the first quasar to have its redshift measured, by Maarten Schmidt in 1963. Above z ≈ 0.8 Hα leaves the visible; above z ≈ 1 even the calcium lines have.'));}
+  if(ch===3){
+    c.appendChild(seg('Data',['Hubble 1929','Modern'],S.data4,i=>{S.data4=i;S.hov=null;S.lh4=Math.log10(i===0?500:60);$('#hsl4').value=S.lh4;up();}));
+    c.appendChild(slider('Slope H₀',1.4,3,0.001,S.lh4,v=>{S.lh4=v;up();},'hsl4'));
+    c.appendChild(btnrow([['Best fit','fit4','primary',()=>{S.lh4=Math.log10(fit4());$('#hsl4').value=S.lh4;up();}]]));
+    c.appendChild(check('Show residuals',S.res4,v=>{S.res4=v;draw();}));
+    c.appendChild(capt('The best fit is a least-squares line forced through the origin. Hubble himself quoted about 500 km/s/Mpc.'));}
+  if(ch===4){
+    c.appendChild(seg('View',['History','Tension'],S.view5,i=>{S.view5=i;S.hov=null;buildControls();up();}));
+    if(S.view5===0){c.appendChild(check('Zoom in on 2000 onwards',S.zoom5,v=>{S.zoom5=v;draw();}));c.appendChild(capt('Error bars are one standard deviation. Early values had errors as large as the values themselves, and are shown without bars.'));}
+    else{c.appendChild(seg('Local measurement',LOC5.map(l=>l[0]),LOC5.findIndex(l=>l[1]===S.loc5&&l[2]===S.sig5),i=>{S.loc5=LOC5[i][1];S.sig5=LOC5[i][2];$('#lsl5').value=S.loc5;$('#ssl5').value=S.sig5;up();}));
+      const clr=()=>{[...c.querySelectorAll('.seg')[1].children].forEach(b=>b.setAttribute('aria-pressed','false'));};
+      c.appendChild(slider('Local H₀',64,78,0.01,S.loc5,v=>{S.loc5=v;clr();up();},'lsl5'));
+      c.appendChild(slider('Its uncertainty',0.2,4,0.01,S.sig5,v=>{S.sig5=v;clr();up();},'ssl5'));
+      c.appendChild(capt('Planck is fixed at 67.4 ± 0.5 km/s/Mpc. A 5σ fluke happens about once in 1.7 million tries.'));}}
+  if(ch===5){
+    c.appendChild(slider('Redshift z',0,15,0.1,S.z6,v=>{S.z6=v;up();},'zsl6'));
+    const J=[['Nearby',0],['z = 1',1],['z = 3',3],['z = 10',10],['z = 14.3',14.3]];
+    c.appendChild(seg('Jump to',J.map(j=>j[0]),J.findIndex(j=>j[1]===S.z6),i=>{S.z6=J[i][1];$('#zsl6').value=S.z6;up();}));
+    c.appendChild(slider('Temperature of the star',Math.log10(2500),Math.log10(40000),0.001,S.lT6,v=>{S.lT6=v;up();},'tsl6'));
+    const T=[['Red dwarf',3000],['Sun-like',5500],['Hot, massive',30000]];
+    c.appendChild(seg('Star',T.map(t=>t[0]),T.findIndex(t=>Math.abs(Math.log10(t[1])-S.lT6)<1e-3),i=>{S.lT6=Math.log10(T[i][1]);$('#tsl6').value=S.lT6;up();}));
+    c.appendChild(capt('The bars along the top show what each instrument can see. The first stars were probably hot and massive, so their light peaked in the ultraviolet.'));}
+  if(ch===6){
+    c.appendChild(seg('View',['Two snapshots','Distances and H₀d'],S.view7,i=>{S.view7=i;S.hov=null;buildControls();up();}));
+    if(S.view7===0){const PR=[['Both: the cosmological principle',0,0],['Isotropic only',1,0],['Homogeneous only',0,1],['Neither',1,1]];
+      c.appendChild(seg('Universe',PR.map(q=>q[0]),PR.findIndex(q=>q[1]===S.h7&&q[2]===S.s7),i=>{S.h7=PR[i][1];S.s7=PR[i][2];if(S.h7)S.obs7=CEN7;$('#hsl7').value=S.h7;$('#ssl7').value=S.s7;up();}));
+      const clr=()=>{[...c.querySelectorAll('.seg')[1].children].forEach(b=>b.setAttribute('aria-pressed','false'));};
+      c.appendChild(slider('Inhomogeneity',0,1,0.01,S.h7,v=>{S.h7=v;clr();up();},'hsl7'));
+      c.appendChild(slider('Anisotropy',0,1,0.01,S.s7,v=>{S.s7=v;clr();up();},'ssl7'));
+      c.appendChild(slider('Size ratio a(t₂) / a(t₁)',1,1.5,0.001,S.k7,v=>{S.k7=v;S.play7=false;const k=c.querySelector('.chk input');if(k)k.checked=false;up();},'ksl7'));
+      c.appendChild(check('Let it expand',S.play7,v=>{S.play7=v;}));c.appendChild(check('Show the comoving grid',S.grid7,v=>{S.grid7=v;draw();}));
+      c.appendChild(capt('Click a galaxy to pin it; try the centre and then somewhere else. The inset plots how far each galaxy moved against its distance: a straight, thin line is Hubble\'s law.'));}
+    else c.appendChild(capt('Hover over a row. The red zone is where v = H₀d would exceed the speed of light.'));}
+  if(ch===7){
+    c.appendChild(slider('Density Ω = ρ / ρ<sub>c</sub>',0,3,0.01,S.om8,v=>{S.om8=v;S.t8=0;up();},'osl8'));
+    const J=[['Open, 0.3',0.3],['Critical, 1',1],['Closed, 2',2]];
+    c.appendChild(seg('Jump to',J.map(j=>j[0]),J.findIndex(j=>j[1]===S.om8),i=>{S.om8=J[i][1];S.t8=0;$('#osl8').value=S.om8;up();}));
+    c.appendChild(check('Play',S.play8,v=>{S.play8=v;}));
+    c.appendChild(btnrow([['Back to today','t08','',()=>{S.t8=0;up();}]]));
+    c.appendChild(capt('Orange is closed, '+(isLight()?'black':'white')+' is flat and blue is open. A denser universe decelerated harder, so it is younger for the same H₀ today.'));}
+  if(ch===8){
+    c.appendChild(slider('Scale factor a',-6,1,0.01,S.la9,v=>{S.la9=v;up();},'asl9'));
+    const J=[['Nucleosynthesis',Math.log10(1/(1+4e8))],['CMB released',Math.log10(1/1101)],['First galaxies',Math.log10(1/11)],['Today',0]];
+    c.appendChild(seg('Jump to',J.map(j=>j[0]),J.findIndex(j=>Math.abs(j[1]-S.la9)<0.01),i=>{S.la9=Math.max(-6,J[i][1]);$('#asl9').value=S.la9;up();}));
+    c.appendChild(check('Include Λ, as a preview',S.lam9,v=>{S.lam9=v;up();}));
+    c.appendChild(check('Add a component with your own w',S.cust9,v=>{S.cust9=v;buildControls();up();}));
+    if(S.cust9)c.appendChild(slider('Equation of state w',-1.5,1,0.01,S.w9,v=>{S.w9=v;up();},'wsl9'));
+    c.appendChild(capt('Your component makes up 5% of the critical density today. Below w = −1/3 it accelerates the expansion; below w = −1 its density grows as the Universe expands.'));}
+  if(ch===9){
+    c.appendChild(slider('Triangle side / radius of curvature',0.05,2,0.01,S.l10,v=>{S.l10=v;up();},'lsl10'));
+    c.appendChild(capt('Small triangles look flat in any space, which is why we need triangles as large as the observable Universe to measure curvature. The CMB provides them.'));}
+  if(ch===10){
+    const J=[['ΛCDM',PL.om,1-PL.om-OR],['Matter only',1-OR,0],['Open, no Λ',0.3,0],['Closed',1.5,0]];
+    c.appendChild(seg('Universe',J.map(j=>j[0]),J.findIndex(j=>Math.abs(j[1]-S.om11)<1e-6&&Math.abs(j[2]-S.ol11)<1e-6),i=>{S.om11=J[i][1];S.ol11=J[i][2];$('#msl11').value=S.om11;$('#lsl11').value=S.ol11;up();}));
+    const clr=()=>{[...c.querySelectorAll('.seg')[0].children].forEach(b=>b.setAttribute('aria-pressed','false'));};
+    c.appendChild(slider('Matter Ω<sub>m</sub>',0.05,2,0.005,S.om11,v=>{S.om11=v;clr();up();},'msl11'));
+    c.appendChild(slider('Λ, Ω<sub>Λ</sub> (preview)',0,1.2,0.005,S.ol11,v=>{S.ol11=v;clr();up();},'lsl11'));
+    c.appendChild(slider('H₀',50,90,0.1,S.h11,v=>{S.h11=v;up();},'hsl11'));
+    c.appendChild(slider('Redshift for the readouts',-2,Math.log10(1100),0.001,S.lz11,v=>{S.lz11=v;up();},'zsl11'));
+    c.appendChild(check('Logarithmic axes, out to the CMB',S.log11,v=>{S.log11=v;up();}));
+    c.appendChild(capt('Ω<sub>k</sub> = 1 − Ω<sub>m</sub> − Ω<sub>Λ</sub> sets the curvature. All distances scale as 1/H₀.'));}
+  if(ch===11){
+    c.appendChild(slider('H₀',50,100,0.1,S.h12,v=>{S.h12=v;up();},'hsl12'));
+    c.appendChild(check('Add dark energy, as a preview',S.de12,v=>{S.de12=v;buildControls();up();}));
+    if(S.de12){c.appendChild(slider('Matter Ω<sub>m</sub>',0.1,1,0.005,S.om12,v=>{S.om12=v;up();},'msl12'));
+      c.appendChild(slider('Dark energy equation of state w',-1.7,-0.3,0.01,S.w12,v=>{S.w12=v;up();},'wsl12'));
+      c.appendChild(btnrow([['Planck 2018','pl12','primary',()=>{S.h12=PL18.h0;S.om12=PL18.om;S.w12=-1;$('#hsl12').value=S.h12;$('#msl12').value=S.om12;$('#wsl12').value=S.w12;up();}]]));}
+    c.appendChild(capt('The dots on the a = 1 line mark today in each universe: the further right, the older. The page starts at H₀ = 70 km/s/Mpc, as in the notes, so ΛCDM gives 13.3 Gyr; Planck 2018 finds H₀ = 67.4 and w = −1, which gives 13.8 Gyr. w closer to −1/3 means less acceleration and a younger universe.'));}
+  typeset($('#ctl'));labs();}
+/* ---------- story ---------- */
+function fillStory(){const c=CH[S.ch];$('#stepno').textContent=`Chapter ${S.ch+1} of ${CH.length}`;$('#title').textContent=c.title;$('#txt').innerHTML=c.txt;
+  $('#ro').innerHTML=c.ro.map(r=>`<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
+  $('#prev').textContent=S.ch===0?'Cover':'Back';
+  $('#next').textContent=S.ch<CH.length-1?'Next: '+CH[S.ch+1].name:'Start again';
+  typeset($('#story'));}
+function typeset(node){if(!window.__mj||!node)return;try{MathJax.typesetClear&&MathJax.typesetClear([node]);MathJax.typesetPromise([node]).then(()=>{if(innerWidth<=820)resize();}).catch(()=>{});}catch(e){}}
+window.addEventListener('mjready',()=>{typeset($('#story'));typeset($('#ctl'));});
+
+CH.forEach((c,i)=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<span class="n">${i+1}</span><span class="t">${c.name}</span>`;b.addEventListener('click',()=>go(i));$('#track').appendChild(b);});
+(function(){const s=document.createElement('span');s.className='sep';$('#track').appendChild(s);const b=document.createElement('button');b.type='button';b.id='panels';b.textContent='Hide panels';b.addEventListener('click',togglePanels);$('#track').appendChild(b);})();
+function go(i,first){i=clamp(i,0,CH.length-1);S.ch=i;S.hov=null;hideTip();
+  const apply=()=>{fillStory();buildControls();refreshRO();cv.style.touchAction=CH[S.ch].drag?'none':'manipulation';resize();};
+  if(!first&&!reduceMotion){$('#fade').style.opacity=.85;setTimeout(()=>{apply();$('#fade').style.opacity=0;},200);}else apply();
+  [...$('#track').querySelectorAll('button')].forEach((b,j)=>{if(b.id!=='panels')b.setAttribute('aria-current',j===i?'step':'false');});}
+$('#prev').addEventListener('click',()=>S.ch===0?showCover():go(S.ch-1));
+$('#next').addEventListener('click',()=>go(S.ch<CH.length-1?S.ch+1:0));
+function setMin(panel,btn,min,labels){$(panel).classList.toggle('min',min);$(btn).textContent=min?labels[1]:labels[0];$(btn).setAttribute('aria-expanded',!min);}
+$('#storyToggle').addEventListener('click',()=>{setMin('#story','#storyToggle',!$('#story').classList.contains('min'),['Hide text','Show text']);resize();});
+$('#ctlToggle').addEventListener('click',()=>{setMin('#controls','#ctlToggle',!$('#controls').classList.contains('min'),['Hide','Show']);resize();});
+function togglePanels(){const hide=!($('#story').classList.contains('min')&&$('#controls').classList.contains('min'));
+  setMin('#story','#storyToggle',hide,['Hide text','Show text']);setMin('#controls','#ctlToggle',hide,['Hide','Show']);$('#panels').textContent=hide?'Show panels':'Hide panels';resize();}
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='t'||e.key==='T'){toggleTheme();return;}if(!$('#cover').hidden){if(e.key==='ArrowRight'){e.preventDefault();hideCover(0);}return;}if(e.key==='ArrowRight')go(S.ch+1);if(e.key==='ArrowLeft'){S.ch===0?showCover():go(S.ch-1);}if(e.key==='h'||e.key==='H')togglePanels();});
+
+/* ---------- pointer ---------- */
+const tip=$('#tip');function hideTip(){tip.style.opacity=0;}
+function showTip(html,x,y){tip.innerHTML=html;tip.style.opacity=1;const w=tip.offsetWidth,h=tip.offsetHeight;let tx=x+16,ty=y+16;if(tx+w>W-8)tx=x-w-16;if(ty+h>H-8)ty=y-h-16;tip.style.transform=`translate(${Math.max(8,tx)}px,${Math.max(8,ty)}px)`;}
+let drag=null,noClick=false;
+cv.addEventListener('pointerdown',e=>{const c=CH[S.ch];if(!c.drag)return;drag={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId};});
+cv.addEventListener('pointermove',e=>{const c=CH[S.ch];
+  if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.abs(dx)+Math.abs(dy)>4){drag.moved=true;try{cv.setPointerCapture(drag.id);}catch(_){}}
+    if(drag.moved){c.drag(dx,dy);drag.x=e.clientX;drag.y=e.clientY;hideTip();cv.style.cursor='grabbing';draw();return;}}
+  if(!c.hover)return;const prev=JSON.stringify(S.hov);const h=c.hover(e.clientX,e.clientY);if(h)showTip(h,e.clientX,e.clientY);else hideTip();
+  cv.style.cursor=h&&c.click?'pointer':(c.drag?'grab':'default');if(JSON.stringify(S.hov)!==prev)draw();});
+const endDrag=()=>{if(drag&&drag.moved)noClick=true;drag=null;cv.style.cursor=CH[S.ch].drag?'grab':'default';};
+cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+cv.addEventListener('pointerleave',()=>{hideTip();if(S.hov!=null){S.hov=null;draw();}});
+cv.addEventListener('click',e=>{if(noClick){noClick=false;return;}const c=CH[S.ch];if(c.click){c.click(e.clientX,e.clientY);draw();}});
+
+/* ---------- layout and drawing ---------- */
+function layout(){const tr=$('#track').getBoundingClientRect(),sr=$('#story').getBoundingClientRect(),cr=$('#controls').getBoundingClientRect();
+  const smin=$('#story').classList.contains('min'),cmin=$('#controls').classList.contains('min');let L=20,R=W-20,T=22,B=tr.top-16;
+  if(W>820){if(!smin)L=sr.right+26;else T=Math.max(T,sr.bottom+14);if(!cmin)R=cr.left-26;else T=Math.max(T,cr.bottom+14);}
+  else{L=8;R=W-8;T=cr.bottom+10;B=(smin?tr.top:sr.top)-10;}
+  P={x:L,y:T,w:Math.max(60,R-L),h:Math.max(60,B-T)};}
+let raf=0;
+function draw(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);if(starCv&&!isLight())g.drawImage(starCv,0,0);
+  g.setTransform(DPR,0,0,DPR,0,0);SHEETS=[];TXT=isLight()?[]:null;try{CH[S.ch].draw();}catch(err){console.error(err);}flushSheets();});}
+function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);makeStars();layout();draw();}
+addEventListener('resize',resize);
+if(innerWidth<=820){setMin('#controls','#ctlToggle',true,['Hide','Show']);}
+/* ---------- theme ---------- */
+const MODEL_COL=['gold','cyan','ink','violet','pink'],SER11_COL=['ink','blue','amber'];
+function applyTheme(redraw){Object.assign(C,isLight()?C_LIGHT:C_DARK);
+  MODELS.forEach((m,i)=>{m.col=C[MODEL_COL[i]];});SER11.forEach((s,i)=>{s[2]=C[SER11_COL[i]];});
+  if(redraw!==false){if(S.ch===7)buildControls();resize();}}
+applyTheme(false);
+document.addEventListener('themechange',()=>applyTheme());
+go(0,true);
+/* ---------- animation ---------- */
+let lastT=0;
+function loop(t){const dt=lastT?Math.min(0.1,(t-lastT)/1000):0;lastT=t;if($('#cover').hidden&&!document.hidden){const c=CH[S.ch];if(c.tick&&c.tick(dt))draw();}requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+/* ---------- cover ---------- */
+(function(){const om=PL.om,ol=1-PL.om,f=HUB/PL.h0;let d='';for(let i=0;i<=200;i++){const t=32*i/200,a=Math.pow(om/ol,1/3)*Math.pow(Math.sinh(1.5*Math.sqrt(ol)*t/f),2/3);d+=(i?' L':'M')+(t/32*1000).toFixed(1)+' '+(390-a/3.2*370).toFixed(1);}
+  $('#coverPath').setAttribute('d',d);
+  CH.forEach((c,i)=>{const b=document.createElement('button');b.type='button';b.textContent=c.name;b.addEventListener('click',()=>hideCover(i));$('#coverJump').appendChild(b);});
+  $('#coverStart').addEventListener('click',()=>hideCover(0));
+  setTimeout(()=>$('#coverStart').focus({preventScroll:true}),0);})();
+function hideCover(i){const cv0=$('#cover');if(i!==S.ch)go(i,true);
+  if(reduceMotion){cv0.hidden=true;}else{cv0.classList.add('leaving');setTimeout(()=>{cv0.hidden=true;cv0.classList.remove('leaving');},450);}
+  resize();}
+function showCover(){const cv0=$('#cover');cv0.hidden=false;hideTip();$('#coverStart').focus({preventScroll:true});}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{resize();});
+})();
+</script>
+</body>
+</html>

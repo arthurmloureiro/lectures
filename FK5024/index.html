@@ -2,6 +2,11 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
+<script>
+(function(){var d=document.documentElement,m=matchMedia('(prefers-color-scheme: light)');
+d.dataset.theme=m.matches?'light':'dark';d.dataset.themeAuto='1';
+m.addEventListener('change',function(e){if(d.dataset.themeAuto==='1'){d.dataset.theme=e.matches?'light':'dark';document.dispatchEvent(new Event('themechange'));}});})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FK5024 — Astrophysics and Cosmology</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +24,26 @@
   --f-ui:Inter,system-ui,sans-serif; --f-display:"Inter Tight",Inter,sans-serif; --f-mono:"Geist Mono",ui-monospace,monospace;
   color-scheme:dark;
 }
+:root[data-theme="light"]{
+  --sky:#F6F5F0;
+  --glow-violet:rgba(37,107,138,.05); --glow-blue:rgba(37,107,138,0);
+  --ink:#141A23; --ink-soft:#4F5B69;
+  --panel:rgba(255,255,255,.92); --edge:#CBCFD3; --line:#E2E3E0;
+  --chip:rgba(20,26,35,.045); --accent:#256B8A; --on-accent:#FFFFFF;
+  --rim:0 2px 10px rgba(20,26,35,.06); --blur:6px;
+  color-scheme:light;
+}
+:root[data-theme="light"] body::before{display:none}
+#atlas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;display:none}
+:root[data-theme="light"] #atlas{display:block}
+main{position:relative}
+#themeToggle{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:11;width:36px;height:36px;
+  display:grid;place-items:center;padding:0;border:1px solid var(--edge);border-radius:8px;background:var(--panel);color:var(--ink);
+  box-shadow:var(--rim);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));cursor:pointer}
+#themeToggle:hover{border-color:var(--accent)}
+#themeToggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#themeToggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:root[data-theme="light"] #themeToggle .i-sun,:root:not([data-theme="light"]) #themeToggle .i-moon{display:none}
 *,*::before,*::after{box-sizing:border-box}
 body{
   min-height:100vh;margin:0;color:var(--ink);
@@ -72,6 +97,7 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
+  <svg id="atlas" aria-hidden="true"></svg>
   <main class="card panel">
     <a class="back" href="../">&larr; Lectures</a>
     <p class="code">FK5024 · Stockholm University</p>
@@ -95,8 +121,39 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
           <span class="desc">Interactive web app</span>
         </a>
       </li>
+      <li>
+        <a class="card lecture" href="lecture13.html">
+          <span class="num">Lecture 13</span>
+          <span class="name">When are we? Hubble expansion and the age of the Universe</span>
+          <span class="desc">Interactive web app</span>
+        </a>
+      </li>
       <!-- add one <li> per lecture -->
     </ul>
   </main>
+  <button id="themeToggle" type="button" aria-label="Switch to light mode" title="Switch to light mode (T)">
+    <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+    <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 1 1 9.4 4a6.6 6.6 0 0 0 10.6 10.6z"/></svg>
+  </button>
+  <script>
+  (function(){var d=document.documentElement,b=document.getElementById('themeToggle');
+  function sync(){var s=d.dataset.theme==='light'?'Switch to dark mode':'Switch to light mode';b.setAttribute('aria-label',s);b.title=s+' (T)';}
+  window.setTheme=function(t){delete d.dataset.themeAuto;d.dataset.theme=t;document.dispatchEvent(new Event('themechange'));};
+  window.toggleTheme=function(){setTheme(d.dataset.theme==='light'?'dark':'light');};
+  b.addEventListener('click',function(){toggleTheme();});
+  document.addEventListener('keydown',function(e){if(e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='t'||e.key==='T')toggleTheme();});
+  document.addEventListener('themechange',sync);sync();
+  // star-atlas background for light mode: declination circles, meridians, dashed equator, printed stars
+  var NS='http://www.w3.org/2000/svg',svg=document.getElementById('atlas'),W=1180,H=700;
+  function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.setAttribute('preserveAspectRatio','xMidYMid slice');
+  var cx=W*.62,cy=-H*.9,g=el('g',{fill:'none',stroke:'#141A23','stroke-opacity':.08,'stroke-width':1},svg);
+  for(var r=700;r<=2200;r+=150)el('circle',{cx:cx,cy:cy,r:r},g);
+  for(var a=-60;a<=60;a+=10){var t=(90+a)*Math.PI/180;el('line',{x1:cx,y1:cy,x2:cx+Math.cos(t)*2400,y2:cy+Math.sin(t)*2400},g);}
+  el('circle',{cx:cx,cy:cy,r:1300,fill:'none',stroke:'#256B8A','stroke-opacity':.16,'stroke-width':1.2,'stroke-dasharray':'6 6'},svg);
+  var s=5;function rn(){s=(s*16807)%2147483647;return s/2147483647;}
+  for(var i=0;i<70;i++){var k=rn();el('circle',{cx:rn()*W,cy:rn()*H,r:k<.08?2.2:k<.3?1.3:.8,fill:'#141A23','fill-opacity':(.18+rn()*.2).toFixed(3)},svg);}
+  })();
+  </script>
 </body>
 </html>
