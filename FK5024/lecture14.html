@@ -398,15 +398,15 @@ const S={ch:0,hov:null,
   L1:1,a1:1,v1:0,t1:0,hist1:[[0,1]],play1:false,
   lE2:Math.log10(1.22e19),tt2:0,
   la3:0,w3:-0.5,cust3:false,play3:!reduceMotion,
-  lam4:3*(1-PL.om),log4:true,
+  lam4:3*(1-PL.om),log4:true,t4:0,play4:false,
   h5:PL.h0,
   om6:PL.om,ol6:1-PL.om,zoom6:false,cmb6:true,sn6:true,
   w7:-1,la7:0,view7:0,
   om8:PL.om,ode8:1-PL.om-OR,w8:-1,
   w9:-1,t9:13.8,play9:false,
   om10:0.3,ol10:0.7,
-  d11:-14,s11:1,
-  N12:0,play12:false};
+  d11:-14,s11:1,z11:0,play11:false,
+  N12:0,play12:false,sel12:0,tt12:0,ns12:0.965,seed12:1,r12:0.01,fnl12:-0.9,noinf12:false};
 
 /* ===== 1. Einstein's static universe ===== */
 // time in units of (4πGρ₀/3)^(−1/2): ä = −1/a² + L a, with L = Λ / 4πGρ₀ and ρ₀ the density at a = 1
@@ -490,8 +490,7 @@ function gauge3(x,y,w,label,v,col){const L=clamp(Math.log10(v)/Math.log10(30),-1
   text(label,x,y,C.soft,11.5,'left','bottom',500);text('× '+(v<0.1?fmt(v,3):fmt(v,2)),x+w,y,C.ink,11.5,'right','bottom',600,MONO);
   rrect(x,y+4,w,9,4);g.fillStyle=C.inkA(.08);g.fill();const x2=cx+L*w/2;if(Math.abs(x2-cx)>0.5){g.fillStyle=col;g.fillRect(Math.min(cx,x2),y+4,Math.abs(x2-cx),9);}
   line(cx,y+1,cx,y+16,C.ink,1.4);text('less',x,y+16,C.soft,10,'left','top',400);text('more',x+w,y+16,C.soft,10,'right','top',400);}
-function draw3(){const a=10**S.la3,n=3,cw=P.w/n,narrow=P.w<640;const plotH=P.h>560?clamp(P.h*0.28,150,230):0,topH=P.h-plotH;
-  const sMax=Math.max(60,Math.min(cw-64,topH-260)),s=sMax*a/A3MAX;
+function draw3(){const a=10**S.la3,n=3,cw=P.w/n,narrow=P.w<640;const sMax=Math.max(60,Math.min(cw-44,(P.h>560?P.h-220:P.h)-262)),s=sMax*a/A3MAX;const topH=P.h>560?sMax+262:P.h,plotH=P.h-topH;
   const K=[['Matter, w = 0',C.green,'p = 0: no push on the walls','No work is done, so its energy stays the same.',0],
     ['Radiation, w = ⅓',C.pink,'p = +⅓ρc²: pushes the walls out','It does work on the walls, and loses energy as 1/a.',1],
     ['Λ, w = −1',C.violet,'p = −ρc²: pulls the walls in','Stretching it takes work, so its energy grows as a³.',2]];
@@ -524,21 +523,44 @@ function updateRO3(){const a=10**S.la3;setRO('r3a',fmt(a,2));setRO('r3b',fmt(a**
 
 /* ===== 4. de Sitter expansion ===== */
 const HL4=()=>Math.sqrt(S.lam4/3);   // in units of H0
-let cache4=null;
+let cache4=null,ax4=null;
 function lcdm4(){if(cache4)return cache4;const e=evolve(PLM,1.2,3.4);cache4=e.bw.pts.slice().reverse().concat(e.fw.pts.slice(1));return cache4;}
-function draw4(){const lg=S.log4;const r=inset(P,56,24,tw('Matter only, a ∝ t²ᐟ³',12,600)+18,58);const ax=makeAx(r,[-14,45],lg?[0.05,40]:[0,6],false,lg);
-  drawAxes(ax,{xt:range(-10,40,10).map(v=>[v,(v>0?'+':v<0?'−':'')+Math.abs(v)]),yt:lg?[[0.1,'0.1'],[0.3,'0.3'],[1,'1'],[3,'3'],[10,'10'],[30,'30']]:range(0,6,1).map(v=>[v,String(v)]),xl:'Time from today (Gyr)',yl:'Scale factor a',ylOff:36});
+// scale factor relative to today, t in Gyr from today, for the three single-component universes
+const A4=[t=>Math.sqrt(1+2*t/F0),t=>Math.pow(1+1.5*t/F0,2/3),t=>Math.exp(HL4()*t/F0)];
+// times (Gyr from today) at which each one has doubled n times
+const DBL4=[n=>(Math.pow(4,n)-1)/2*F0,n=>(Math.pow(2,1.5*n)-1)/1.5*F0,n=>n*Math.LN2/HL4()*F0];
+const LAT4=(function(){const r=rng(44),a=[];for(let i=-9;i<=9;i++)for(let j=-9;j<=9;j++){if(!i&&!j)continue;a.push([i+(r()-.5)*.6,j+(r()-.5)*.6,r()]);}return a;})();
+function tick4(dt){if(!S.play4)return false;S.t4=Math.min(45,S.t4+dt*4);if(S.t4>=45)S.play4=false;const e=$('#tsl4');if(e)e.value=S.t4;updateRO4();return true;}
+function draw4(){const lg=S.log4,t=S.t4;const topH=clamp(P.h*0.5,250,430),n=3,cw=P.w/n;const ws=Math.max(80,Math.min(cw-28,topH-116));
+  const K=[['Radiation only','a ∝ t¹ᐟ²',C.pink],['Matter only','a ∝ t²ᐟ³',C.green],['Only Λ','a ∝ exp(√(Λ/3) t)',C.violet]];
+  K.forEach(([nm,law,col],k)=>{const cx=P.x+cw*k+cw/2,x0=cx-ws/2,y0=P.y+38;paperSheet(cx-cw/2+6,P.y,cw-12,topH-12);
+    ts(nm,cx,P.y+8,col,13,'center','top',600);ts(law,cx,P.y+24,C.soft,11.5,'center','top',500);
+    skyInset(x0,y0,ws,ws,10);g.save();rrect(x0,y0,ws,ws,10);g.clip();if(!isLight()){g.fillStyle=C.inkA(.03);g.fillRect(x0,y0,ws,ws);}
+    const a=A4[k](t),sp=ws/5;let nv=0;
+    LAT4.forEach(([u,v,b])=>{const x=cx+u*sp*a,y=y0+ws/2+v*sp*a;if(x<x0-6||x>x0+ws+6||y<y0-6||y>y0+ws+6)return;if(x>x0&&x<x0+ws&&y>y0&&y<y0+ws)nv++;
+      g.save();g.translate(x,y);g.rotate(b*3);g.beginPath();g.ellipse(0,0,4.2,1.9,0,0,Math.PI*2);g.fillStyle=`rgba(230,237,243,${.45+.4*b})`;g.fill();g.restore();});
+    circle(cx,y0+ws/2,4.5,'#FFC857');g.restore();
+    const nr=cw<230;text('a = '+(a<100?fmt(a,2):sci(a,1))+(nr?', '+nv+' in view':', '+nv+' galaxies in view'),cx,y0+ws+8,C.ink,nr?11:12,'center','top',600);
+    // doubling clock: a tick each time the distances double
+    const sx=cx-ws/2,sw=ws,sy=y0+ws+36,X=v=>sx+v/45*sw;line(sx,sy,sx+sw,sy,C.faint,1.2);
+    for(let m=1;m<40;m++){const td=DBL4[k](m);if(td>45)break;line(X(td),sy-5,X(td),sy+5,col,2);}
+    line(X(t),sy-9,X(t),sy+9,C.red,1.6);text('0',sx,sy+8,C.soft,10,'left','top',400,MONO);text('+45 Gyr',sx+sw,sy+8,C.soft,10,'right','top',400,MONO);
+    const d1=DBL4[k](1),d2=DBL4[k](2)-d1;text(k===2?(nr?'every ':'doubles every ')+fmt(d1,1)+' Gyr':(nr?'':'doubles after ')+fmt(d1,0)+', then '+fmt(d2,0)+' Gyr',cx,sy+20,C.soft,11,'center','top',500);});
+  const cp=wrap('t = +'+fmt(t,1)+' Gyr from today. Each window stays the same size; the galaxies move with the expansion. Ticks mark each doubling.',P.w-24,11.5,500);cp.forEach((l,i)=>text(l,P.x+P.w/2,P.y+topH-4-(cp.length-1-i)*15,C.soft,11.5,'center','bottom',500));
+  const r=inset({x:P.x,y:P.y+topH,w:P.w,h:P.h-topH},56,16,tw('Matter only, a ∝ t²ᐟ³',12,600)+18,52);ax4=null;if(r.h<80)return;
+  const ax=makeAx(r,[-14,45],lg?[0.05,40]:[0,6],false,lg);ax4=ax;
+  drawAxes(ax,{xt:range(-10,40,10).map(v=>[v,(v>0?'+':v<0?'−':'')+Math.abs(v)]),yt:lg?[[0.1,'0.1'],[1,'1'],[10,'10']]:range(0,6,2).map(v=>[v,String(v)]),xl:'Time from today (Gyr)',yl:'Scale factor a',ylOff:36});
   line(ax.X(0),r.y,ax.X(0),r.y+r.h,C.faint,1,[3,4]);text('today',ax.X(0)+4,r.y+4,C.soft,11.5,'left','top',500);
-  const hl=HL4(),T=t=>t/F0;
-  const C4=[['Radiation only, a ∝ t¹ᐟ²',t=>{const u=1+2*T(t);return u>0?Math.sqrt(u):NaN;},C.pink,[]],['Matter only, a ∝ t²ᐟ³',t=>{const u=1+1.5*T(t);return u>0?Math.pow(u,2/3):NaN;},C.green,[]],
-    ['Only Λ, a ∝ exp(√(Λ/3) t)',t=>Math.exp(hl*T(t)),C.violet,[]]];
-  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
-  const yc=v=>ax.Y(lg?Math.max(v,0.01):v);
-  C4.forEach(([,fn,c,d])=>{g.beginPath();let st=false;for(let i=0;i<=400;i++){const t=-14+59*i/400,v=fn(t);if(!isFinite(v))continue;const X=ax.X(t),Y=yc(v);st?g.lineTo(X,Y):(g.moveTo(X,Y),st=true);}g.strokeStyle=c;g.lineWidth=2.2;g.setLineDash(d);g.stroke();g.setLineDash([]);});
+  const hl=HL4(),T=q=>q/F0;
+  const C4=[['Radiation only, a ∝ t¹ᐟ²',q=>{const u=1+2*T(q);return u>0?Math.sqrt(u):NaN;},C.pink],['Matter only, a ∝ t²ᐟ³',q=>{const u=1+1.5*T(q);return u>0?Math.pow(u,2/3):NaN;},C.green],
+    ['Only Λ',q=>Math.exp(hl*T(q)),C.violet]];
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();const yc=v=>ax.Y(lg?Math.max(v,0.01):v);
+  C4.forEach(([,fn,c])=>{g.beginPath();let st=false;for(let i=0;i<=400;i++){const q=-14+59*i/400,v=fn(q);if(!isFinite(v))continue;const X=ax.X(q),Y=yc(v);st?g.lineTo(X,Y):(g.moveTo(X,Y),st=true);}g.strokeStyle=c;g.lineWidth=2.2;g.stroke();});
   g.beginPath();lcdm4().forEach((p,i)=>{const X=ax.X(p[0]*F0),Y=yc(p[1]);i?g.lineTo(X,Y):g.moveTo(X,Y);});g.strokeStyle=C.ink;g.lineWidth=2.6;g.setLineDash([6,4]);g.stroke();g.setLineDash([]);
-  g.restore();
+  line(ax.X(t),r.y,ax.X(t),r.y+r.h,C.red,1.3);g.restore();
   const lab=[...C4.map(([l,fn,c])=>[l,c,fn(45)]),['ΛCDM, our Universe',C.ink,(()=>{const p=lcdm4().find(q=>q[0]*F0>=45);return p?p[1]:99;})()]];
   lab.forEach(L=>{L[2]=yc(Math.min(L[2],lg?38:5.9));});lab.sort((a,b)=>a[2]-b[2]);let last=-1e9;lab.forEach(([l,c,y])=>{if(y<last+16)y=last+16;last=y;ts(l,r.x+r.w+8,y,c,12,'left','middle',600);});}
+function click4(x,y){if(!ax4||x<ax4.r.x||x>ax4.r.x+ax4.r.w||y<ax4.r.y||y>ax4.r.y+ax4.r.h)return;S.t4=clamp(-14+(x-ax4.r.x)/ax4.r.w*59,0,45);S.play4=false;const e=$('#tsl4');if(e)e.value=S.t4;updateRO4();}
 function updateRO4(){const hl=HL4()*PL.h0;setRO('r4a',fH(hl));setRO('r4b',fGyr(HUB/hl));setRO('r4c',fGyr(Math.LN2*HUB/hl));setRO('r4d','× '+sci(Math.exp(45/(HUB/hl)),1));
   setRO('r4e',fH(PL.h0*Math.sqrt(1-PL.om))+', doubling every '+fGyr(Math.LN2*HUB/(PL.h0*Math.sqrt(1-PL.om))));labs();}
 
@@ -546,16 +568,16 @@ function updateRO4(){const hl=HL4()*PL.h0;setRO('r4a',fH(hl));setRO('r4b',fGyr(H
 const MH=1.6735e-27,MSUN=1.989e30,MPC=3.0857e22;
 const COMP5=[['Dark energy',1-PL.om-OR,'violet'],['Dark matter',PL.om-0.0493,'blue'],['Atoms (baryons)',0.0493,'gold'],['Radiation',OR,'pink']];
 const DOTS5=(function(){const r=rng(5),a=[];for(let i=0;i<1200;i++)a.push([r(),r(),r()]);return a;})();
-function draw5(){const rc=RHOC(S.h5),nH=rc/MH;const vol=100;const N=Math.round(nH*vol);
-  const narrow=P.w<700;const bs=Math.min(narrow?P.w-40:P.w*0.42,P.h-120);const bx=P.x+(narrow?(P.w-bs)/2:20),by=P.y+40;
-  paperSheet(bx-14,by-38,bs+28,bs+70);
-  text('100 m³ of the Universe, at the critical density',bx+bs/2,by-12,C.ink,12.5,'center','bottom',600);
+function draw5(){const rc=RHOC(S.h5),nH=rc/MH;const N=Math.round(nH*100);const chartH=COMP5.length*24+64;
+  const bs=Math.max(120,Math.min(P.w-40,P.h-36-40-chartH-30,640));const bx=P.x+(P.w-bs)/2,by=P.y+30;
+  paperSheet(bx-14,by-28,bs+28,bs+60);
+  text('100 m³ of the Universe, at the critical density',bx+bs/2,by-10,C.ink,12.5,'center','bottom',600);
   rrect(bx,by,bs,bs,10);g.fillStyle=C.fillA(.3);g.fill();g.strokeStyle=C.faint;g.lineWidth=1.2;g.stroke();
-  let k=0;const cum=[];let acc=0;COMP5.forEach(c=>{acc+=c[1];cum.push(acc);});
-  for(let i=0;i<Math.min(N,DOTS5.length);i++){const[u,v]=DOTS5[i];const f=(i+.5)/N;let j=cum.findIndex(c=>f<=c);if(j<0)j=3;circle(bx+8+u*(bs-16),by+8+v*(bs-16),2.6,C[COMP5[j][2]]);k++;}
+  const cum=[];let acc=0;COMP5.forEach(c=>{acc+=c[1];cum.push(acc);});const rd=clamp(bs/150,1.8,2.8);
+  for(let i=0;i<Math.min(N,DOTS5.length);i++){const[u,v]=DOTS5[i];const f=(i+.5)/N;let j=cum.findIndex(c=>f<=c);if(j<0)j=3;circle(bx+8+u*(bs-16),by+8+v*(bs-16),rd,C[COMP5[j][2]]);}
   text(N+' hydrogen-atom masses, each dot one atom',bx+bs/2,by+bs+10,C.soft,12,'center','top',500);
-  const x2=narrow?P.x+20:bx+bs+60,w2=narrow?P.w-40:P.x+P.w-x2-20,y2=narrow?by+bs+50:by+20;if(w2<160||y2>P.y+P.h-60)return;
-  paperSheet(x2-14,y2-28,w2+28,COMP5.length*34+60);
+  const w2=Math.min(P.w-40,Math.max(bs,440)),x2=P.x+(P.w-w2)/2,y2=by+bs+70;if(y2+chartH-40>P.y+P.h)return;
+  paperSheet(x2-14,y2-28,w2+28,chartH);
   text('What the critical density is made of today',x2,y2-8,C.ink,12.5,'left','bottom',600);
   let xx=x2;COMP5.forEach(([n,o,c])=>{const w=w2*o;g.fillStyle=C[c];g.fillRect(xx,y2,Math.max(w,o>0.001?2:0),18);xx+=w;});
   COMP5.forEach(([n,o,c],i)=>{const y=y2+38+i*24;circle(x2+6,y,5,C[c]);text(n,x2+18,y,C.ink,12.5,'left','middle',600);
@@ -651,7 +673,10 @@ function draw7(){const D=calc7();const r=inset(P,62,40,16,58);const ax=makeAx(r,
   const x=ax.X(S.la7);line(x,r.y,x,r.y+r.h,C.red,1.5);g.restore();
   if(S.view7===0){const p=D.pts.reduce((b,q)=>Math.abs(q.la-S.la7)<Math.abs(b.la-S.la7)?q:b);let base=0;for(let k=0;k<3;k++){if(p.fr[k]>0.06)text(NAME7[k],clamp(x+8,r.x+4,r.x+r.w-90),ax.Y(base+p.fr[k]/2),C.onData,12,'left','middle',600);base+=p.fr[k];}}
   else NAME7.forEach((n,k)=>{const y=r.y+12+k*18;line(r.x+r.w-150,y,r.x+r.w-132,y,C[COL7[k]],2.4);text(n,r.x+r.w-126,y,C.ink,12,'left','middle',500);});}
-function hover7(x,y){if(!ax7||x<ax7.r.x||x>ax7.r.x+ax7.r.w||y<ax7.r.y||y>ax7.r.y+ax7.r.h)return null;S.la7=clamp((x-ax7.r.x)/ax7.r.w*9-7,-7,2);const e=$('#asl7');if(e)e.value=S.la7;updateRO7();draw();return null;}
+function in7(x,y){return ax7&&x>=ax7.r.x&&x<=ax7.r.x+ax7.r.w&&y>=ax7.r.y&&y<=ax7.r.y+ax7.r.h;}
+function hover7(x,y){if(!in7(x,y))return null;const la=(x-ax7.r.x)/ax7.r.w*9-7,D=calc7(),p=D.pts.reduce((b,q)=>Math.abs(q.la-la)<Math.abs(b.la-la)?q:b);
+  return `<b>a = ${10**p.la<0.01?sci(10**p.la,1):fmt(10**p.la,3)}</b>, ${fSec(p.t*GYR_S)}<br>`+NAME7.map((n,k)=>n+' '+fmt(p.fr[k]*100,p.fr[k]<0.01?3:1)+'%').join('<br>')+'<br><i>click to move the cursor here</i>';}
+function click7(x,y){if(!in7(x,y))return;S.la7=clamp((x-ax7.r.x)/ax7.r.w*9-7,-7,2);const e=$('#asl7');if(e)e.value=S.la7;updateRO7();}
 function updateRO7(){const D=calc7();const p=D.pts.reduce((b,q)=>Math.abs(q.la-S.la7)<Math.abs(b.la-S.la7)?q:b);const a=10**p.la;
   setRO('r7a',(a<0.01?sci(a,1):fmt(a,a<1?3:2))+(Math.abs(p.la)<0.006?', today':a<1?', z = '+(1/a-1<100?fmt(1/a-1,2):sci(1/a-1,1)):', in the future'));setRO('r7b',fSec(p.t*GYR_S));
   ['r7c','r7d','r7e'].forEach((id,k)=>setRO(id,fmt(p.fr[k]*100,p.fr[k]<0.01?3:1)+'%'));const k=p.fr.indexOf(Math.max(...p.fr));setRO('r7f',NAME7[k]);labs();}
@@ -728,7 +753,9 @@ function draw9(){const D=calc9().pts;const p=at9(S.t9),pN=at9(13.8);const topH=P
     const Xc=ax.X(p.t);line(Xc,r.y,Xc,r.y+r.h,C.red,1.3);circle(Xc,ax.Y(Math.min(f(p),ax===a1?vmax:200)),4.5,C.red,C.ink,1.1);g.restore();});
   if(im>0&&im<D.length-1){const q=D[im];circle(a1.X(q.t),a1.Y(v9(q)),4,C.amber,C.ink,1);text('slowest, '+fmt(q.t,1)+' Gyr',a1.X(q.t)+6,a1.Y(v9(q))-8,C.ink,11,'left','bottom',600);}
   if(S.w9===-1){const hi=PL.h0*Math.sqrt(1-PL.om);g.save();g.beginPath();g.rect(r2.x,r2.y,r2.w,r2.h);g.clip();line(r2.x,a2.Y(hi),r2.x+r2.w,a2.Y(hi),C.violet,1.2,[5,4]);g.restore();text('H₀√ΩΛ',r2.x+r2.w-4,a2.Y(hi)-4,C.violet,11,'right','bottom',600);}}
-function hover9(x,y){const ax=[ax9a,ax9b].find(a=>a&&x>=a.r.x&&x<=a.r.x+a.r.w&&y>=a.r.y&&y<=a.r.y+a.r.h);if(!ax)return null;S.t9=clamp((x-ax.r.x)/ax.r.w*60,0.5,60);S.play9=false;const e=$('#tsl9');if(e)e.value=S.t9;updateRO9();draw();return null;}
+const in9=(x,y)=>[ax9a,ax9b].find(a=>a&&x>=a.r.x&&x<=a.r.x+a.r.w&&y>=a.r.y&&y<=a.r.y+a.r.h);
+function hover9(x,y){const ax=in9(x,y);if(!ax)return null;const q=at9(clamp((x-ax.r.x)/ax.r.w*60,0.5,60));return `<b>t = ${fmt(q.t,1)} Gyr</b><br>v = ${fmt(v9(q),2)} c<br>H = ${fH(q.H)}<br><i>click to jump here</i>`;}
+function click9(x,y){const ax=in9(x,y);if(!ax)return;S.t9=clamp((x-ax.r.x)/ax.r.w*60,0.5,60);S.play9=false;const e=$('#tsl9');if(e)e.value=S.t9;updateRO9();}
 function updateRO9(){const p=at9(S.t9);setRO('r9a',fmt(p.t,1)+' Gyr, a = '+fmt(p.a,p.a<1?3:2));setRO('r9b',fmt(p.ad,3)+' H₀');setRO('r9c',fH(p.H));setRO('r9d',signed(p.q,2)+(p.q<0?', accelerating':', decelerating'));
   setRO('r9e',fmt(v9(p)*CKM,0)+' km/s, '+fmt(v9(p),2)+' c');labs();}
 
@@ -784,19 +811,38 @@ function tCurv11(){for(let lt=0;lt<=LT_NOW;lt+=0.01)if(dev11(lt)>=0)return lt;re
 // Ω written out in full: 1.000…046 or 0.999…954, decimals grouped in threes
 function omStr(dl,closed){const e=Math.floor(dl+1e-9);let m=Math.round(10**(dl-e+1));if(m>99)m=99;const z=-e-1;
   const s=closed?'1.'+'0'.repeat(Math.max(0,z))+String(m):'0.'+'9'.repeat(Math.max(0,z))+String(100-m).padStart(2,'0');const[i,f]=s.split('.');return i+'.'+f.replace(/(\d{3})(?=\d)/g,'$1 ');}
+function tick11(dt){if(!S.play11)return false;S.z11=Math.min(21,S.z11+dt*2.5);if(S.z11>=21)S.play11=false;const e=$('#zsl11');if(e)e.value=S.z11;labs();return true;}
+// a number line around Ω = 1, magnified 10^z11 times
+function zoom11(x,y,w,closed){const z=S.z11,hw=Math.pow(10,-z),cx=x+w/2,X=d=>cx+d/hw*(w/2);
+  rrect(x,y-14,w,28,8);g.fillStyle=C.inkA(.05);g.fill();
+  const ok=Math.pow(10,need11());const bw=Math.max(1.5,Math.min(w/2,ok/hw*(w/2)));g.fillStyle=rgba('green',.45);g.fillRect(cx-bw,y-14,2*bw,28);
+  for(let k=-4;k<=4;k++){const xx=cx+k*w/8;line(xx,y-14,xx,y+14,C.inkA(k===0?.5:.15),k===0?1.6:1);}
+  const E=Math.floor(-z+1e-9),m=Math.pow(10,-z-E);const lab=v=>v===0?'1':(v<0?'1 − ':'1 + ')+(Math.abs(m-1)<0.05?'':fmt(m,1)+'×')+p10(E);
+  text(lab(-1),x,y+20,C.soft,11,'left','top',400,MONO);text('1',cx,y+20,C.ink,11,'center','top',600,MONO);text(lab(1),x+w,y+20,C.soft,11,'right','top',400,MONO);
+  const d=Math.pow(10,S.d11)*(closed?1:-1),xd=X(d);
+  if(Math.abs(d)<=hw){line(xd,y-22,xd,y+22,C.red,2.4);text('your Ω',xd,y-24,C.red,11.5,'center','bottom',600);}
+  else{const sx=closed?x+w-4:x+4;arrow(closed?x+w-40:x+40,y,sx,y,C.red,2);text('your Ω is off this scale',closed?x+w-44:x+44,y-18,C.red,11,closed?'right':'left','bottom',600);}
+  text('magnified × '+p10(Math.round(z)),x,y-20,C.ink,11.5,'left','bottom',600);
+  text(bw>3?'green: the values allowed by today\'s |Ωₖ| < 10⁻³':'the allowed band is still too thin to see: zoom in',cx,y+34,bw>3?C.green:C.soft,11.5,'center','top',600);}
+// what the universe looks like today in each case
+function fate11(x,y,w,h,kind,col){const cx=x+w/2,cy=y+h/2,R=Math.min(w,h)*0.36,r=rng(11);
+  rrect(x,y,w,h,12);g.fillStyle=C.fillA(.55);g.fill();g.strokeStyle=col;g.lineWidth=1.4;g.stroke();
+  if(kind==='crunch'){circle(cx,cy,R*0.35,rgba('red',.5),C.red,1.5);for(let i=0;i<8;i++){const a=i*Math.PI/4;arrow(cx+Math.cos(a)*R,cy+Math.sin(a)*R,cx+Math.cos(a)*R*0.5,cy+Math.sin(a)*R*0.5,C.red,1.6,7);}}
+  else if(kind==='empty'){for(let i=0;i<9;i++){const a=r()*Math.PI*2,d=R*(0.5+0.5*r());const px=cx+Math.cos(a)*d,py=cy+Math.sin(a)*d;circle(px,py,1.8,C.soft);arrow(px,py,px+Math.cos(a)*14,py+Math.sin(a)*14,C.inkA(.35),1,5);}}
+  else{for(let c=0;c<7;c++){const a=r()*Math.PI*2,d=R*Math.sqrt(r()),qx=cx+Math.cos(a)*d,qy=cy+Math.sin(a)*d;for(let i=0;i<14;i++){const s=8*gauss(r),t=8*gauss(r);circle(qx+s,qy+t,1.4,col);}}
+    for(let i=0;i<40;i++)circle(cx+(r()-.5)*2*R,cy+(r()-.5)*2*R,1,C.inkA(.35));}}
 function draw11(){const closed=S.s11>0,tc=tCurv11(),fail=tc!=null,dn=dev11(LT_NOW);const col=fail?C.red:dn>-3?C.amber:C.green;
-  const y0=P.y+6;paperSheet(P.x,y0,P.w,108);
-  text('Set the density of the Universe one second after the Big Bang, in units of the critical density:',P.x+16,y0+12,C.soft,12,'left','top',500);
-  const str='Ω(1 s) = '+omStr(S.d11,closed);let px=30;while(px>13&&tw(str,px,500,MONO)>P.w-32)px-=1;text(str,P.x+16,y0+38,C.ink,px,'left','top',500,MONO);
-  {const tail=str.slice(-2),w0=tw(str.slice(0,-2),px,500,MONO);text(tail,P.x+16+w0,y0+38,col,px,'left','top',600,MONO);}
-  text(closed?'a little denser than critical: closed':'a little less dense than critical: open',P.x+16,y0+46+px,C.soft,12,'left','top',500);
-  const r=inset({x:P.x,y:y0+124,w:P.w,h:P.y+P.h-(y0+124)},62,24,16,58);if(r.h<80)return;const ax=makeAx(r,[-44,19],[-70,4]);ax11=ax;
+  const y0=P.y+6,hA=142;paperSheet(P.x,y0,P.w,hA);
+  const str='Ω(1 s) = '+omStr(S.d11,closed);let px=24;while(px>12&&tw(str,px,500,MONO)>P.w-32)px-=1;text(str,P.x+16,y0+10,C.ink,px,'left','top',500,MONO);
+  {const tail=str.slice(-2),w0=tw(str.slice(0,-2),px,500,MONO);text(tail,P.x+16+w0,y0+10,col,px,'left','top',600,MONO);}
+  zoom11(P.x+24,y0+86,P.w-48,closed);
+  const top=y0+hA+14,wide=P.w>=720,fw=wide?Math.min(260,P.w*0.3):0;
+  const r=inset({x:P.x,y:top,w:P.w-fw-(wide?16:0),h:P.y+P.h-top},62,20,16,58);if(r.h<80)return;const ax=makeAx(r,[-44,19],[-70,4]);ax11=ax;
   drawAxes(ax,{xt:range(-40,15,10).map(v=>[v,p10(v)]),yt:range(-70,0,10).map(v=>[v,p10(v)]),xl:'Time since the Big Bang (s)',yl:'How far from flat, |Ω − 1|',ylOff:46});
   g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
   g.fillStyle=rgba('red',.08);g.fillRect(r.x,r.y,r.w,ax.Y(0)-r.y);line(r.x,ax.Y(0),r.x+r.w,ax.Y(0),C.red,1,[4,4]);
   const EV=[[Math.log10(TPL),'Planck time'],[-10,'electroweak'],[0,'1 s'],[Math.log10(1.2e13),'CMB'],[LT_NOW,'today']];
   EV.forEach(([lt,l])=>{const x=ax.X(lt);line(x,r.y,x,r.y+r.h,C.inkA(.10),1);g.save();g.translate(x+4,r.y+r.h-6);g.rotate(-Math.PI/2);text(l,0,0,C.soft,11,'left','top',500);g.restore();});
-  // what we measure today: |Ω_k| < 10⁻³
   const xn=ax.X(LT_NOW);g.fillStyle=rgba('green',.25);g.fillRect(xn-5,ax.Y(-3),10,r.y+r.h-ax.Y(-3));line(xn-9,ax.Y(-3),xn+9,ax.Y(-3),C.green,2);
   const end=fail?tc:19;g.beginPath();for(let i=0;i<=900;i++){const lt=-44+(end+44)*i/900;const X=ax.X(lt),Y=ax.Y(Math.min(dev11(lt),0));i?g.lineTo(X,Y):g.moveTo(X,Y);}g.strokeStyle=col;g.lineWidth=2.6;g.stroke();
   g.restore();
@@ -804,9 +850,12 @@ function draw11(){const closed=S.s11>0,tc=tCurv11(),fail=tc!=null,dn=dev11(LT_NO
   text('measured today: |Ωₖ| < 10⁻³',xn-12,ax.Y(-3)-6,C.green,11.5,'right','bottom',600);
   circle(ax.X(0),ax.Y(S.d11),6,col,C.ink,1.3);text('you set it here',ax.X(0)+10,ax.Y(S.d11)+4,C.ink,11.5,'left','top',600);
   if(fail){const X=ax.X(tc),Y=ax.Y(0);line(X-7,Y-7,X+7,Y+7,C.red,2.6);line(X-7,Y+7,X+7,Y-7,C.red,2.6);}else circle(xn,ax.Y(dn),5,col,C.ink,1.2);
-  let msg;if(fail)msg=closed?['Too dense. After '+fSec(10**tc)+' gravity wins: this universe stops expanding and recollapses. No galaxies, no stars, no us.']:['Too thin. After '+fSec(10**tc)+' it is nearly empty and expanding too fast for gas to collapse into galaxies.'];
-  else if(dn>-3)msg=['It survives, but today |Ω − 1| = '+sci(10**dn,1)+': more curved than we measure.'];else msg=['A universe like ours: today |Ω − 1| = '+sci(10**dn,1)+', inside the measured bound.'];
-  const cwid=Math.min(320,r.w*0.5);callout(Math.min(ax.X(-16),r.x+r.w-cwid-40),ax.Y(-52),msg,col,cwid);}
+  let msg,kind,ttl;if(fail){kind=closed?'crunch':'empty';ttl=closed?'Big Crunch':'An empty universe';msg=closed?'Too dense. After '+fSec(10**tc)+' gravity wins: it stops expanding and recollapses. No galaxies, no stars, no us.':'Too thin. After '+fSec(10**tc)+' it is nearly empty and expanding too fast for gas to collapse into galaxies.';}
+  else if(dn>-3){kind='ours';ttl='Galaxies, but curved';msg='It survives, but today |Ω − 1| = '+sci(10**dn,1)+': more curved than we measure.';}else{kind='ours';ttl='A universe like ours';msg='Galaxies, stars and us. Today |Ω − 1| = '+sci(10**dn,1)+', inside the measured bound.';}
+  if(wide){const fx=P.x+P.w-fw,fy=top+6;paperSheet(fx,fy-6,fw,r.h+40);text('Today, this universe is…',fx+10,fy+4,C.soft,12,'left','top',500);
+    const ih=Math.min(fw-20,r.h*0.55);fate11(fx+10,fy+26,fw-20,ih,kind,col);ts(ttl,fx+fw/2,fy+36+ih,col,14,'center','top',600);
+    wrap(msg,fw-24,12.5,500).forEach((l,i)=>text(l,fx+fw/2,fy+60+ih+i*17,C.ink,12.5,'center','top',500));}
+  else{const cwid=Math.min(320,r.w-40);callout(r.x+r.w-cwid-30,ax.Y(-48),[ttl+'. '+msg],col,cwid);}}
 function hover11(x,y){if(!ax11||x<ax11.r.x||x>ax11.r.x+ax11.r.w||y<ax11.r.y||y>ax11.r.y+ax11.r.h)return null;const lt=-44+(x-ax11.r.x)/ax11.r.w*63;const tc=tCurv11();
   if(tc!=null&&lt>tc)return `<b>t = ${fSec(10**lt)}</b><br>curvature has taken over`;return `<b>t = ${fSec(10**lt)}</b><br>|Ω − 1| = ${sci(10**dev11(lt),1)}`;}
 function updateRO11(){const tc=tCurv11(),dn=dev11(LT_NOW);setRO('r11a',(S.s11>0?'1 + ':'1 − ')+sci(10**S.d11,1));
@@ -815,30 +864,120 @@ function updateRO11(){const tc=tCurv11(),dn=dev11(LT_NOW);setRO('r11a',(S.s11>0?
   setRO('r11f',fmt(-(-3-(kl11(LT_NOW)-kl11(LT_IN)))/(2*Math.LOG10E),0)+' e-folds');labs();}
 
 /* ===== 12. Inflation ===== */
-const PRED12=[['Spatial flatness','|Ω_{k}| < 0.002 (Planck + BAO)',1],['Super-horizon correlations','CMB temperature–polarisation pattern on scales larger than the horizon at recombination',1],
-  ['No magnetic monopoles','none found; inflation dilutes them',1],['Nearly scale-invariant','n_{s} = 0.965 ± 0.004, slightly below 1',1],['Gaussian and adiabatic','f_{NL} = −0.9 ± 5.1, consistent with zero',1],['Primordial gravitational waves','not yet: r < 0.036 (BICEP/Keck 2021)',0]];
-function tick12(dt){if(!S.play12)return false;S.N12=Math.min(70,S.N12+dt*(S.N12<5?1.2:12));if(S.N12>=70)S.play12=false;const e=$('#nsl12');if(e)e.value=S.N12;updateRO12();return true;}
-function draw12(){const narrow=P.w<820;const vw=narrow?P.w:Math.min(P.w*0.46,P.h*0.95),vh=narrow?Math.min(P.h*0.42,vw*0.7):Math.min(P.h-40,vw*0.85);const vx=P.x,vy=P.y+24;
-  paperSheet(vx,vy-24,vw,vh+44);skyInset(vx+12,vy,vw-24,vh-20,12);const K=isLight()?C_DARK:C;
-  const wx=vx+12,wy=vy,ww=vw-24,wh=vh-20;g.save();rrect(wx,wy,ww,wh,12);g.clip();
-  const R0=ww*0.36,Rv=R0*Math.exp(Math.min(S.N12,30)),cx=wx+ww/2,top=wy+wh*0.35,cy=top+Rv;
-  // the sphere: its top, seen through our fixed horizon
-  const yS=x=>{const dx=x-cx;return Rv>1e7?top+dx*dx/(2*Rv):cy-Math.sqrt(Math.max(0,Rv*Rv-dx*dx));};
-  g.beginPath();g.moveTo(wx,wy+wh);for(let i=0;i<=240;i++){const x=wx+ww*i/240;g.lineTo(x,Math.abs(x-cx)<Rv?yS(x):wy+wh);}g.lineTo(wx+ww,wy+wh);g.closePath();g.fillStyle='rgba(128,183,208,.16)';g.fill();
-  line(wx,top,wx+ww,top,'rgba(230,237,243,.35)',1,[4,4]);
-  g.beginPath();let st=false;for(let i=0;i<=240;i++){const x=wx+ww*i/240;if(Math.abs(x-cx)>=Rv){st=false;continue;}const y=yS(x);st?g.lineTo(x,y):g.moveTo(x,y);st=true;}g.strokeStyle='#E6EDF3';g.lineWidth=2.2;g.stroke();
-  const sag=yS(cx+ww*0.32)-top;if(sag>3){line(cx+ww*0.32,top,cx+ww*0.32,top+sag,'#E8615A',1.4);text('curvature',cx+ww*0.32+6,top+sag/2,'#E8615A',11.5,'left','middle',600);}
-  const hx1=cx-ww*0.32,hx2=cx+ww*0.32;arrow(cx,top-28,hx1,top-28,'#FFC857',1.4);arrow(cx,top-28,hx2,top-28,'#FFC857',1.4);text('our observable patch',cx,top-34,'#FFC857',12,'center','bottom',600);
-  circle(cx,top,4.5,'#FFC857');g.restore();
-  text('N = '+fmt(S.N12,S.N12<10?1:0)+' e-folds: the sphere is '+(S.N12<7?fmt(Math.exp(S.N12),S.N12<3?1:0):p10(Math.round(S.N12*Math.LOG10E)))+' times larger',vx+vw/2,vy+vh-10,C.ink,12.5,'center','top',600);
-  const x2=narrow?P.x:vx+vw+30,y2=narrow?vy+vh+40:P.y+24,w2=narrow?P.w:P.x+P.w-x2,h2=P.y+P.h-y2;if(w2<200||h2<120)return;
-  const cols=w2>520?2:1,gap=10,cw=(w2-gap*(cols-1))/cols,rows=Math.ceil(PRED12.length/cols);const chh=Math.min(92,(h2-24-gap*(rows-1))/rows);
-  text('Predictions of inflation, and how they fare',x2,y2-6,C.ink,12.5,'left','bottom',600);
-  PRED12.forEach(([n,d,ok],i)=>{const x=x2+(i%cols)*(cw+gap),y=y2+4+Math.floor(i/cols)*(chh+gap);paperSheet(x,y,cw,chh);rrect(x,y,cw,chh,12);g.fillStyle=C.fillA(.55);g.fill();g.strokeStyle=C.lineA(.12);g.lineWidth=1;g.stroke();
-    text(ok?'✓':'?',x+12,y+10,ok?C.green:C.amber,18,'left','top',600);ts(n,x+36,y+12,C.ink,12.5,'left','top',600);wrap(d,cw-50,12,400).slice(0,Math.floor((chh-34)/16)).forEach((l,k)=>ts(l,x+36,y+32+k*16,C.soft,12,'left','top',400));});}
+const PRED12=[['Spatial flatness','|Ω_{k}| < 0.002 (Planck + BAO)',1,'Flatness',
+   'Inflation stretches any curvature away. Our observable patch is a tiny piece of a hugely inflated space, so it looks flat, as a small patch of the Earth does. Inflate the sphere: after a few e-folds the curvature across our patch is too small to see.'],
+  ['Super-horizon correlations','temperature–polarisation pattern of the CMB on scales larger than the horizon at recombination',1,'Horizon',
+   'During inflation the comoving Hubble radius 1/aH shrinks, so ripples of fixed comoving size leave it, freeze, and come back in long after. At recombination the largest ripples are still outside the horizon, yet they are correlated: they were in causal contact before inflation. Without inflation the horizon only ever grows, and nothing could have connected them.'],
+  ['No magnetic monopoles','none found; inflation dilutes them',1,'Monopoles',
+   'Grand unified theories predict heavy magnetic monopoles, about one per horizon volume when they form. If inflation happens afterwards, it spreads them out: their density falls by e^{−3N}, so after 60 e-folds there is far less than one in our whole observable Universe.'],
+  ['Nearly scale-invariant','n_{s} = 0.965 ± 0.004, slightly below 1',1,'Scale-invariant',
+   'Quantum jitters of the inflaton are stretched to cosmic sizes. Each scale leaves the horizon at a slightly different moment, when H is almost but not quite the same, so all scales get nearly equal ripples: P(k) ∝ k^(nₛ − 1) with nₛ just below 1. Slide nₛ to see the sky change.'],
+  ['Gaussian and adiabatic','f_{NL} = −0.9 ± 5.1, consistent with zero',1,'Gaussian',
+   'The simplest inflation gives ripples whose heights follow a Gaussian bell curve. Departures are measured by f_NL, defined by Φ = φ + f_NL(φ² − ⟨φ²⟩) with φ Gaussian: a non-zero f_NL skews the distribution. Because Φ is only about 3×10⁻⁵, even f_NL of a few hundred would barely show; Planck finds f_NL = −0.9 ± 5.1. The ripples are also adiabatic: matter, dark matter and radiation are compressed together, by the same fraction, with no sign of isocurvature modes.'],
+  ['Primordial gravitational waves','not yet seen: r < 0.036 (BICEP/Keck 2021)',0,'Grav. waves',
+   'Inflation also stretches quantum ripples of space-time itself into gravitational waves, which would leave a swirling B-mode pattern in the CMB polarisation. Their strength is the tensor-to-scalar ratio r. The simplest model, m²φ², predicted r ≈ 0.13 and is ruled out; Starobinsky inflation predicts r ≈ 0.004, within reach of the Simons Observatory and LiteBIRD.']];
+let cards12=[];
+function tick12(dt){let ch=false;if(S.play12&&(S.sel12===0||S.sel12===2)){S.N12=Math.min(70,S.N12+dt*(S.N12<5?1.2:12));if(S.N12>=70)S.play12=false;const e=$('#nsl12');if(e)e.value=S.N12;updateRO12();ch=true;}
+  if(!reduceMotion&&(S.sel12===1||S.sel12===5)){S.tt12+=dt;ch=true;}return ch;}
+// 0: a sphere seen through our fixed observable patch
+function vis12flat(x,y,w,h){skyInset(x,y,w,h,12);g.save();rrect(x,y,w,h,12);g.clip();
+  const R0=w*0.36,Rv=R0*Math.exp(Math.min(S.N12,30)),cx=x+w/2,top=y+h*0.35,cy=top+Rv;
+  const yS=xx=>{const dx=xx-cx;return Rv>1e7?top+dx*dx/(2*Rv):cy-Math.sqrt(Math.max(0,Rv*Rv-dx*dx));};
+  g.beginPath();g.moveTo(x,y+h);for(let i=0;i<=240;i++){const xx=x+w*i/240;g.lineTo(xx,Math.abs(xx-cx)<Rv?yS(xx):y+h);}g.lineTo(x+w,y+h);g.closePath();g.fillStyle='rgba(128,183,208,.16)';g.fill();
+  line(x,top,x+w,top,'rgba(230,237,243,.35)',1,[4,4]);
+  g.beginPath();let st=false;for(let i=0;i<=240;i++){const xx=x+w*i/240;if(Math.abs(xx-cx)>=Rv){st=false;continue;}const yy=yS(xx);st?g.lineTo(xx,yy):g.moveTo(xx,yy);st=true;}g.strokeStyle='#E6EDF3';g.lineWidth=2.2;g.stroke();
+  const sag=yS(cx+w*0.32)-top;if(sag>3){line(cx+w*0.32,top,cx+w*0.32,top+sag,'#E8615A',1.4);text('curvature',cx+w*0.32+6,top+sag/2,'#E8615A',11.5,'left','middle',600);}
+  arrow(cx,top-28,cx-w*0.32,top-28,'#FFC857',1.4);arrow(cx,top-28,cx+w*0.32,top-28,'#FFC857',1.4);text('our observable patch',cx,top-34,'#FFC857',12,'center','bottom',600);circle(cx,top,4.5,'#FFC857');
+  text('N = '+fmt(S.N12,S.N12<10?1:0)+' e-folds: the sphere is '+(S.N12<7?fmt(Math.exp(S.N12),S.N12<3?1:0):p10(Math.round(S.N12*Math.LOG10E)))+' times larger',cx,y+h-12,'#E6EDF3',12.5,'center','bottom',600);g.restore();}
+// 1: comoving Hubble radius and three ripples of fixed comoving size
+function vis12horizon(x,y,w,h){const r=inset({x,y,w,h},40,16,16,40);const ax=makeAx(r,[0,10],[0,7]);plotSheet(r,{xl:1,yl:1});
+  line(r.x,r.y+r.h,r.x+r.w,r.y+r.h,C.faint,1);line(r.x,r.y,r.x,r.y+r.h,C.faint,1);
+  text('time, as log a  →',r.x+r.w,r.y+r.h+10,C.soft,12,'right','top',500);g.save();g.translate(r.x-14,r.y+r.h/2);g.rotate(-Math.PI/2);text('comoving size (log): ripples and horizon 1/aH  →',0,0,C.soft,12,'center','bottom',500);g.restore();
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();const ni=S.noinf12;const RH=u=>u<4?(ni?2+(u-4)*0.9:6-u):u<8?2+(u-4)*0.9:u<9.4?5.6+(u-8)*0.45:6.23-(u-9.4)*1.2;
+  if(!ni){g.fillStyle=rgba('violet',.10);g.fillRect(r.x,r.y,ax.X(4)-r.x,r.h);text('inflation',ax.X(2),r.y+6,C.violet,12,'center','top',600);}
+  else text('no inflation: the horizon only grows',ax.X(2),r.y+6,C.red,12,'center','top',600);
+  [8,9.4].forEach(u=>line(ax.X(u),r.y,ax.X(u),r.y+r.h,C.inkA(.10),1));
+  text('radiation',ax.X(6),r.y+6,C.soft,11.5,'center','top',500);text('matter',ax.X(8.7),r.y+6,C.soft,11.5,'center','top',500);text('Λ',ax.X(9.7),r.y+6,C.violet,12,'center','top',600);
+  const xr=ax.X(7.6);line(xr,r.y+22,xr,r.y+r.h,C.inkA(.3),1,[3,3]);text('recombination',xr-4,r.y+r.h-6,C.soft,11,'right','bottom',500);
+  g.beginPath();for(let i=0;i<=300;i++){const u=10*i/300;i?g.lineTo(ax.X(u),ax.Y(RH(u))):g.moveTo(ax.X(u),ax.Y(RH(u)));}g.strokeStyle=C.ink;g.lineWidth=2.6;g.stroke();
+  if(!ni){g.beginPath();for(let u=0;u<=4;u+=0.05){const v=2+(u-4)*0.9;u?g.lineTo(ax.X(u),ax.Y(v)):g.moveTo(ax.X(u),ax.Y(v));}g.strokeStyle=C.soft;g.lineWidth=1.4;g.setLineDash([5,4]);g.stroke();g.setLineDash([]);
+  text('horizon without inflation',ax.X(2.5),ax.Y(0.75),C.soft,11,'left','bottom',500);}
+  text('comoving horizon, 1/aH',ax.X(4.3),ax.Y(1.6),C.ink,12,'left','top',600);
+  const T=(S.tt12*1.1)%11-0.5,xt=ax.X(clamp(T,0,10));line(xt,r.y,xt,r.y+r.h,C.red,1.2);
+  [[5.5,C.amber,ni?'never inside the horizon before recombination: nothing could correlate it':'outside at recombination, yet correlated'],[4.2,C.cyan,''],[3.0,C.pink,'']].forEach(([lv,c,l])=>{const yl=ax.Y(lv);
+    let x1=-1,x2=10;for(let u=0;u<10;u+=0.01){if(RH(u)<lv&&u<4.5&&x1<0)x1=u;if(u>4&&RH(u)>lv&&x2===10){x2=u;}}const out0=x1<=0.001;x1=Math.max(0,x1);
+    const inside=!(T>x1&&T<x2);
+    g.beginPath();for(let px=r.x;px<=r.x+r.w;px+=2){const u=(px-r.x)/r.w*10,fz=u>x1&&u<x2;const amp=fz?0:3;g.lineTo(px,yl+amp*Math.sin(px*0.45-S.tt12*4));}g.strokeStyle=c;g.lineWidth=1.8;g.stroke();
+    if(!out0)circle(ax.X(x1),yl,4,c,C.ink,1);if(x2<10)circle(ax.X(x2),yl,4,c,C.ink,1);
+    text(inside?'inside: oscillating':'outside: frozen',r.x+r.w-4,yl-6,c,11,'right','bottom',600);if(l)text(l,r.x+6,yl-6,c,11,'left','bottom',600);});
+  g.restore();text('● leaves the horizon     ● comes back in',r.x+8,r.y+r.h-8,C.soft,11,'left','bottom',500);}
+// 2: monopoles carried out of our patch
+const MONO12=(function(){const r=rng(9),a=[];for(let i=-7;i<=7;i++)for(let j=-7;j<=7;j++)a.push([i+(r()-.5)*.8,j+(r()-.5)*.8,r()<.5]);return a;})();
+function vis12mono(x,y,w,h){const s=Math.min(w,h-40),x0=x+(w-s)/2,y0=y+10;skyInset(x0,y0,s,s,12);g.save();rrect(x0,y0,s,s,12);g.clip();
+  const sc=Math.exp(Math.min(S.N12,20)),sp=s/7,cx=x0+s/2,cy=y0+s/2;let n=0;
+  MONO12.forEach(([u,v,nn])=>{const px=cx+u*sp*sc,py=cy+v*sp*sc;if(px<x0-8||px>x0+s+8||py<y0-8||py>y0+s+8)return;n++;circle(px,py,5,nn?'#E8615A':'#6CC4F0');text(nn?'N':'S',px,py+0.5,'#0D1117',8,'center','middle',600);});g.restore();
+  const dil=-3*S.N12*Math.LOG10E;text(n+' monopoles in our patch; density × '+(S.N12<1?fmt(Math.exp(-3*S.N12),2):p10(Math.round(dil))),x+w/2,y0+s+12,C.ink,12.5,'center','top',600);}
+// 3 and 4: a Gaussian random sky with spectral index n_s
+let sky12=null;
+function sky12f(){const key=S.ns12+'|'+S.seed12;if(sky12&&sky12.key===key)return sky12;const N=96,r=rng(1000+S.seed12),M=[];
+  for(let i=0;i<360;i++){const k=2*Math.PI/N*Math.pow(10,Math.log10(1.2)+r()*Math.log10(30)),th=r()*2*Math.PI;M.push([k*Math.cos(th),k*Math.sin(th),Math.pow(k,(S.ns12-1)/2)*gauss(r),r()*2*Math.PI]);}
+  const f=new Float32Array(N*N);let s2=0;for(let j=0;j<N;j++)for(let i=0;i<N;i++){let v=0;for(const[kx,ky,A,p]of M)v+=A*Math.cos(kx*i+ky*j+p);f[j*N+i]=v;s2+=v*v;}
+  const sd=Math.sqrt(s2/(N*N));const c=document.createElement('canvas');c.width=c.height=N;const im=c.getContext('2d').createImageData(N,N);
+  for(let q=0;q<N*N;q++){f[q]/=sd;const t=clamp(f[q]/2.5,-1,1);const R=t>0?255:Math.round(255*(1+t)),G=Math.round(255*(1-Math.abs(t)*0.85)),B=t<0?255:Math.round(255*(1-t));im.data[q*4]=R;im.data[q*4+1]=G;im.data[q*4+2]=B;im.data[q*4+3]=255;}
+  c.getContext('2d').putImageData(im,0,0);sky12={key,c,f,N,M};return sky12;}
+function vis12scale(x,y,w,h){const S12=sky12f();const s=Math.min(w*0.62,h-30),x0=x,y0=y+6;g.imageSmoothingEnabled=true;rrect(x0,y0,s,s,10);g.save();g.clip();g.drawImage(S12.c,x0,y0,s,s);g.restore();
+  text('a sky with nₛ = '+fmt(S.ns12,3),x0+s/2,y0+s+8,C.ink,12,'center','top',600);
+  const r=inset({x:x0+s+10,y:y0,w:w-s-10,h:s},44,24,8,40);if(r.w<80)return;const ax=makeAx(r,[0,1],[0,2]);drawAxes(ax,{yt:[[0,'0'],[1,'1'],[2,'2']],xl:'ripple size: large → small',yl:'strength'});
+  text('Ripple strength per scale',r.x,r.y-10,C.ink,12,'left','bottom',600);
+  const B=8;for(let i=0;i<B;i++){const u=(i+.5)/B,k=Math.pow(30,u),v=Math.pow(k,S.ns12-1)/Math.pow(Math.sqrt(30),S.ns12-1);const x1=ax.X(i/B)+3,x2=ax.X((i+1)/B)-3;g.fillStyle=rgba('blue',.6);g.fillRect(x1,ax.Y(v),x2-x1,ax.Y(0)-ax.Y(v));}
+  line(r.x,ax.Y(1),r.x+r.w,ax.Y(1),C.ink,1.2,[5,4]);text('nₛ = 1: all equal',r.x+r.w,ax.Y(1)-4,C.soft,11,'right','bottom',500);}
+// local-type non-Gaussianity: Φ = φ + f_NL (φ² − ⟨φ²⟩), with the measured amplitude σ_Φ ≈ 3×10⁻⁵, shown in units of σ_Φ
+const SIGPHI=3e-5;
+function vis12gauss(x,y,w,h){const S12=sky12f(),eps=S.fnl12*SIGPHI;const f=Array.from(S12.f,v=>v+eps*(v*v-1));
+  let m=0;for(const v of f)m+=v;m/=f.length;let m2=0,m3=0;for(const v of f){const d=v-m;m2+=d*d;m3+=d*d*d;}m2/=f.length;m3/=f.length;const skew=m3/Math.pow(m2,1.5);
+  const r=inset({x,y,w:w*0.6,h},44,30,10,44);const ax=makeAx(r,[-4,4],[0,0.45]);
+  drawAxes(ax,{xt:[-4,-2,0,2,4].map(v=>[v,signed(v,0)]),yt:[],xl:'ripple height Φ, in standard deviations'});text('How often each ripple height occurs',r.x,r.y-12,C.ink,12,'left','bottom',600);
+  ts('f_{NL} = '+signed(S.fnl12,Math.abs(S.fnl12)<10?1:0)+',  skewness = '+signed(skew,3),r.x+r.w,r.y+4,C.ink,12,'right','top',600);
+  text('a Gaussian has skewness 0',r.x+r.w,r.y+22,C.soft,11,'right','top',500);
+  const nb=32,H=new Array(nb).fill(0);for(const v of f){const b=Math.floor((v+4)/8*nb);if(b>=0&&b<nb)H[b]++;}const bw=8/nb;
+  H.forEach((c,i)=>{const d=c/f.length/bw,x1=ax.X(-4+i*bw)+1,x2=ax.X(-4+(i+1)*bw)-1;g.fillStyle=rgba('amber',.6);g.fillRect(x1,ax.Y(d),x2-x1,ax.Y(0)-ax.Y(d));});
+  g.beginPath();for(let i=0;i<=200;i++){const v=-4+8*i/200,p=Math.exp(-v*v/2)/Math.sqrt(2*Math.PI);i?g.lineTo(ax.X(v),ax.Y(p)):g.moveTo(ax.X(v),ax.Y(p));}g.strokeStyle=C.ink;g.lineWidth=2;g.stroke();
+  text('bell curve',ax.X(1.3),ax.Y(0.3),C.ink,11.5,'left','bottom',600);
+  // adiabatic: every component overdense by the same fraction in a hot spot
+  const x2=x+w*0.62,w2=w*0.38,y2=y+30;paperSheet(x2,y2-24,w2-6,h-30);text('In a hot spot',x2+10,y2-6,C.ink,12,'left','bottom',600);
+  const comp=[['photons','pink'],['atoms','gold'],['dark matter','blue']];const bh=Math.min(110,h*0.4),by=y2+20+bh;
+  [['adiabatic ✓',[1,1,1]],['isocurvature ✗',[1,-0.5,-0.5]]].forEach(([l,v],k)=>{const bx=x2+12+k*(w2-24)/2,cwid=(w2-24)/2-10;text(l,bx+cwid/2,by+bh*0.45+8,k?C.soft:C.green,11.5,'center','top',600);
+    line(bx,by,bx+cwid,by,C.faint,1);comp.forEach(([n,c],i)=>{const bwid=cwid/3-4,xx=bx+i*(cwid/3)+2,hh=v[i]*bh*0.8;g.fillStyle=C[c];g.fillRect(xx,hh>0?by-hh:by,bwid,Math.abs(hh));});});
+  comp.forEach(([n,c],i)=>{circle(x2+16,by+bh*0.45+40+i*18,4,C[c]);text(n,x2+26,by+bh*0.45+40+i*18,C.ink,11.5,'left','middle',500);});}
+// 5: a ring of test masses in a passing gravitational wave, and the limit on r
+function vis12gw(x,y,w,h){const s=Math.min(w*0.5,h-40),cx=x+s/2+10,cy=y+s/2+20,R=s*0.34;skyInset(x+10,y+20,s,s,12);
+  const hA=0.06+Math.sqrt(S.r12/0.2)*0.4,ph=Math.cos(S.tt12*3);
+  for(let i=0;i<20;i++){const a=i/20*2*Math.PI,px=cx+R*Math.cos(a)*(1+hA*ph/2),py=cy+R*Math.sin(a)*(1-hA*ph/2);circle(px,py,4,'#80B7D0');}
+  circle(cx,cy,R,null,'rgba(230,237,243,.25)',1);text('test masses as a gravitational wave passes',cx,y+20+s+8,C.ink,12,'center','top',600);
+  const r=inset({x:x+s+40,y:y+20,w:w-s-40,h:s},10,20,16,40);if(r.w<120)return;const ax=makeAx(r,[0,0.2],[0,1]);
+  drawAxes(ax,{xt:[0,0.05,0.1,0.15,0.2].map(v=>[v,fmt(v,2)]),yt:[],xl:'tensor-to-scalar ratio r'});
+  g.fillStyle=rgba('red',.12);g.fillRect(ax.X(0.036),r.y,ax.X(0.2)-ax.X(0.036),r.h);text('ruled out, r > 0.036',ax.X(0.12),r.y+8,C.red,11.5,'center','top',600);
+  line(ax.X(0.036),r.y,ax.X(0.036),r.y+r.h,C.red,1.6);
+  [[0.13,'m²φ²',0.6],[0.004,'Starobinsky',0.35],[0.001,'CMB-S4 goal',0.15]].forEach(([v,l,yy])=>{circle(ax.X(v),ax.Y(yy),5,C.ink);text(l,ax.X(v)+8,ax.Y(yy),C.ink,11.5,'left','middle',500);});
+  line(ax.X(S.r12),r.y,ax.X(S.r12),r.y+r.h,C.amber,2.2);text('your r',ax.X(S.r12)+4,r.y+r.h-6,C.amber,11.5,'left','bottom',600);}
+const VIS12=[vis12flat,vis12horizon,vis12mono,vis12scale,vis12gauss,vis12gw];
+function draw12(){cards12=[];const narrow=P.w<820;const lw=narrow?P.w:P.w*0.6;const it=PRED12[S.sel12];
+  const D=wrap(it[4],lw-32,13,400),dh=narrow?0:D.length*19+20;const vh=narrow?Math.min(P.h*0.5,lw*0.8):Math.max(320,Math.min(P.h-dh-16,lw*1.05));
+  paperSheet(P.x,P.y,lw,vh+dh);ts(it[0],P.x+16,P.y+12,C.ink,14,'left','top',600);
+  VIS12[S.sel12](P.x+16,P.y+40,lw-32,vh-56);
+  if(!narrow){line(P.x+16,P.y+vh,P.x+lw-16,P.y+vh,C.lineA(.12),1);D.forEach((l,k)=>text(l,P.x+16,P.y+vh+12+k*19,C.ink,13,'left','top',400));}
+  const x2=narrow?P.x:P.x+lw+20,y2=narrow?P.y+vh+16:P.y,w2=narrow?P.w:P.w-lw-20;const cols=narrow&&w2>500?2:1,gap=8;
+  text('Predictions of inflation: click one',x2,y2+4,C.ink,12.5,'left','top',600);
+  const ch=narrow?40:64,cw=(w2-gap*(cols-1))/cols;
+  PRED12.forEach(([n,d,ok],i)=>{const x=x2+(i%cols)*(cw+gap),y=y2+26+Math.floor(i/cols)*(ch+gap),on=i===S.sel12;paperSheet(x,y,cw,ch);
+    rrect(x,y,cw,ch,10);g.fillStyle=on?C.accA(.14):C.fillA(.55);g.fill();g.strokeStyle=on?C.acc:C.lineA(.12);g.lineWidth=on?1.8:1;g.stroke();
+    text(ok?'✓':'?',x+10,y+(narrow?ch/2:18),ok?C.green:C.amber,16,'left','middle',600);ts(n,x+30,y+(narrow?ch/2:11),C.ink,12.5,'left',narrow?'middle':'top',600);
+    if(!narrow)wrap(d,cw-44,11.5,400).slice(0,2).forEach((l,k)=>ts(l,x+30,y+30+k*15,C.soft,11.5,'left','top',400));cards12.push([x,y,cw,ch,i]);});}
+function hit12(x,y){return cards12.find(([cx,cy,cw,chh])=>x>=cx&&x<=cx+cw&&y>=cy&&y<=cy+chh);}
+function hover12(x,y){const c=hit12(x,y);return c?'<b>'+PRED12[c[4]][0]+'</b><br>click to see it':null;}
+function click12(x,y){const c=hit12(x,y);if(c&&c[4]!==S.sel12){S.sel12=c[4];S.play12=false;buildControls();refreshRO();}}
 function updateRO12(){const N=S.N12;setRO('r12a',fmt(N,N<10?1:0));setRO('r12b',N<7?fmt(Math.exp(N),1):p10(Math.round(N*Math.LOG10E)));setRO('r12c',N<3?fmt(Math.exp(-2*N),3):p10(-Math.round(2*N*Math.LOG10E)));
   setRO('r12d',N>=60?'Yes, even if |Ω − 1| started near 1':'Not enough: need N ≳ 60');const H=N/1e-32;setRO('r12e',N>0?'H ≈ '+sci(H,0)+' s⁻¹, Λ<sub>I</sub> = 3H² ≈ '+sci(3*H*H,0)+' s⁻²':'–');labs();}
-
 
 /* ---------- chapters ---------- */
 const CH=[
@@ -872,14 +1011,15 @@ for a universe with only Λ. Its density is constant, so \(\dot\rho_\Lambda=0\).
 <p>Watch the three boxes expand. The gauges compare the density and the energy with their starting values. Below, the same densities over the whole history of the Universe; add a component with your own \(w\).</p>
 <p class="note">Densities in units of today's critical density, Planck 2018. Lecture 14 slide 13 and Notes, p. 2.</p>`,
   ro:[['Scale factor a',sp('r3a')],['Volume of the box',sp('r3b')],['Radiation energy in it',sp('r3c')],['Λ energy in it',sp('r3d')],['Your component',sp('r3e')]]},
- {name:'de Sitter',title:'Expansion with only Λ',draw:draw4,
+ {name:'de Sitter',title:'Expansion with only Λ',draw:draw4,tick:tick4,click:click4,
   txt:String.raw`<p>In a flat universe with only Λ, the first Friedmann equation is
 \[\left(\frac{\dot a}{a}\right)^2=\frac{\Lambda}{3}\quad\Rightarrow\quad\frac{\dot a}{a}=+\sqrt{\frac{\Lambda}{3}},\]
 taking the expanding root. Integrating, \(\ln a=\sqrt{\Lambda/3}\,t+\mathrm{const}\), so
 \[a(t)=C\,e^{\sqrt{\Lambda/3}\,t}.\]
 This is de Sitter's solution of 1917. The Hubble rate is constant, and the Universe doubles in size every \(\ln2/H\): exponential expansion.</p>
 <p>Matter and radiation give power laws, \(a\propto t^{2/3}\) and \(t^{1/2}\), which slow down. Our Universe, ΛCDM, was matter-dominated in the past and is turning into a de Sitter universe: its Hubble rate approaches \(H_0\sqrt{\Omega_\Lambda}\approx56\) km/s/Mpc, and it will double in size about every 12 billion years.</p>
-<p>On the logarithmic axis an exponential is a straight line. Change Λ to see how fast a Λ-only universe grows.</p>
+<p>Press play to run the three universes forward from today. Each window stays the same size while the galaxies are carried apart. With matter or radiation each doubling takes longer than the last; with Λ the distances double at a steady rate, and the galaxies stream out of view. That is the future of our own Universe: in about 100 billion years every galaxy beyond our Local Group will have left our sight.</p>
+<p>Below, the same three histories as a graph; on the logarithmic axis an exponential is a straight line. Change Λ to see how fast a Λ-only universe grows.</p>
 <p class="note">The radiation and matter curves have \(H=H_0\) today; all curves pass \(a=1\) today. Lecture 14 slide 14 and Notes, p. 2.</p>`,
   ro:[['H of a Λ-only universe, √(Λ/3)',sp('r4a')],['e-folding time, 1/H',sp('r4b')],['Doubling time',sp('r4c')],['Growth in 45 Gyr',sp('r4d')],['Our Universe in the far future',sp('r4e')]]},
  {name:'ρ_c',title:'The critical density',draw:draw5,
@@ -904,7 +1044,7 @@ is negative, an accelerating expansion, when \(\Omega_\Lambda>\Omega_m/2\).</p>
 <p>Click or drag in the plane.</p>
 <p class="note">Radiation is neglected here. The Planck region is an approximation to Planck 2018 TT,TE,EE+lowE+lensing without assuming flatness, \(\Omega_k=-0.011\pm0.007\). The supernova regions are computed here from the 20 Pantheon+ bins with statistical errors only, so they are smaller than the published ones. Lecture 14 slides 17 and 19–20 and Notes, p. 4.</p>`,
   ro:[['Ω<sub>m</sub>, Ω<sub>Λ</sub>',sp('r6a')],['Ω<sub>k</sub> = 1 − Ω<sub>m</sub> − Ω<sub>Λ</sub>',sp('r6b')],['q₀ = Ω<sub>m</sub>/2 − Ω<sub>Λ</sub>',sp('r6c')],['Fate',sp('r6d')],['Age',sp('r6e')],['Supernovae, Δχ² from their best fit',sp('r6f')]]},
- {name:'Budget',title:'The energy budget through time',draw:draw7,hover:hover7,
+ {name:'Budget',title:'The energy budget through time',draw:draw7,hover:hover7,click:click7,
   txt:String.raw`<p>Each component dilutes at its own rate, \(\rho_i\propto a^{-3(1+w_i)}\). Its share of the total at any time is
 \[\Omega_i(a)=\frac{\Omega_{i,0}\,a^{-3(1+w_i)}}{E^2(a)},\]
 where
@@ -923,7 +1063,7 @@ The factor \(1/E^2=(H_0/H)^2\) matters: without it these are densities in units 
 <p>Pick a universe or set your own. Measurements so far give \(w=-1.03\pm0.03\).</p>
 <p class="note">\(H_0=67.4\) km/s/Mpc. A crunch need not lead to a new cycle: what happens then needs physics beyond general relativity. \(w\) from Planck 2018 with supernovae and BAO. Lecture 14 slides 23 and 25 and Notes, p. 5.</p>`,
   ro:[['Ω<sub>k</sub>',sp('r8a')],['Age today',sp('r8b')],['q₀',sp('r8c')],['Fate',sp('r8d')]]},
- {name:'H falls',title:'Accelerating, yet H falls',draw:draw9,hover:hover9,tick:tick9,
+ {name:'H falls',title:'Accelerating, yet H falls',draw:draw9,hover:hover9,click:click9,tick:tick9,
   txt:String.raw`<p>An accelerating expansion, \(\ddot a>0\), does not mean that the Hubble rate grows. Differentiating \(H=\dot a/a\),
 \[\dot H=\frac{a\ddot a-\dot a^2}{a^2}=-H^2(1+q).\]
 \(H\) falls whenever \(q>-1\), even while \(q<0\).</p>
@@ -943,22 +1083,21 @@ so in an accelerating universe distant supernovae are further away, and fainter,
 <p>Fit the data with the sliders, or press best fit.</p>
 <p class="note">Pantheon+ (Scolnic et al. 2022; Brout et al. 2022): 1,580 supernovae in 20 bins, statistical errors only. The absolute magnitude is fitted for each model, which is the same as leaving \(H_0\) free; the SH0ES Cepheid calibration then gives the implied \(H_0\). Lecture 14 slide 24 and Notes, p. 5.</p>`,
   ro:[['Ω<sub>m</sub>, Ω<sub>Λ</sub>',sp('r10a')],['q₀',sp('r10b')],['χ²',sp('r10c')],['Δχ² from the best fit',sp('r10d')],['Implied H₀',sp('r10e')],['Best flat fit',sp('r10f')]]},
- {name:'Flatness',title:'The flatness problem',draw:draw11,hover:hover11,
+ {name:'Flatness',title:'The flatness problem',draw:draw11,hover:hover11,tick:tick11,
   txt:String.raw`<p>The first Friedmann equation holds at every time, so the departure from flatness is
 \[|\Omega(t)-1|=\frac{|K|c^2}{a^2H^2}.\]
 \(K\) is fixed, but \(aH\) is not. In the radiation era \(a\propto t^{1/2}\) and \(H=1/2t\), so \(|\Omega-1|\propto t\); in the matter era \(|\Omega-1|\propto t^{2/3}\). Flatness is unstable, like a pencil balanced on its tip: any small departure grows.</p>
-<p>Try it. Set how far \(\Omega\) was from 1 one second after the Big Bang, when the light elements were about to form, and watch what happens to that universe. If \(|\Omega-1|\) reaches 1 before today, curvature takes over: a closed universe recollapses, an open one empties out before galaxies can form.</p>
+<p>Try it. Set how far \(\Omega\) was from 1 one second after the Big Bang (the number line zooms in on 1 so you can see how close the allowed values are), when the light elements were about to form, and watch what happens to that universe. If \(|\Omega-1|\) reaches 1 before today, curvature takes over: a closed universe recollapses, an open one empties out before galaxies can form.</p>
 <p>To end up with today's \(|\Omega_k|<10^{-3}\), \(\Omega\) at one second must equal 1 to about 18 decimal places, and at the Planck time to about 60. Nothing in the hot Big Bang sets it so precisely. That is the flatness problem.</p>
 <p>Only when dark energy dominates does \(aH\) grow and \(|\Omega-1|\) shrink. Inflation, next, uses the same trick in the very early Universe.</p>
 <p class="note">The background is flat ΛCDM; the radiation era is drawn with \(a\propto t^{1/2}\) throughout, ignoring changes in the number of relativistic species. Lecture 14 slide 26 and Notes, p. 5.</p>`,
   ro:[['Ω at 1 s',sp('r11a')],['Ω today',sp('r11b')],['|Ω − 1| at 10⁻¹⁰ s, electroweak',sp('r11c')],['|Ω − 1| at the Planck time',sp('r11d')],['Needed at 1 s for |Ω<sub>k</sub>| < 10⁻³ today',sp('r11e')],['Inflation ending at 10⁻³² s must last',sp('r11f')]]},
- {name:'Inflation',title:'Inflation',draw:draw12,tick:tick12,
+ {name:'Inflation',title:'Inflation',draw:draw12,tick:tick12,hover:hover12,click:click12,
   txt:String.raw`<p>Alan Guth proposed in 1981, with Andrei Linde, Andreas Albrecht and Paul Steinhardt refining the idea in 1982, that the very early Universe went through a short phase dominated by a field, the inflaton, that acts like a huge cosmological constant \(\Lambda_I\):
 \[a(t)\propto e^{\sqrt{\Lambda_I/3}\,t}.\]</p>
-<p>While it lasts, \(aH\) grows exponentially and \(|\Omega-1|\propto e^{-2N}\), where \(N\) is the number of e-folds. About 60 e-folds make any initial curvature unmeasurable today, as the Earth looks flat from the ground. The same stretching puts regions that are now far apart in causal contact, dilutes magnetic monopoles, and turns quantum fluctuations into the seeds of galaxies.</p>
-<p>The inflaton then decays, reheating the Universe into the hot Big Bang.</p>
-<p>Inflate the sphere and look at the predictions: five are confirmed, and primordial gravitational waves are still being searched for.</p>
-<p class="note">The readout assumes the e-folds take \(10^{-32}\) s; the true energy scale is unknown, with \(H\lesssim10^{38}\) s⁻¹ allowed by \(r<0.036\). Lecture 14 slides 27–29 and Notes, p. 5.</p>`,
+<p>While it lasts, \(aH\) grows exponentially and \(|\Omega-1|\propto e^{-2N}\), where \(N\) is the number of e-folds. About 60 e-folds make any initial curvature unmeasurable today. The inflaton then decays, reheating the Universe into the hot Big Bang.</p>
+<p>Inflation makes six predictions. Click each one to see what it means; five are confirmed, and primordial gravitational waves are still being searched for.</p>
+<p class="note">The readouts assume the e-folds take \(10^{-32}\) s; the true energy scale is unknown, with \(H\lesssim10^{38}\) s⁻¹ allowed by \(r<0.036\). The horizon diagram is schematic. Lecture 14 slides 27–29 and Notes, p. 5.</p>`,
   ro:[['e-folds N',sp('r12a')],['Growth of a, e<sup>N</sup>',sp('r12b')],['|Ω − 1| multiplied by e<sup>−2N</sup>',sp('r12c')],['Solves flatness?',sp('r12d')],['If those e-folds take 10⁻³² s',sp('r12e')]]}
 ];
 
@@ -968,15 +1107,15 @@ function labs(){const ch=S.ch;
   if(ch===0)setLab('lsl1',fmt(S.L1,3));
   if(ch===1)setLab('esl2',fE(10**S.lE2));
   if(ch===2){setLab('asl3',fmt(10**S.la3,2));setLab('wsl3',signed(S.w3,2));}
-  if(ch===3)setLab('lsl4',fmt(S.lam4,2)+' H₀²');
+  if(ch===3){setLab('lsl4',fmt(S.lam4,2)+' H₀²');setLab('tsl4','+'+fmt(S.t4,1)+' Gyr');}
   if(ch===4)setLab('hsl5',fH(S.h5));
   if(ch===5){setLab('msl6',fmt(S.om6,2));setLab('lsl6',signed(S.ol6,2));}
   if(ch===6){const a=10**S.la7;setLab('asl7',a<0.01?sci(a,1):fmt(a,a<1?3:2));setLab('wsl7',signed(S.w7,2));}
   if(ch===7){setLab('msl8',fmt(S.om8,2));setLab('dsl8',signed(S.ode8,2));setLab('wsl8',signed(S.w8,2));}
   if(ch===8){setLab('tsl9',fmt(S.t9,1)+' Gyr');setLab('wsl9',signed(S.w9,2));}
   if(ch===9){setLab('msl10',fmt(S.om10,2));setLab('lsl10',signed(S.ol10,2));}
-  if(ch===10)setLab('dsl11',sci(10**S.d11,1));
-  if(ch===11)setLab('nsl12',fmt(S.N12,1));}
+  if(ch===10){setLab('dsl11',sci(10**S.d11,1));setLab('zsl11','× '+p10(Math.round(S.z11)));}
+  if(ch===11){setLab('nsl12',fmt(S.N12,1));setLab('nssl12',fmt(S.ns12,3));setLab('fsl12',signed(S.fnl12,Math.abs(S.fnl12)<10?1:0));setLab('rsl12',fmt(S.r12,3));}}
 function refreshRO(){[updateRO1,updateRO2,updateRO3,updateRO4,updateRO5,updateRO6,updateRO7,updateRO8,updateRO9,updateRO10,updateRO11,updateRO12][S.ch]();labs();}
 const clrSeg=(c,k)=>{const s=c.querySelectorAll('.seg')[k||0];if(s)[...s.children].forEach(b=>b.setAttribute('aria-pressed','false'));};
 const setVal=(id,v)=>{const e=$('#'+id);if(e)e.value=v;};
@@ -999,10 +1138,12 @@ function buildControls(){const c=$('#ctl');c.innerHTML='';const ch=S.ch;const up
     if(S.cust3)c.appendChild(slider('Equation of state w',-1.5,1,0.01,S.w3,v=>{S.w3=v;up();},'wsl3'));
     c.appendChild(capt('Dots are matter particles. Wavy lines are photons: their wavelength stretches with a and they redden. The Λ box keeps the same shade, because its density never changes. Arrows show which way each pressure acts on the walls.'));}
   if(ch===3){
+    c.appendChild(slider('Time from today',0,45,0.1,S.t4,v=>{S.t4=v;S.play4=false;up();},'tsl4'));
+    c.appendChild(btnrow([['Play','play4b','primary',()=>{if(S.t4>=44.9)S.t4=0;S.play4=true;up();}],['Today','now4','',()=>{S.t4=0;S.play4=false;setVal('tsl4',0);up();}]]));
     c.appendChild(slider('Λ, in units of H₀²',0.3,6,0.01,S.lam4,v=>{S.lam4=v;up();},'lsl4'));
     c.appendChild(btnrow([['Our Λ = 3Ω<sub>Λ</sub>H₀²','our4','primary',()=>{S.lam4=3*(1-PL.om);setVal('lsl4',S.lam4);up();}]]));
     c.appendChild(check('Logarithmic scale factor',S.log4,v=>{S.log4=v;draw();}));
-    c.appendChild(capt('The dashed black curve is our Universe, ΛCDM with Planck 2018 parameters. In the future it runs parallel to a Λ-only universe with our Λ.'));}
+    c.appendChild(capt('The gold dot is us. The dashed black curve is our Universe, ΛCDM with Planck 2018 parameters; in the future it runs parallel to a Λ-only universe with our Λ. Click on the graph to jump to a time.'));}
   if(ch===4){
     c.appendChild(slider('H₀',50,100,0.1,S.h5,v=>{S.h5=v;clrSeg(c);up();},'hsl5'));
     const J=[['Planck, 67.4',67.4],['SH0ES, 73.0',73.04],['h = 1',100]];
@@ -1021,7 +1162,7 @@ function buildControls(){const c=$('#ctl');c.innerHTML='';const ch=S.ch;const up
     c.appendChild(seg('Show',['Shares Ω<sub>i</sub>','Densities ρ<sub>i</sub>'],S.view7,i=>{S.view7=i;up();}));
     c.appendChild(slider('Scale factor a',-7,2,0.01,S.la7,v=>{S.la7=v;up();},'asl7'));
     c.appendChild(slider('Dark energy equation of state w',-1.5,-0.4,0.01,S.w7,v=>{S.w7=v;up();},'wsl7'));
-    c.appendChild(capt('The time along the top is for w = −1. With w > −1 dark energy dilutes and takes over later.'));}
+    c.appendChild(capt('Hover over the plot for the shares at any time; click to move the cursor there. The time along the top is for w = −1.'));}
   if(ch===7){
     c.appendChild(seg('Universe',PRE8.map(p=>p[0]),cur8(),i=>{[S.om8,S.ode8,S.w8]=PRE8[i].slice(1);setVal('msl8',S.om8);setVal('dsl8',S.ode8);setVal('wsl8',S.w8);up();}));
     c.appendChild(slider('Matter Ω<sub>m</sub>',0,3.5,0.005,S.om8,v=>{S.om8=v;clrSeg(c);up();},'msl8'));
@@ -1032,7 +1173,7 @@ function buildControls(){const c=$('#ctl');c.innerHTML='';const ch=S.ch;const up
     c.appendChild(slider('Time since the Big Bang',0.5,60,0.1,S.t9,v=>{S.t9=v;S.play9=false;up();},'tsl9'));
     c.appendChild(btnrow([['Play','play9b','primary',()=>{if(S.t9>=59.9)S.t9=0.5;S.play9=true;up();}],['Today','now9','',()=>{S.t9=13.8;S.play9=false;setVal('tsl9',S.t9);up();}]]));
     c.appendChild(slider('Dark energy equation of state w',-1.5,-0.5,0.01,S.w9,v=>{S.w9=v;up();},'wsl9'));
-    c.appendChild(capt('The dashed marks on the dials show today. Hover over either plot below to move the time.'));}
+    c.appendChild(capt('The dashed marks on the dials show today. Click on either plot below to jump to a time.'));}
   if(ch===9){
     const J=[['Planck ΛCDM',PL.om,1-PL.om-OR],['Matter only',1,0],['Open, no Λ',0.3,0],['Empty',0,0]];
     c.appendChild(seg('Universe',J.map(j=>j[0]),J.findIndex(j=>Math.abs(j[1]-S.om10)<1e-6&&Math.abs(j[2]-S.ol10)<1e-6),i=>{S.om10=J[i][1];S.ol10=J[i][2];setVal('msl10',S.om10);setVal('lsl10',S.ol10);up();}));
@@ -1045,11 +1186,23 @@ function buildControls(){const c=$('#ctl');c.innerHTML='';const ch=S.ch;const up
     c.appendChild(slider('|Ω − 1| at 1 s',-24,-8,0.01,S.d11,v=>{S.d11=v;up();},'dsl11'));
     c.appendChild(seg('Universe',['Ω > 1, closed','Ω < 1, open'],S.s11>0?0:1,i=>{S.s11=i?-1:1;up();}));
     c.appendChild(btnrow([['Make it like ours','our11','primary',()=>{S.d11=need11()-0.3;setVal('dsl11',S.d11);up();}]]));
+    c.appendChild(slider('Zoom into Ω = 1',0,21,0.01,S.z11,v=>{S.z11=v;S.play11=false;up();},'zsl11'));
+    c.appendChild(btnrow([['Zoom in','zm11','',()=>{S.z11=0;S.play11=true;up();}]]));
     c.appendChild(capt('Start at 10⁻¹⁴ and the Universe fails long before today. Move the slider left until it survives: count the zeros.'));}
   if(ch===11){
-    c.appendChild(slider('Number of e-folds N',0,70,0.1,S.N12,v=>{S.N12=v;S.play12=false;up();},'nsl12'));
-    c.appendChild(btnrow([['Inflate','inf12','primary',()=>{S.N12=0;S.play12=true;up();}],['Reset','res12','',()=>{S.N12=0;S.play12=false;setVal('nsl12',0);up();}]]));
-    c.appendChild(capt('The window is our observable patch, fixed in size. After a few e-folds the curvature across it is already too small to see.'));}
+    c.appendChild(seg('Prediction',PRED12.map(q=>q[3]),S.sel12,i=>{S.sel12=i;S.play12=false;buildControls();up();}));const sl=S.sel12;
+    if(sl===0||sl===2){c.appendChild(slider('Number of e-folds N',0,70,0.1,S.N12,v=>{S.N12=v;S.play12=false;up();},'nsl12'));
+      c.appendChild(btnrow([['Inflate','inf12','primary',()=>{S.N12=0;S.play12=true;up();}],['Reset','res12','',()=>{S.N12=0;S.play12=false;setVal('nsl12',0);up();}]]));
+      c.appendChild(capt(sl===0?'The window is our observable patch, fixed in size. After a few e-folds the curvature across it is already too small to see.':'Red and blue are north and south monopoles. The window is our patch; after a few e-folds none are left in it.'));}
+    if(sl===1){c.appendChild(check('Remove inflation',S.noinf12,v=>{S.noinf12=v;draw();}));c.appendChild(capt('The red line is the clock. Ripples inside the horizon oscillate; outside, they freeze. The amber ripple is still outside the horizon at recombination, so without inflation it could never have been in causal contact. Remove inflation to see it: every ripple starts outside the horizon.'));}
+    if(sl===3){c.appendChild(slider('Spectral index nₛ',0.6,1.4,0.005,S.ns12,v=>{S.ns12=v;up();},'nssl12'));
+      c.appendChild(btnrow([['Planck: 0.965','pl12','primary',()=>{S.ns12=0.965;setVal('nssl12',S.ns12);up();}],['New sky','sky12','',()=>{S.seed12++;up();}]]));
+      c.appendChild(capt('nₛ < 1 gives slightly more power on large scales, nₛ > 1 on small ones. The measured 0.965 is barely distinguishable by eye from 1.'));}
+    if(sl===4){c.appendChild(slider('Non-Gaussianity f<sub>NL</sub>',-5000,5000,0.1,S.fnl12,v=>{S.fnl12=v;up();},'fsl12'));
+      c.appendChild(btnrow([['Planck: −0.9','plf12','primary',()=>{S.fnl12=-0.9;setVal('fsl12',S.fnl12);up();}],['f<sub>NL</sub> = 3000','big12','',()=>{S.fnl12=3000;setVal('fsl12',S.fnl12);up();}]]));
+      c.appendChild(capt('The skewness is about 6 f<sub>NL</sub> σ<sub>Φ</sub>, with σ<sub>Φ</sub> ≈ 3×10⁻⁵. Planck\'s |f<sub>NL</sub>| ≲ 10 is invisible here: the bell curve only tilts once f<sub>NL</sub> reaches the thousands.'));}
+    if(sl===5){c.appendChild(slider('Tensor-to-scalar ratio r',0,0.2,0.001,S.r12,v=>{S.r12=v;up();},'rsl12'));
+      c.appendChild(capt('The ring is stretched one way and squeezed the other, alternately. The amplitude is exaggerated enormously: primordial waves are far too weak to see this way, and we look for them as B-mode patterns in the CMB polarisation.'));}}
   typeset($('#ctl'));labs();}
 
 /* ---------- story ---------- */
