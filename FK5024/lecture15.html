@@ -494,7 +494,7 @@ function updateRO1(){const T=S.T1;setRO('r1a',fT(T));setRO('r1b',fmt(NUPK(T),1)+
   setRO('r1d',sci(ASB*T**4,2)+' J m⁻³');setRO('r1e',fmt(NG(T)/1e6,0)+' cm⁻³');setRO('r1f',sci(2.701*KEV*T,2)+' eV');setRO('r1g',fmt(chi1(T),T===TBEST1?1:0)+' for 43 points');labs();}
 
 /* ===== 2. It stays a blackbody ===== */
-const ZE2=1090,TE2=T0*(1+ZE2);
+const ZE2=1100,TE2=T0*(1+ZE2);
 const PH2=(function(){const r=rng(22),a=[];for(let i=0;i<46;i++)a.push([r(),r(),r()*Math.PI*2,0.6+0.8*r()]);return a;})();
 function tick2(dt){if(!S.play2)return false;S.lz2=Math.max(0,S.lz2-dt*0.55);if(S.lz2<=0)S.play2=false;setVal('zsl2',S.lz2);updateRO2();return true;}
 let ax2=null;
@@ -631,17 +631,18 @@ function updateRO4(){const T=10**S.lT4,eta=10**S.leta4;setRO('r4a',fT(T)+', z = 
 
 /* ===== 5. The last-scattering surface ===== */
 const ZS=1089.9;
+const ZL5=1100;   // last scattering as drawn in this chapter, z ≈ 1100
 let tab5=null;
-function calc5(){if(tab5)return tab5;const T=tTable(PLM,Math.log10(1/(1+ZS)),0,900);
+function calc5(){if(tab5)return tab5;const T=tTable(PLM,Math.log10(1/(1+ZL5)),0,900);
   // comoving distance from us to redshift z, in Mpc: χ(z) = (c/H0) ∫ dz/E
-  const DH=CKM/PL.h0,ch=[];let s=0;const n=4000;for(let i=0;i<=n;i++){const z=ZS*i/n;if(i){const zm=ZS*(i-.5)/n;s+=ZS/n/Math.sqrt(E2(PLM,1/(1+zm)));}ch.push(s*DH);}
-  const chi=z=>{const f=z/ZS*n,i=Math.floor(f);return i>=n?ch[n]:ch[i]+(ch[i+1]-ch[i])*(f-i);};
+  const DH=CKM/PL.h0,ch=[];let s=0;const n=4000;for(let i=0;i<=n;i++){const z=ZL5*i/n;if(i){const zm=ZL5*(i-.5)/n;s+=ZL5/n/Math.sqrt(E2(PLM,1/(1+zm)));}ch.push(s*DH);}
+  const chi=z=>{const f=z/ZL5*n,i=Math.floor(f);return i>=n?ch[n]:ch[i]+(ch[i+1]-ch[i])*(f-i);};
   // comoving particle horizon at last scattering: c ∫₀^{a*} da/(a² H)
-  let hz=0;const as=1/(1+ZS);for(let i=0;i<4000;i++){const a=as*(i+.5)/4000;hz+=as/4000/(a*a*Math.sqrt(E2(PLM,a)));}hz*=DH;
-  tab5={T:T.map(([la,t])=>[la,t*F0]),chi,chis:chi(ZS),hor:hz};return tab5;}
+  let hz=0;const as=1/(1+ZL5);for(let i=0;i<4000;i++){const a=as*(i+.5)/4000;hz+=as/4000/(a*a*Math.sqrt(E2(PLM,a)));}hz*=DH;
+  tab5={T:T.map(([la,t])=>[la,t*F0]),chi,chis:chi(ZL5),hor:hz};return tab5;}
 // redshift at time t (Gyr)
-function z5(t){const D=calc5().T;if(t<=D[0][1])return ZS;for(let i=1;i<D.length;i++)if(D[i][1]>=t){const f=(t-D[i-1][1])/(D[i][1]-D[i-1][1]);return 1/10**(D[i-1][0]+f*(D[i][0]-D[i-1][0]))-1;}return 0;}
-const LT5A=Math.log10(3.73e5),LT5B=Math.log10(13.8e9);
+function z5(t){const D=calc5().T;if(t<=D[0][1])return ZL5;for(let i=1;i<D.length;i++)if(D[i][1]>=t){const f=(t-D[i-1][1])/(D[i][1]-D[i-1][1]);return 1/10**(D[i-1][0]+f*(D[i][0]-D[i-1][0]))-1;}return 0;}
+const LT5A=Math.log10(calc5().T[0][1]*1e9),LT5B=Math.log10(13.8e9);
 function tick5(dt){if(!S.play5)return false;S.lt5=Math.min(LT5B,S.lt5+dt*0.5);if(S.lt5>=LT5B)S.play5=false;setVal('tsl5',S.lt5);updateRO5();return true;}
 let ax5=null;
 function draw5(){const D=calc5(),t=10**S.lt5/1e9,z=z5(t),T=T0*(1+z),chiF=D.chi(z),chis=D.chis;const wide=P.w>=P.h*1.35&&P.w>=600;
@@ -654,13 +655,13 @@ function draw5(){const D=calc5(),t=10**S.lt5/1e9,z=z5(t),T=T0*(1+z),chiF=D.chi(z
   // the photons heading for us are at the comoving distance χ(z) of the current redshift
   const rf=R*chiF/chis,col=bbRGB(T),wc=col.a>0.05?`rgba(${col.r},${col.g},${col.b},.95)`:'#80B7D0';
   if(rf>3){g.setLineDash([3,5]);circle(cx,cy,rf,null,wc,1.2);g.setLineDash([]);
-    const lam=3+9*Math.log10((1+ZS)/(1+z))/Math.log10(1+ZS);for(let k=0;k<12;k++){const a=k/12*Math.PI*2+0.13,L=Math.min(46,R-rf+6),ux=-Math.cos(a),uy=-Math.sin(a);g.beginPath();
+    const lam=3+9*Math.log10((1+ZL5)/(1+z))/Math.log10(1+ZL5);for(let k=0;k<12;k++){const a=k/12*Math.PI*2+0.13,L=Math.min(46,R-rf+6),ux=-Math.cos(a),uy=-Math.sin(a);g.beginPath();
       for(let i=0;i<=30;i++){const q=i/30*L,w=Math.sin(q/lam*Math.PI*2)*3,px=cx+Math.cos(a)*(rf+L-q)-uy*w,py=cy+Math.sin(a)*(rf+L-q)+ux*w;i?g.lineTo(px,py):g.moveTo(px,py);}g.strokeStyle=wc;g.lineWidth=1.5;g.stroke();
       arrow(cx+Math.cos(a)*(rf+4),cy+Math.sin(a)*(rf+4),cx+Math.cos(a)*(rf-2),cy+Math.sin(a)*(rf-2),wc,1.5,6);}}
   if(S.hor5){const th=D.hor/chis,a0=-Math.PI/4;g.beginPath();g.arc(cx,cy,R,a0-th,a0+th);g.strokeStyle='#8FD3A7';g.lineWidth=7;g.stroke();
     text('one horizon: '+fmt(2*th/DEG,1)+'° across',cx+Math.cos(a0)*(R-16),cy+Math.sin(a0)*(R-16),'#8FD3A7',11.5,'right','top',600);}
   circle(cx,cy,4.5,'#FFC857');text('us',cx+8,cy+4,'#E6EDF3',11.5,'left','top',600);
-  text('last scattering, z = 1090',cx+R*0.7+6,cy+R*0.7+8,'#F28C5B',11.5,'left','top',600);
+  text('last scattering, z ≈ 1100',cx+R*0.7+6,cy+R*0.7+8,'#F28C5B',11.5,'left','top',600);
   text('radius '+fMpc(chis)+', comoving',cx,cy+R-22,'#E6EDF3',11.5,'center','bottom',500);
   text(z>2?'t = '+fmtYr(t*1e9)+', T = '+fT(T):'t = '+fmtYr(t*1e9)+', T = '+fT(T),px0+18,P.y+18,'#E6EDF3',12.5,'left','top',600);
   // temperature against time
@@ -1079,11 +1080,11 @@ Its energy density is \(u=aT^4\), with \(a=8\pi^5k_B^4/15h^3c^3\), and its photo
 <p class="note">Wien's law: the peak of \(B_\nu\) is at \(h\nu=2.82\,k_BT\), \(\nu_\mathrm{peak}=58.8\ \mathrm{GHz\,K^{-1}}\times T=160\) GHz today; the peak of \(B_\lambda\) is at 1.06 mm, which is not \(c/\nu_\mathrm{peak}\). FIRAS: Fixsen et al. 1996, built on a 2.725 K curve; the modern value is 2.7255 K. Lecture 15 slides 3–7 and Notes, pp. 1–2.</p>`,
   ro:[['Temperature',sp('r1a')],['Peak of B<sub>ν</sub>',sp('r1b')],['Peak of B<sub>λ</sub>, Wien',sp('r1c')],['Energy density aT⁴',sp('r1d')],['Photons',sp('r1e')],['Mean photon energy 2.70 kT',sp('r1f')],['χ² against FIRAS',sp('r1g')]]},
  {name:'Expansion',title:'It stays a blackbody as it expands',draw:draw2,tick:tick2,
-  txt:String.raw`<p>Every photon's wavelength stretches with the scale factor, \(\lambda\propto a\), so its frequency falls as \(\nu\propto1/(1+z)\). The photons are not created or destroyed, so their number density falls as \(a^{-3}\).</p>
+  txt:String.raw`<p>Every photon's wavelength stretches with the scale factor, \(\lambda\propto a\), so its frequency and energy fall as \(\nu\propto1/(1+z)\). The photons are not created or destroyed, so the <em>number</em> of photons per unit volume falls as \(n_\gamma\propto a^{-3}\), like matter. Their <em>energy</em> density falls faster, \(\rho_\gamma\propto n_\gamma\,h\nu\propto a^{-4}\): one factor of \(a\) more, because each photon also loses energy.</p>
 <p>Put both into the Planck spectrum. The number of photons per mode, \(1/(e^{h\nu/k_BT}-1)\), is unchanged if \(T\) falls exactly like \(\nu\):
 \[T(z)=T_0\,(1+z).\]
 A blackbody stays a blackbody, only colder. No collisions are needed to keep it thermal.</p>
-<p>The CMB was released at \(z\approx1090\) at about 3000 K, the temperature of a dim orange star. Press play. The dots are photons taken from the emitted spectrum, each one stretched; they always land on a Planck curve at the new, lower temperature. The glow leaves the visible band and the Universe goes dark, until the first stars switch on.</p>
+<p>The CMB was released at \(z\approx1100\) at about 3000 K, the temperature of a dim orange star. Press play. The dots are photons taken from the emitted spectrum, each one stretched; they always land on a Planck curve at the new, lower temperature. The glow leaves the visible band and the Universe goes dark, until the first stars switch on.</p>
 <p class="note">The observed temperature also gives \(T_\mathrm{emit}=T_\mathrm{obs}(1+z)\) for any source. Lecture 15 slides 4 and 8 and Notes, p. 1.</p>`,
   ro:[['Redshift z',sp('r2a')],['Temperature T₀(1 + z)',sp('r2b')],['Scale factor a',sp('r2c')],['Peak wavelength of B<sub>λ</sub>',sp('r2d')],['Photon density',sp('r2e')],['Each photon stretched by',sp('r2f')]]},
  {name:'Opaque',title:'An opaque plasma',draw:draw3,tick:tick3,click:click3,hover:hover3,
@@ -1106,8 +1107,8 @@ where \(X\) is the ionised fraction.</p>
 <p class="note">Even with one photon per atom, the halfway point would be at about 8000 K, not 158 000 K: the gas is so dilute that an electron rarely finds a proton, so recombination only wins once \(k_BT\) is well below \(Q\). The photon excess pushes it from 8000 K down to 3760 K. Saha assumes equilibrium; the real recombination lags behind it, which is why codes like CAMB solve the full rate equations. Lecture 15 slides 8–9 and Notes, pp. 2–3.</p>`,
   ro:[['Temperature',sp('r4a')],['k<sub>B</sub>T',sp('r4b')],['Photons per baryon, 1/η',sp('r4c')],['Ionising photons per atom',sp('r4d')],['Ionised, Saha',sp('r4e')],['Half recombined at',sp('r4f')]]},
  {name:'Last scattering',title:'The last-scattering surface',draw:draw5,tick:tick5,click:click5,hover:hover5,
-  txt:String.raw`<p>We see the CMB coming from every direction, from a sphere around us: the last-scattering surface, at \(z=1090\). Beyond it the Universe was an opaque plasma, and we cannot see through it with light.</p>
-<p>The picture is in comoving coordinates, which grow with the Universe. Play it from last scattering. The photons heading our way are always at the comoving distance of the current redshift, and they reach us today, cooled from 2970 K to 2.7255 K.</p>
+  txt:String.raw`<p>We see the CMB coming from every direction, from a sphere around us: the last-scattering surface, at \(z\approx1100\). Beyond it the Universe was an opaque plasma, and we cannot see through it with light.</p>
+<p>The picture is in comoving coordinates, which grow with the Universe. Play it from last scattering. The photons heading our way are always at the comoving distance of the current redshift, and they reach us today, cooled from about 3000 K to 2.7255 K.</p>
 <p>The matter that emitted them was only 12.7 Mpc away from our position at the time, about 42 million light years. Today that same matter is 13.9 Gpc away, 45 billion light years; it has long since formed galaxies of its own.</p>
 <p>Show the horizon: the green arc is how far a signal could have travelled by last scattering, about 280 Mpc comoving. Points on the sky more than about 2° apart had never been in causal contact, yet they have the same temperature to one part in 100 000. That is the horizon problem, which inflation solves.</p>
 <p class="note">Flat ΛCDM, Planck 2018; times from the Friedmann equation. Lecture 15 slide 10.</p>`,
@@ -1197,7 +1198,7 @@ function buildControls(){const c=$('#ctl');c.innerHTML='';const ch=S.ch;const up
   if(ch===1){
     c.appendChild(slider('Redshift z',0,Math.log10(1+ZE2),0.001,S.lz2,v=>{S.lz2=v;S.play2=false;up();},'zsl2'));
     c.appendChild(btnrow([['Play','play2b','primary',()=>{if(S.lz2<=0.001)S.lz2=Math.log10(1+ZE2);S.play2=true;up();}],['Last scattering','ls2','',()=>{S.lz2=Math.log10(1+ZE2);S.play2=false;setVal('zsl2',S.lz2);up();}],['Today','now2','',()=>{S.lz2=0;S.play2=false;setVal('zsl2',0);up();}]]));
-    c.appendChild(capt('Dashed: the spectrum emitted at z = 1090. Solid: a Planck curve at T₀(1 + z). The gold band is visible light.'));}
+    c.appendChild(capt('Dashed: the spectrum emitted at z = 1100. Solid: a Planck curve at T₀(1 + z). The gold band is visible light.'));}
   if(ch===2){
     c.appendChild(slider('Redshift z',Math.log10(101),5,0.001,S.lz3,v=>{S.lz3=v;S.play3=false;up();},'zsl3'));
     c.appendChild(btnrow([['Play','play3b','primary',()=>{if(S.lz3<=Math.log10(101)+0.01)S.lz3=4;S.play3=true;up();}],['New photons','np3','',()=>{newPh3();draw();}]]));
